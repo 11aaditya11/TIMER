@@ -2,7 +2,7 @@
   "name": "electron-timer-app",
   "version": "1.0.0",
   "description": "A feature-rich timer application with Electron and Picture-in-Picture mode",
-  "main": "main.js",
+  "main": "src/main.js",
   "homepage": ".",
   "scripts": {
     "start": "electron .",
@@ -37,18 +37,9 @@
       "output": "dist"
     },
     "files": [
-      "main.js",
-      "preload.js",
-      "index.html",
-      "pip.html",
-      "tiny.html",
-      "styles.css",
-      "pip-styles.css",
-      "tiny-styles.css",
-      "renderer.js",
-      "pip-renderer.js",
-      "tiny-renderer.js",
-      "assets/**/*",
+      "src/main.js",
+      "src/preload.js",
+      "public/**/*",
       "node_modules/**/*"
     ],
     "linux": {

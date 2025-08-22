@@ -19,10 +19,10 @@ function createMainWindow() {
     minimizable: true,
     maximizable: true,
     title: 'Timer App',
-    icon: path.join(__dirname, 'assets', 'icon.png')
+    icon: path.join(__dirname, '..', 'public', 'assets', 'icon.png')
   });
 
-  mainWindow.loadFile('index.html');
+  mainWindow.loadFile(path.join(__dirname, '..', 'public', 'index.html'));
 
   // Open DevTools in development
   if (process.argv.includes('--dev')) {
@@ -60,7 +60,7 @@ function createPipWindow() {
     minHeight: 110
   });
 
-  pipWindow.loadFile('pip.html');
+  pipWindow.loadFile(path.join(__dirname, '..', 'public', 'pip.html'));
 
   pipWindow.on('closed', () => {
     pipWindow = null;
@@ -94,7 +94,7 @@ function createTinyWindow() {
     maxHeight: 60
   });
 
-  tinyWindow.loadFile('tiny.html');
+  tinyWindow.loadFile(path.join(__dirname, '..', 'public', 'tiny.html'));
 
   tinyWindow.on('closed', () => {
     // Remove from tracking array when closed
