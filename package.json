@@ -1,0 +1,96 @@
+{
+  "name": "electron-timer-app",
+  "version": "1.0.0",
+  "description": "A feature-rich timer application with Electron and Picture-in-Picture mode",
+  "main": "main.js",
+  "homepage": ".",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "build-linux": "electron-builder --linux",
+    "build-win": "electron-builder --win",
+    "build-mac": "electron-builder --mac",
+    "dist": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "timer",
+    "electron",
+    "desktop-app",
+    "pomodoro",
+    "picture-in-picture"
+  ],
+  "author": {
+    "name": "Timer App Developer",
+    "email": "developer@timerapp.com"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.timerapp.electron",
+    "productName": "Timer App",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "pip.html",
+      "tiny.html",
+      "styles.css",
+      "pip-styles.css",
+      "tiny-styles.css",
+      "renderer.js",
+      "pip-renderer.js",
+      "tiny-renderer.js",
+      "assets/**/*",
+      "node_modules/**/*"
+    ],
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64"]
+        }
+      ],
+      "category": "Utility",
+      "synopsis": "Feature-rich timer with PiP mode"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "public.app-category.productivity"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  }
+}
