@@ -15,15 +15,15 @@ class PiPTimer {
 
     initializeElements() {
         this.timeDisplay = document.getElementById('pipTimeDisplay');
-        this.progressBar = document.getElementById('pipProgressBar');
-        this.startBtn = document.getElementById('pipStartBtn');
+        this.progressBar = null;
+        this.startBtn = null;
         this.pauseBtn = document.getElementById('pipPauseBtn');
         this.resetBtn = document.getElementById('pipResetBtn');
         this.closeBtn = document.getElementById('pipCloseBtn');
-        this.tinyToggle = document.getElementById('pipTinyToggle');
-        this.pipHeader = document.querySelector('.pip-header');
+        this.tinyToggle = null;
+        this.pipHeader = null;
         this.pipControls = document.querySelector('.pip-controls');
-        this.pipProgress = document.querySelector('.pip-progress');
+        this.pipProgress = null;
         this.pipContainer = document.querySelector('.pip-container');
         
         // Initialize tiny mode state
@@ -31,11 +31,19 @@ class PiPTimer {
     }
 
     setupEventListeners() {
-        this.startBtn.addEventListener('click', () => this.startTimer());
-        this.pauseBtn.addEventListener('click', () => this.pauseTimer());
+        // Toggle start/pause via the same button
+        this.pauseBtn.addEventListener('click', () => {
+            if (this.isRunning) {
+                this.pauseTimer();
+            } else {
+                this.startTimer();
+            }
+        });
         this.resetBtn.addEventListener('click', () => this.resetTimer());
-        this.closeBtn.addEventListener('click', () => this.closePiP());
-        this.tinyToggle.addEventListener('click', () => this.toggleTinyMode());
+        if (this.closeBtn) {
+            this.closeBtn.addEventListener('click', () => this.closePiP());
+        }
+        // Tiny toggle removed in tidy PiP
     }
 
     setupIpcListeners() {
@@ -50,8 +58,12 @@ class PiPTimer {
     }
 
     startSync() {
-        // Initial sync only - don't keep polling
-        this.syncWithMainWindow();
+        // Initial sync: ask main window to broadcast current state
+        try {
+            window.electronAPI.requestTimerStateFromMain();
+        } catch (e) {
+            // Fallback to local no-op
+        }
     }
 
     async syncWithMainWindow() {
@@ -143,15 +155,27 @@ class PiPTimer {
     }
 
     updateProgress() {
-        if (this.totalTime === 0) return;
-        
-        const progress = (this.totalTime - this.timeLeft) / this.totalTime;
-        this.progressBar.style.width = `${progress * 100}%`;
+        // progress removed
     }
 
     updateButtonStates() {
-        this.startBtn.disabled = this.isRunning;
-        this.pauseBtn.disabled = !this.isRunning;
+        this.pauseBtn.disabled = false;
+        this.renderPauseButton();
+    }
+
+    renderPauseButton() {
+        if (!this.pauseBtn) return;
+        if (this.isRunning) {
+            this.pauseBtn.classList.remove('play-btn');
+            this.pauseBtn.classList.add('pause-btn');
+            this.pauseBtn.title = 'Pause';
+            this.pauseBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+        } else {
+            this.pauseBtn.classList.remove('pause-btn');
+            this.pauseBtn.classList.add('play-btn');
+            this.pauseBtn.title = 'Start';
+            this.pauseBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+        }
     }
 
     timerComplete() {
@@ -217,38 +241,7 @@ class PiPTimer {
         this.resetTimer();
     }
 
-    // Toggle tiny mode - show only the time
-    toggleTinyMode() {
-        this.isTinyMode = !this.isTinyMode;
-        
-        if (this.isTinyMode) {
-            // Hide all elements except time display
-            this.pipHeader.style.display = 'none';
-            this.pipControls.style.display = 'none';
-            this.pipProgress.style.display = 'none';
-            this.tinyToggle.textContent = '🔍';
-            this.tinyToggle.title = 'Show Full Mode';
-            
-            // Add tiny mode class to container
-            this.pipContainer.classList.add('tiny-mode');
-            
-            // Make the window smaller and centered
-            this.resizeForTinyMode();
-        } else {
-            // Show all elements
-            this.pipHeader.style.display = 'flex';
-            this.pipControls.style.display = 'flex';
-            this.pipProgress.style.display = 'block';
-            this.tinyToggle.textContent = '🔍';
-            this.tinyToggle.title = 'Toggle Tiny Mode';
-            
-            // Remove tiny mode class from container
-            this.pipContainer.classList.remove('tiny-mode');
-            
-            // Restore normal size
-            this.restoreNormalSize();
-        }
-    }
+    // Tiny toggle removed for tidy PiP
 
     // Resize window for tiny mode
     resizeForTinyMode() {

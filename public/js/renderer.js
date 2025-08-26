@@ -27,6 +27,11 @@ class Timer {
         this.addPresetBtn = document.getElementById('addPresetBtn');
         this.pipBtn = document.getElementById('pipBtn');
         this.tinyBtn = document.getElementById('tinyBtn');
+        this.closeBtn = document.getElementById('closeBtn');
+
+        // Tabs
+        this.tabButtons = document.querySelectorAll('.tab-btn');
+        this.tabPanels = document.querySelectorAll('.tab-panel');
     }
 
     async loadPreferredTimes() {
@@ -86,6 +91,27 @@ class Timer {
         this.addPresetBtn.addEventListener('click', () => this.addPreferredTime());
         this.pipBtn.addEventListener('click', () => this.openPiP());
         this.tinyBtn.addEventListener('click', () => this.openTinyMode());
+        if (this.closeBtn) {
+            this.closeBtn.addEventListener('click', () => {
+                try {
+                    window.electronAPI.close();
+                } catch (e) {
+                    window.close();
+                }
+            });
+        }
+
+        // Tab switching
+        this.tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = btn.getAttribute('data-tab');
+                this.tabButtons.forEach(b => b.classList.remove('active'));
+                this.tabPanels.forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                const panel = document.getElementById(target);
+                if (panel) panel.classList.add('active');
+            });
+        });
 
         // Enter key support for inputs
         this.minutesInput.addEventListener('keypress', (e) => {
@@ -178,31 +204,35 @@ class Timer {
     }
 
     startTimer() {
-        if (this.timeLeft <= 0) return;
-        
+        if (this.timeLeft <= 0 || this.isRunning) return;
+
         this.isRunning = true;
         this.startBtn.disabled = true;
         this.pauseBtn.disabled = false;
-        
-        console.log('Timer started, timeLeft:', this.timeLeft);
-        
-        // Use a more precise timer implementation
-        const startTime = Date.now();
-        const targetTime = startTime + (this.timeLeft * 1000);
-        
+
+        // Countdown based on target timestamp so pause/resume preserves remaining time
+        const targetTime = Date.now() + (this.timeLeft * 1000);
+
+        // Clear any existing interval defensively
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
+
+        // Send immediate update so PiP/Tiny reflect state without delay
+        this.sendUpdateToPip();
+
         this.interval = setInterval(() => {
             const currentTime = Date.now();
-            const elapsed = Math.floor((currentTime - startTime) / 1000);
-            this.timeLeft = Math.max(0, this.totalTime - elapsed);
-            
+            const remainingSeconds = Math.ceil((targetTime - currentTime) / 1000);
+            this.timeLeft = Math.max(0, remainingSeconds);
+
             this.updateDisplay();
             this.updateProgress();
-            
-            // Send update to PiP window (only every 5 seconds to reduce IPC overhead)
-            if (this.timeLeft % 5 === 0 || this.timeLeft <= 10) {
-                this.sendUpdateToPip();
-            }
-            
+
+            // Send update to PiP/Tiny every tick for snappier sync
+            this.sendUpdateToPip();
+
             if (this.timeLeft <= 0) {
                 this.timerComplete();
             }

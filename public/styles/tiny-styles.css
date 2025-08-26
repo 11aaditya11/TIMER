@@ -63,12 +63,18 @@ body {
     -webkit-app-region: no-drag;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    z-index: 10;
 }
 
 .tiny-close-btn:hover {
     background: rgba(255, 255, 255, 0.3);
     transform: scale(1.1);
 }
+
+/* Kept hover styles for emphasis, but button is always visible for reliability */
 
 /* Animation for timer completion */
 @keyframes tinyPulse {

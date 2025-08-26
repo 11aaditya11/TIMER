@@ -25,47 +25,61 @@
                         <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
                     </svg>
                 </button>
+                <button class="close-btn" id="closeBtn" title="Close">
+                    ×
+                </button>
             </div>
         </header>
+        
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="tab-timer" id="tabTimerBtn">Timer</button>
+            <button class="tab-btn" data-tab="tab-new" id="tabNewBtn">New Timer</button>
+        </div>
 
-        <div class="timer-display">
-            <div class="time" id="timeDisplay">25:00</div>
-            <div class="progress-ring">
-                <svg class="progress-ring-svg" width="200" height="200">
-                    <circle class="progress-ring-circle-bg" cx="100" cy="100" r="90"></circle>
-                    <circle class="progress-ring-circle" cx="100" cy="100" r="90" id="progressCircle"></circle>
-                </svg>
+        <div class="tab-content">
+            <div class="tab-panel active" id="tab-timer">
+                <div class="timer-display">
+                    <div class="time" id="timeDisplay">25:00</div>
+                    <div class="progress-ring">
+                        <svg class="progress-ring-svg" width="200" height="200">
+                            <circle class="progress-ring-circle-bg" cx="100" cy="100" r="90"></circle>
+                            <circle class="progress-ring-circle" cx="100" cy="100" r="90" id="progressCircle"></circle>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="control-btn primary" id="startBtn">Start</button>
+                    <button class="control-btn secondary" id="pauseBtn" disabled>Pause</button>
+                    <button class="control-btn secondary" id="resetBtn">Reset</button>
+                </div>
+
+                <div class="preset-times">
+                    <h3>Quick Start</h3>
+                    <div class="preset-grid" id="presetGrid">
+                        <!-- Preset times will be populated by JavaScript -->
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="controls">
-            <button class="control-btn primary" id="startBtn">Start</button>
-            <button class="control-btn secondary" id="pauseBtn" disabled>Pause</button>
-            <button class="control-btn secondary" id="resetBtn">Reset</button>
-        </div>
+            <div class="tab-panel" id="tab-new">
+                <div class="custom-time">
+                    <h3>Custom Time</h3>
+                    <div class="time-input">
+                        <input type="number" id="minutesInput" placeholder="Minutes" min="1" max="999">
+                        <input type="number" id="secondsInput" placeholder="Seconds" min="0" max="59">
+                        <button class="set-btn" id="setTimeBtn">Set</button>
+                    </div>
+                </div>
 
-        <div class="preset-times">
-            <h3>Quick Start</h3>
-            <div class="preset-grid" id="presetGrid">
-                <!-- Preset times will be populated by JavaScript -->
-            </div>
-        </div>
-
-        <div class="custom-time">
-            <h3>Custom Time</h3>
-            <div class="time-input">
-                <input type="number" id="minutesInput" placeholder="Minutes" min="1" max="999">
-                <input type="number" id="secondsInput" placeholder="Seconds" min="0" max="59">
-                <button class="set-btn" id="setTimeBtn">Set</button>
-            </div>
-        </div>
-
-        <div class="add-preset">
-            <h3>Add to Favorites</h3>
-            <div class="preset-input">
-                <input type="text" id="presetNameInput" placeholder="Timer name">
-                <input type="number" id="presetMinutesInput" placeholder="Minutes" min="1" max="999">
-                <button class="add-btn" id="addPresetBtn">Add</button>
+                <div class="add-preset">
+                    <h3>Add to Favorites</h3>
+                    <div class="preset-input">
+                        <input type="text" id="presetNameInput" placeholder="Timer name">
+                        <input type="number" id="presetMinutesInput" placeholder="Minutes" min="1" max="999">
+                        <button class="add-btn" id="addPresetBtn">Add</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

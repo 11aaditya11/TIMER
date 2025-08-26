@@ -8,16 +8,21 @@ let tinyWindows = []; // Track all tiny windows
 
 function createMainWindow() {
   mainWindow = new BrowserWindow({
-    width: 400,
-    height: 600,
+    width: 500,
+    height: 650,
+    minWidth: 500,
+    minHeight: 650,
+    maxWidth: 500,
+    maxHeight: 650,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     },
-    resizable: true,
+    resizable: false,
     minimizable: true,
     maximizable: true,
+    frame: false,
     title: 'Timer App',
     icon: path.join(__dirname, '..', 'public', 'assets', 'icon.png')
   });
@@ -32,6 +37,9 @@ function createMainWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+
+  // Hide menu bar for main window
+  mainWindow.setMenuBarVisibility(false);
 }
 
 function createPipWindow() {
@@ -41,14 +49,15 @@ function createPipWindow() {
   }
 
   pipWindow = new BrowserWindow({
-    width: 200,
-    height: 130,
+    width: 140,
+    height: 80,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     },
-    resizable: true,
+    useContentSize: true,
+    resizable: false,
     minimizable: false,
     maximizable: false,
     alwaysOnTop: true,
@@ -56,8 +65,10 @@ function createPipWindow() {
     title: 'Timer - PiP',
     frame: false,
     transparent: true,
-    minWidth: 180,
-    minHeight: 110
+    minWidth: 120,
+    minHeight: 72,
+    maxWidth: 140,
+    maxHeight: 80
   });
 
   pipWindow.loadFile(path.join(__dirname, '..', 'public', 'pip.html'));
@@ -68,13 +79,20 @@ function createPipWindow() {
 
   // Make PiP window draggable
   pipWindow.setMovable(true);
+
+  // Request current timer state from main window shortly after opening PiP
+  setTimeout(() => {
+    if (mainWindow && mainWindow.webContents) {
+      mainWindow.webContents.send('request-timer-state');
+    }
+  }, 500);
 }
 
 function createTinyWindow() {
   // Create a new tiny window (not reusing PiP window)
   const tinyWindow = new BrowserWindow({
-    width: 80,
-    height: 60,
+    width: 85,
+    height: 65,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -88,10 +106,10 @@ function createTinyWindow() {
     title: 'Timer - Tiny',
     frame: false,
     transparent: true,
-    minWidth: 80,
-    minHeight: 60,
-    maxWidth: 80,
-    maxHeight: 60
+    minWidth: 85,
+    minHeight: 65,
+    maxWidth: 85,
+    maxHeight: 65
   });
 
   tinyWindow.loadFile(path.join(__dirname, '..', 'public', 'tiny.html'));
@@ -122,8 +140,8 @@ function createTinyWindow() {
   const { screen } = require('electron');
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
-  const x = Math.round((screenWidth - 80) / 2);
-  const y = Math.round((screenHeight - 60) / 2);
+  const x = Math.round((screenWidth - 85) / 2);
+  const y = Math.round((screenHeight - 65) / 2);
   tinyWindow.setPosition(x, y);
 }
 
@@ -313,6 +331,29 @@ ipcMain.handle('request-timer-state-from-main', () => {
     mainWindow.webContents.send('request-timer-state');
   }
   return true;
+});
+
+// Window control IPC handlers
+const { ipcMain: _ipcMain } = require('electron');
+_ipcMain.on('minimize-window', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.minimize();
+  }
+});
+
+_ipcMain.on('maximize-window', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+    } else {
+      mainWindow.maximize();
+    }
+  }
+});
+
+_ipcMain.on('close-window', () => {
+  // Quit entire app
+  app.quit();
 });
 
 ipcMain.handle('update-timer-from-pip', (event, update) => {
