@@ -9,7 +9,7 @@ class Timer {
         this.initializeElements();
         this.loadPreferredTimes();
         this.setupEventListeners();
-        this.setDefaultTime(25, 0);
+        this.setDefaultTime(15, 0);
     }
 
     initializeElements() {
