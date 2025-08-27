@@ -9,7 +9,7 @@ class Timer {
         this.initializeElements();
         this.loadPreferredTimes();
         this.setupEventListeners();
-        this.setDefaultTime(25, 0);
+        this.setDefaultTime(15, 0);
     }
 
     initializeElements() {
@@ -28,6 +28,7 @@ class Timer {
         this.pipBtn = document.getElementById('pipBtn');
         this.tinyBtn = document.getElementById('tinyBtn');
         this.closeBtn = document.getElementById('closeBtn');
+        this.minBtn = document.getElementById('minBtn');
 
         // Tabs
         this.tabButtons = document.querySelectorAll('.tab-btn');
@@ -91,6 +92,15 @@ class Timer {
         this.addPresetBtn.addEventListener('click', () => this.addPreferredTime());
         this.pipBtn.addEventListener('click', () => this.openPiP());
         this.tinyBtn.addEventListener('click', () => this.openTinyMode());
+        if (this.minBtn) {
+            this.minBtn.addEventListener('click', () => {
+                try {
+                    window.electronAPI.minimize();
+                } catch (e) {
+                    // no-op in non-electron env
+                }
+            });
+        }
         if (this.closeBtn) {
             this.closeBtn.addEventListener('click', () => {
                 try {

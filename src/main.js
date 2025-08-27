@@ -23,7 +23,7 @@ function createMainWindow() {
     minimizable: true,
     maximizable: true,
     frame: false,
-    title: 'Timer App',
+    // title: 'Timer App',
     icon: path.join(__dirname, '..', 'public', 'assets', 'icon.png')
   });
 
