@@ -1,7 +1,7 @@
 class TinyTimer {
     constructor() {
-        this.timeLeft = 1500; // Default 25 minutes
-        this.totalTime = 1500;
+        this.timeLeft = 0; // Default 25 minutes
+        this.totalTime = 0;
         this.isRunning = false;
         this.interval = null;
         
@@ -80,11 +80,13 @@ class TinyTimer {
         if (this.interval) return; // Already running
         
         this.interval = setInterval(() => {
-            this.timeLeft--;
-            this.updateDisplay();
-            
-            if (this.timeLeft <= 0) {
-                this.timerComplete();
+            if (this.timeLeft > 0) {
+                this.timeLeft--;
+                this.updateDisplay();
+                
+                if (this.timeLeft <= 0) {
+                    this.timerComplete();
+                }
             }
         }, 1000);
     }

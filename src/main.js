@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, globalShortcut, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Notification } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -7,9 +7,17 @@ let pipWindow;
 let tinyWindows = []; // Track all tiny windows
 
 function createMainWindow() {
+  // Determine best available icon (prefer PNG, fallback to SVG). If none, omit.
+  const assetsDir = path.join(__dirname, '..', 'public', 'assets');
+  const pngIcon = path.join(assetsDir, 'icon.png');
+  const svgIcon = path.join(assetsDir, 'icon.svg');
+  const iconPath = fs.existsSync(pngIcon)
+    ? pngIcon
+    : (fs.existsSync(svgIcon) ? svgIcon : undefined);
+
   mainWindow = new BrowserWindow({
-    width: 500,
-    height: 650,
+    width: 497,
+    height: 629,
     minWidth: 500,
     minHeight: 650,
     maxWidth: 500,
@@ -24,7 +32,7 @@ function createMainWindow() {
     maximizable: true,
     frame: false,
     // title: 'Timer App',
-    icon: path.join(__dirname, '..', 'public', 'assets', 'icon.png')
+    icon: iconPath
   });
 
   mainWindow.loadFile(path.join(__dirname, '..', 'public', 'index.html'));
@@ -49,8 +57,8 @@ function createPipWindow() {
   }
 
   pipWindow = new BrowserWindow({
-    width: 140,
-    height: 80,
+    width: 160,
+    height: 63,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -65,9 +73,9 @@ function createPipWindow() {
     title: 'Timer - PiP',
     frame: false,
     transparent: true,
-    minWidth: 120,
-    minHeight: 72,
-    maxWidth: 140,
+    minWidth: 160,
+    minHeight: 80,
+    maxWidth: 160,
     maxHeight: 80
   });
 
@@ -80,12 +88,26 @@ function createPipWindow() {
   // Make PiP window draggable
   pipWindow.setMovable(true);
 
-  // Request current timer state from main window shortly after opening PiP
+  // Position at bottom-right corner with 20px margin
+  const { screen } = require('electron');
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
+  const x = screenWidth - 160 - 20; // window width + margin
+  const y = screenHeight - 80 - 20; // window height + margin
+  pipWindow.setPosition(x, y);
+
+  // Minimize main window when PiP opens
+  if (mainWindow) {
+    mainWindow.minimize();
+  }
+
+  // Request and forward current timer state from main window to PiP
   setTimeout(() => {
     if (mainWindow && mainWindow.webContents) {
-      mainWindow.webContents.send('request-timer-state');
+      // Request timer state and forward to PiP when received
+      mainWindow.webContents.send('request-timer-state-for-pip');
     }
-  }, 500);
+  }, 20);
 }
 
 function createTinyWindow() {
@@ -129,19 +151,31 @@ function createTinyWindow() {
   setTimeout(() => {
     // Get current timer state from main window and send to tiny window
     if (mainWindow && mainWindow.webContents) {
-      mainWindow.webContents.send('request-timer-state');
+      mainWindow.webContents.send('request-timer-state-for-tiny');
     }
-  }, 1000); // Delay to ensure window is fully loaded
+  }, 20); // Reduced delay to match PiP timing
 
   // Make tiny window draggable
   tinyWindow.setMovable(true);
+
+  // Minimize main window when Tiny mode opens
+  if (mainWindow) {
+    mainWindow.minimize();
+    // Auto-start timer when tiny mode opens
+    setTimeout(() => {
+      if (mainWindow && mainWindow.webContents) {
+        console.log('Sending auto-start-timer command to main window');
+        mainWindow.webContents.send('auto-start-timer');
+      }
+    }, 500);
+  }
   
-  // Center the window on screen
+  // Position at bottom-right corner with 20px margin
   const { screen } = require('electron');
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
-  const x = Math.round((screenWidth - 85) / 2);
-  const y = Math.round((screenHeight - 65) / 2);
+  const x = screenWidth - 85 - 20; // window width + margin
+  const y = screenHeight - 65 - 20; // window height + margin
   tinyWindow.setPosition(x, y);
 }
 
@@ -356,6 +390,18 @@ _ipcMain.on('close-window', () => {
   app.quit();
 });
 
+// Notification IPC: show native notification from renderer
+ipcMain.on('show-notification', (event, title, body) => {
+  try {
+    if (Notification && Notification.isSupported()) {
+      const n = new Notification({ title: String(title || 'Notification'), body: String(body || '') });
+      n.show();
+    }
+  } catch (err) {
+    console.error('Failed to show notification:', err);
+  }
+});
+
 ipcMain.handle('update-timer-from-pip', (event, update) => {
   // Send update to main window
   if (mainWindow && mainWindow.webContents) {
@@ -377,5 +423,23 @@ ipcMain.handle('send-timer-update-to-pip', (event, timerState) => {
     }
   });
   
+  return true;
+});
+
+// Handle timer state forwarding to specific windows
+ipcMain.handle('forward-timer-state-to-pip', (event, timerState) => {
+  if (pipWindow && pipWindow.webContents) {
+    pipWindow.webContents.send('main-timer-update', timerState);
+  }
+  return true;
+});
+
+ipcMain.handle('forward-timer-state-to-tiny', (event, timerState) => {
+  // Send to all tiny windows
+  tinyWindows.forEach(tinyWindow => {
+    if (tinyWindow && !tinyWindow.isDestroyed() && tinyWindow.webContents) {
+      tinyWindow.webContents.send('main-timer-update', timerState);
+    }
+  });
   return true;
 });

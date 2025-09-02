@@ -29,8 +29,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Notifications
   showNotification: (title, body) => ipcRenderer.send('show-notification', title, body),
   
+  // Timer state forwarding
+  forwardTimerStateToPip: (timerState) => ipcRenderer.invoke('forward-timer-state-to-pip', timerState),
+  forwardTimerStateToTiny: (timerState) => ipcRenderer.invoke('forward-timer-state-to-tiny', timerState),
+  
   // Listeners for timer updates
   onMainTimerUpdate: (callback) => ipcRenderer.on('main-timer-update', callback),
   onPipTimerUpdate: (callback) => ipcRenderer.on('pip-timer-update', callback),
-  onRequestTimerState: (callback) => ipcRenderer.on('request-timer-state', callback)
+  onRequestTimerState: (callback) => ipcRenderer.on('request-timer-state', callback),
+  onRequestTimerStateForPip: (callback) => ipcRenderer.on('request-timer-state-for-pip', callback),
+  onRequestTimerStateForTiny: (callback) => ipcRenderer.on('request-timer-state-for-tiny', callback),
+  onAutoStartTimer: (callback) => ipcRenderer.on('auto-start-timer', callback),
 });

@@ -29,6 +29,7 @@ class Timer {
         this.tinyBtn = document.getElementById('tinyBtn');
         this.closeBtn = document.getElementById('closeBtn');
         this.minBtn = document.getElementById('minBtn');
+        this.backBtn = document.getElementById('backBtn');
 
         // Tabs
         this.tabButtons = document.querySelectorAll('.tab-btn');
@@ -136,6 +137,19 @@ class Timer {
         this.presetMinutesInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.addPreferredTime();
         });
+
+        // Back button event listener
+        if (this.backBtn) {
+            this.backBtn.addEventListener('click', () => {
+                // Switch back to timer tab
+                this.tabButtons.forEach(b => b.classList.remove('active'));
+                this.tabPanels.forEach(p => p.classList.remove('active'));
+                
+                // Activate timer tab
+                const timerPanel = document.getElementById('tab-timer');
+                if (timerPanel) timerPanel.classList.add('active');
+            });
+        }
     }
 
     setDefaultTime(minutes, seconds) {
@@ -301,11 +315,14 @@ class Timer {
         this.pauseTimer();
         this.timeDisplay.classList.add('timer-complete');
         
+        // Show confetti animation
+        this.showConfetti();
+        
         // Show notification
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Timer Complete!', {
                 body: 'Your timer has finished!',
-                icon: '/assets/icon.png'
+                icon: 'assets/icon.svg'
             });
         }
         
@@ -317,23 +334,165 @@ class Timer {
         }, 1000);
     }
 
+    showConfetti() {
+        // Create bang effect first
+        this.createBangEffect();
+        
+        // Create main confetti container
+        const confettiContainer = document.createElement('div');
+        confettiContainer.className = 'confetti-container';
+        document.body.appendChild(confettiContainer);
+
+        // Vibrant color palette
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
+            '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
+            '#F8C471', '#82E0AA', '#F1948A', '#85C1E9', '#D7BDE2',
+            '#A3E4D7', '#F9E79F', '#FADBD8', '#D5DBDB', '#AED6F1',
+            '#FF1744', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5',
+            '#2196F3', '#03DAC6', '#4CAF50', '#8BC34A', '#CDDC39'
+        ];
+
+        // Create center burst confetti (300 pieces)
+        for (let i = 0; i < 300; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti-piece center-burst';
+            
+            // Random vibrant color
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.backgroundColor = color;
+            
+            // Center positioning for burst effect
+            confetti.style.left = '50%';
+            confetti.style.top = '50%';
+            
+            // Burst direction
+            const angle = (Math.PI * 2 * i) / 300;
+            const velocity = Math.random() * 200 + 100;
+            confetti.style.setProperty('--burst-x', Math.cos(angle) * velocity + 'px');
+            confetti.style.setProperty('--burst-y', Math.sin(angle) * velocity + 'px');
+            
+            // Stagger timing
+            confetti.style.animationDelay = Math.random() * 0.3 + 's';
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            
+            // Random shapes and sizes
+            const size = Math.random() * 10 + 3;
+            confetti.style.width = size + 'px';
+            confetti.style.height = size + 'px';
+            
+            if (Math.random() > 0.5) {
+                confetti.style.borderRadius = '50%';
+            }
+            
+            confettiContainer.appendChild(confetti);
+        }
+
+        // Create side confetti (left side - 150 pieces)
+        for (let i = 0; i < 150; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti-piece side-left';
+            
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.backgroundColor = color;
+            
+            confetti.style.left = '-10px';
+            confetti.style.top = Math.random() * 100 + '%';
+            
+            confetti.style.animationDelay = Math.random() * 1.5 + 's';
+            confetti.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+            
+            const size = Math.random() * 8 + 4;
+            confetti.style.width = size + 'px';
+            confetti.style.height = size + 'px';
+            
+            if (Math.random() > 0.6) {
+                confetti.style.borderRadius = '50%';
+            }
+            
+            confettiContainer.appendChild(confetti);
+        }
+
+        // Create side confetti (right side - 150 pieces)
+        for (let i = 0; i < 150; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti-piece side-right';
+            
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.backgroundColor = color;
+            
+            confetti.style.right = '-10px';
+            confetti.style.top = Math.random() * 100 + '%';
+            
+            confetti.style.animationDelay = Math.random() * 1.5 + 's';
+            confetti.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+            
+            const size = Math.random() * 8 + 4;
+            confetti.style.width = size + 'px';
+            confetti.style.height = size + 'px';
+            
+            if (Math.random() > 0.6) {
+                confetti.style.borderRadius = '50%';
+            }
+            
+            confettiContainer.appendChild(confetti);
+        }
+
+        // Create top falling confetti (200 pieces)
+        for (let i = 0; i < 200; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti-piece top-fall';
+            
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.backgroundColor = color;
+            
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.top = '-20px';
+            
+            confetti.style.animationDelay = Math.random() * 2 + 's';
+            confetti.style.animationDuration = (Math.random() * 2 + 3) + 's';
+            
+            const size = Math.random() * 8 + 4;
+            confetti.style.width = size + 'px';
+            confetti.style.height = size + 'px';
+            
+            if (Math.random() > 0.6) {
+                confetti.style.borderRadius = '50%';
+            }
+            
+            confettiContainer.appendChild(confetti);
+        }
+
+        // Remove confetti after animation
+        setTimeout(() => {
+            if (confettiContainer.parentNode) {
+                confettiContainer.parentNode.removeChild(confettiContainer);
+            }
+        }, 8000);
+    }
+
+    createBangEffect() {
+        // Create bang flash effect
+        const bangFlash = document.createElement('div');
+        bangFlash.className = 'bang-flash';
+        document.body.appendChild(bangFlash);
+
+        // Create expanding ring effect
+        const bangRing = document.createElement('div');
+        bangRing.className = 'bang-ring';
+        document.body.appendChild(bangRing);
+
+        // Remove bang effects after animation
+        setTimeout(() => {
+            if (bangFlash.parentNode) bangFlash.parentNode.removeChild(bangFlash);
+            if (bangRing.parentNode) bangRing.parentNode.removeChild(bangRing);
+        }, 1000);
+    }
+
     playNotificationSound() {
-        // Create a simple beep sound
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.3);
+        // Disabled sound for main window to avoid conflicts with confetti
+        // Sound is still available in PiP and Tiny modes
+        console.log('Sound disabled for main window');
     }
 
     openPiP() {
@@ -404,21 +563,42 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Create and start the timer
     window.timer = new Timer();
+    // Handle auto-start timer command from main process
+    window.electronAPI.onAutoStartTimer(() => {
+        console.log('Auto-start timer command received');
+        if (!window.timer.isRunning) {
+            console.log('Starting timer automatically');
+            window.timer.startTimer();
+        } else {
+            console.log('Timer already running, skipping auto-start');
+        }
+    });
     
-    // Set up IPC listeners for PiP communication
-    try {
-        window.electronAPI.onPipTimerUpdate((event, update) => {
-            window.timer.receivePiPUpdate(update);
-        });
-        
-        // Listen for timer state requests from other windows
-        window.electronAPI.onRequestTimerState((event) => {
-            // Send current timer state to all other windows
-            window.timer.sendUpdateToPip();
-        });
-    } catch (error) {
-        console.log('Could not set up PiP update listener');
-    }
+    // Listen for timer state requests from other windows
+    window.electronAPI.onRequestTimerState((event) => {
+        // Send current timer state to all other windows
+        window.timer.sendUpdateToPip();
+    });
+
+    // Listen for specific timer state requests for PiP window
+    window.electronAPI.onRequestTimerStateForPip(() => {
+        const currentState = {
+            timeLeft: window.timer.timeLeft,
+            totalTime: window.timer.totalTime,
+            isRunning: window.timer.isRunning
+        };
+        window.electronAPI.forwardTimerStateToPip(currentState);
+    });
+
+    // Listen for specific timer state requests for Tiny windows
+    window.electronAPI.onRequestTimerStateForTiny(() => {
+        const currentState = {
+            timeLeft: window.timer.timeLeft,
+            totalTime: window.timer.totalTime,
+            isRunning: window.timer.isRunning
+        };
+        window.electronAPI.forwardTimerStateToTiny(currentState);
+    });
 });
 
 // Listen for messages from PiP window

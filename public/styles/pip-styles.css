@@ -39,18 +39,24 @@ body {
 }
 
 .pip-close-btn {
-    background: rgba(255, 255, 255, 0.15);
-    border: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 10px;
+    font-weight: bold;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    z-index: 10;
     -webkit-app-region: no-drag;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -58,8 +64,6 @@ body {
 
 .pip-close-btn:hover {
     background: rgba(255, 255, 255, 0.25);
-    transform: scale(1.1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .pip-tiny-toggle {
@@ -97,11 +101,11 @@ body {
 }
 
 .pip-time {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 700;
+    color: #e7e7ea;
     font-family: 'Courier New', monospace;
-    color: white;
-    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     margin-bottom: 0;
     text-align: center;
     letter-spacing: 1px;
@@ -112,56 +116,34 @@ body {
 .pip-controls {
     display: flex;
     gap: 6px;
+    align-items: center;
     justify-content: center;
     -webkit-app-region: no-drag;
     margin-top: 0;
 }
 
-.pip-close-btn {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    background: rgba(255, 255, 255, 0.15);
-    border: none;
-    color: white;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
+.pip-control-btn {
+    background: rgba(42, 42, 48, 0.9);
+    border: 1px solid rgba(58, 58, 64, 0.8);
+    color: #e7e7ea;
+    padding: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 14px;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    min-width: 24px;
+    min-height: 24px;
     -webkit-app-region: no-drag;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.pip-close-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
-}
-
-.pip-control-btn {
-    background: rgba(255, 255, 255, 0.15);
-    border: none;
-    color: white;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    margin-right: 8px;
 }
 
 .pip-control-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
 }
 
 .pip-control-btn:hover:not(:disabled) {

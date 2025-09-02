@@ -1,7 +1,7 @@
 class PiPTimer {
     constructor() {
-        this.timeLeft = 1500; // Default 25 minutes
-        this.totalTime = 1500;
+        this.timeLeft = 0; // Start with 0, will sync from main
+        this.totalTime = 0;
         this.isRunning = false;
         this.interval = null;
         
@@ -100,12 +100,14 @@ class PiPTimer {
         if (this.interval) return; // Already running
         
         this.interval = setInterval(() => {
-            this.timeLeft--;
-            this.updateDisplay();
-            this.updateProgress();
-            
-            if (this.timeLeft <= 0) {
-                this.timerComplete();
+            if (this.timeLeft > 0) {
+                this.timeLeft--;
+                this.updateDisplay();
+                this.updateProgress();
+                
+                if (this.timeLeft <= 0) {
+                    this.timerComplete();
+                }
             }
         }, 1000);
     }
