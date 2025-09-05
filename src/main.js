@@ -51,6 +51,12 @@ function createMainWindow() {
 }
 
 function createPipWindow() {
+  // Prevent opening PiP if tiny windows exist
+  if (tinyWindows.length > 0) {
+    console.log('Cannot open PiP mode: Tiny mode is already active');
+    return;
+  }
+  
   if (pipWindow) {
     pipWindow.focus();
     return;
@@ -83,6 +89,7 @@ function createPipWindow() {
 
   pipWindow.on('closed', () => {
     pipWindow = null;
+    console.log('PiP window closed');
   });
 
   // Make PiP window draggable
@@ -111,6 +118,19 @@ function createPipWindow() {
 }
 
 function createTinyWindow() {
+  // Prevent opening tiny mode if PiP window exists
+  if (pipWindow) {
+    console.log('Cannot open Tiny mode: PiP mode is already active');
+    return;
+  }
+  
+  // Prevent multiple tiny windows
+  if (tinyWindows.length > 0) {
+    console.log('Tiny mode window already exists, focusing existing window');
+    tinyWindows[0].focus();
+    return;
+  }
+  
   // Create a new tiny window (not reusing PiP window)
   const tinyWindow = new BrowserWindow({
     width: 85,
@@ -141,6 +161,7 @@ function createTinyWindow() {
     const index = tinyWindows.indexOf(tinyWindow);
     if (index > -1) {
       tinyWindows.splice(index, 1);
+      console.log('Tiny window closed, remaining windows:', tinyWindows.length);
     }
   });
 

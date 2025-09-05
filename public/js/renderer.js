@@ -67,7 +67,6 @@ class Timer {
             `;
             presetBtn.addEventListener('click', () => {
                 this.setTime(preset.minutes, 0);
-                this.startTimer();
             });
             
             const deleteBtn = document.createElement('button');
@@ -150,6 +149,22 @@ class Timer {
                 if (timerPanel) timerPanel.classList.add('active');
             });
         }
+
+        // In-app keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Only trigger shortcuts when not typing in input fields
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            if (e.key === 'p' || e.key === 'P') {
+                e.preventDefault();
+                this.openPiP();
+            } else if (e.key === 't' || e.key === 'T') {
+                e.preventDefault();
+                this.openTinyMode();
+            }
+        });
     }
 
     setDefaultTime(minutes, seconds) {
