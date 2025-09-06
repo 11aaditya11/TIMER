@@ -114,7 +114,7 @@ npm run build-mac      # macOS .dmg
 ## File Structure
 
 ```
-electron-timer-app/
+timer-app/
 ├── main.js              # Main Electron process
 ├── preload.js           # Secure API bridge
 ├── index.html           # Main window HTML

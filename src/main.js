@@ -6,14 +6,9 @@ let mainWindow;
 let pipWindow;
 let tinyWindows = []; // Track all tiny windows
 
+
 function createMainWindow() {
-  // Determine best available icon (prefer PNG, fallback to SVG). If none, omit.
-  const assetsDir = path.join(__dirname, '..', 'public', 'assets');
-  const pngIcon = path.join(assetsDir, 'icon.png');
-  const svgIcon = path.join(assetsDir, 'icon.svg');
-  const iconPath = fs.existsSync(pngIcon)
-    ? pngIcon
-    : (fs.existsSync(svgIcon) ? svgIcon : undefined);
+  // Determine best available icon (prefer PNG timer-icon, fallback to others). If none, omit.
 
   mainWindow = new BrowserWindow({
     width: 497,
@@ -31,8 +26,8 @@ function createMainWindow() {
     minimizable: true,
     maximizable: true,
     frame: false,
-    // title: 'Timer App',
-    icon: iconPath
+    title: 'Timer App',
+    icon: path.join(__dirname, '../public/assets', 'icon.png')
   });
 
   mainWindow.loadFile(path.join(__dirname, '..', 'public', 'index.html'));
@@ -243,6 +238,7 @@ function createMenu() {
 }
 
 app.whenReady().then(() => {
+  app.setName('Timer App');
   createMainWindow();
   createMenu();
 
@@ -294,10 +290,10 @@ function loadPreferredTimes() {
   
   // Return default times if file doesn't exist or is corrupted
   return [
-    { name: 'Quick Break', minutes: 5 },
-    { name: 'Pomodoro', minutes: 25 },
-    { name: 'Long Break', minutes: 15 },
-    { name: 'Deep Work', minutes: 90 }
+    { name: 'Fifteen', minutes: 15 },
+    { name: 'Hour', minutes: 60 },
+    { name: 'TwentyFive', minutes: 25 },
+    { name: 'FortyFive', minutes: 45 }
   ];
 }
 

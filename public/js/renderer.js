@@ -44,10 +44,10 @@ class Timer {
             console.error('Failed to load preferred times:', error);
             // Fallback to default times
             this.preferredTimes = [
-                { name: 'Quick Break', minutes: 5 },
-                { name: 'Pomodoro', minutes: 25 },
-                { name: 'Long Break', minutes: 15 },
-                { name: 'Deep Work', minutes: 90 }
+                { name: 'Fifteen', minutes: 15 },
+                { name: 'Hour', minutes: 60 },
+                { name: 'TwentyFive', minutes: 25 },
+                { name: 'FortyFive', minutes: 45 }
             ];
             this.renderPresetTimes();
         }
@@ -337,7 +337,7 @@ class Timer {
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Timer Complete!', {
                 body: 'Your timer has finished!',
-                icon: 'assets/icon.svg'
+                icon: 'assets/icon.png'
             });
         }
         
@@ -613,6 +613,12 @@ document.addEventListener('DOMContentLoaded', () => {
             isRunning: window.timer.isRunning
         };
         window.electronAPI.forwardTimerStateToTiny(currentState);
+    });
+
+    // Listen for updates from PiP window via IPC
+    window.electronAPI.onPipTimerUpdate((event, update) => {
+        console.log('Received PiP timer update:', update);
+        window.timer.receivePiPUpdate(update);
     });
 });
 
