@@ -35,6 +35,7 @@ dist/
 build/
 out/
 release/
+pkg/
 
 # Electron
 *.asar

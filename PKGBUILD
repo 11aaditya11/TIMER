@@ -6,31 +6,30 @@ pkgdesc="A feature-rich timer application with Electron and Picture-in-Picture m
 arch=('x86_64')
 url="https://github.com/yourusername/timer-app"
 license=('custom')
-depends=('electron28' 'gtk3' 'libxss' 'gconf' 'nss')
+depends=('electron' 'gtk3' 'libxss' 'nss')
 makedepends=('npm' 'nodejs')
-source=("$pkgname-$pkgver.tar.gz::file://$PWD")
-sha256sums=('SKIP')
+provides=('timer-app')
+conflicts=('timer-app')
+source=()
+sha256sums=()
 
 build() {
-    cd "$srcdir"
+    cd "$startdir"
     npm install
-    npm run build
 }
 
 package() {
-    cd "$srcdir"
-    
     # Create application directory
     install -d "$pkgdir/opt/$pkgname"
     install -d "$pkgdir/usr/bin"
     install -d "$pkgdir/usr/share/applications"
     install -d "$pkgdir/usr/share/icons/hicolor/256x256/apps"
     
-    # Copy application files
-    cp -r src/ "$pkgdir/opt/$pkgname/"
-    cp -r public/ "$pkgdir/opt/$pkgname/"
-    cp package.json "$pkgdir/opt/$pkgname/"
-    cp package-lock.json "$pkgdir/opt/$pkgname/"
+    # Copy application files from startdir
+    cp -r "$startdir/src/" "$pkgdir/opt/$pkgname/"
+    cp -r "$startdir/public/" "$pkgdir/opt/$pkgname/"
+    cp "$startdir/package.json" "$pkgdir/opt/$pkgname/"
+    cp "$startdir/package-lock.json" "$pkgdir/opt/$pkgname/"
     
     # Install node_modules (production only)
     cd "$pkgdir/opt/$pkgname"
@@ -45,7 +44,7 @@ EOF
     chmod +x "$pkgdir/usr/bin/$pkgname"
     
     # Install icon
-    install -Dm644 "$srcdir/public/assets/icon.png" "$pkgdir/usr/share/icons/hicolor/256x256/apps/$pkgname.png"
+    install -Dm644 "$startdir/public/assets/icon.png" "$pkgdir/usr/share/icons/hicolor/256x256/apps/$pkgname.png"
     
     # Install desktop file
     cat > "$pkgdir/usr/share/applications/$pkgname.desktop" << EOF

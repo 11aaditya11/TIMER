@@ -32,6 +32,12 @@ sudo mkdir -p "$BIN_DIR"
 sudo mkdir -p "$DESKTOP_DIR"
 sudo mkdir -p "$ICON_DIR"
 
+# Remove existing installation if it exists
+if [ -d "$INSTALL_DIR" ]; then
+    echo "🔄 Removing existing Timer App installation..."
+    sudo rm -rf "$INSTALL_DIR"
+fi
+
 # Copy application files
 echo "📋 Copying application files..."
 sudo cp -r src/ "$INSTALL_DIR/"

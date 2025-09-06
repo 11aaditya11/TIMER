@@ -21,7 +21,7 @@ fi
 
 # Clean previous builds
 echo "🧹 Cleaning previous builds..."
-rm -rf pkg/ src/ *.pkg.tar.xz *.pkg.tar.zst 2>/dev/null || true
+rm -rf pkg/ *.pkg.tar.xz *.pkg.tar.zst 2>/dev/null || true
 
 # Build the package
 echo "📦 Building package with makepkg..."
@@ -37,9 +37,15 @@ fi
 
 echo "📦 Package built: $PACKAGE"
 
+# Remove existing installation if it exists
+if pacman -Q timer-app &>/dev/null; then
+    echo "🔄 Removing existing Timer App installation..."
+    sudo pacman -R timer-app --noconfirm
+fi
+
 # Install the package
 echo "🚀 Installing Timer App..."
-sudo pacman -U "$PACKAGE" --noconfirm
+sudo pacman -U "$PACKAGE" --noconfirm --overwrite '*'
 
 echo "✅ Timer App installed successfully!"
 echo "🎯 You can now find 'Timer App' in your application menu/drawer"
