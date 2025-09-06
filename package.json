@@ -33,7 +33,7 @@
   "build": {
     "appId": "com.timerapp.electron",
     "productName": "Timer App",
-    "icon": "icon.png",
+    "icon": "public/assets/icon.png",
     "directories": {
       "output": "dist"
     },
@@ -54,7 +54,7 @@
         }
       ],
       "category": "Utility",
-      "icon": "icon.png",
+      "icon": "public/assets/icon.png",
       "synopsis": "Feature-rich timer with PiP mode"
     },
     "win": {
