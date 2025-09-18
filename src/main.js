@@ -7,12 +7,121 @@ let pipWindow;
 let tinyWindows = []; // Track all tiny windows
 
 
+// Single instance lock to prevent multiple app instances
+const gotTheLock = app.requestSingleInstanceLock();
+const lockFilePath = path.join(app.getPath('userData'), 'app.lock');
+
+// Function to handle cleanup
+function cleanup() {
+  try {
+    if (fs.existsSync(lockFilePath)) {
+      fs.unlinkSync(lockFilePath);
+      console.log('Lock file released');
+    }
+  } catch (error) {
+    console.error('Error during cleanup:', error);
+  }
+}
+
+// Function to acquire lock file
+function acquireLockFile() {
+  try {
+    // Try to create lock file exclusively
+    fs.writeFileSync(lockFilePath, process.pid.toString(), { flag: 'wx' });
+    console.log('Lock file created successfully at:', lockFilePath);
+    
+    // Ensure cleanup happens on exit
+    const events = ['exit', 'SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2', 'uncaughtException'];
+    events.forEach(event => {
+      process.on(event, (err) => {
+        cleanup();
+        if (err && err.stack) console.error('Uncaught exception:', err);
+        if (event !== 'exit') process.exit(0);
+      });
+    });
+    
+    return true;
+  } catch (error) {
+    if (error.code === 'EEXIST') {
+      console.log('Lock file already exists at:', lockFilePath);
+      try {
+        const existingPid = fs.readFileSync(lockFilePath, 'utf8');
+        console.log('Existing PID in lock file:', existingPid);
+        
+        // Check if the process is still running
+        try {
+          process.kill(parseInt(existingPid), 0);
+          console.log('Process with PID', existingPid, 'is still running');
+        } catch (e) {
+          console.log('Process with PID', existingPid, 'is not running, removing stale lock');
+          fs.unlinkSync(lockFilePath);
+          return acquireLockFile(); // Try again
+        }
+      } catch (readError) {
+        console.error('Error reading existing lock file:', readError);
+      }
+      return false;
+    }
+    console.error('Error creating lock file:', error);
+    return false;
+  }
+}
+
+// Check if another instance is running
+if (!gotTheLock) {
+  console.log('Another instance is already running, focusing it...');
+  app.quit();
+  process.exit(0);
+}
+
+// Set up lock file as additional protection
+if (!acquireLockFile()) {
+  console.log('Could not acquire lock, another instance might be running');
+  app.quit();
+  process.exit(0);
+}
+
+console.log('This is the first instance, continuing...');
+
+// Handle second instance - focus existing window instead of creating new one
+app.on('second-instance', (event, commandLine, workingDirectory) => {
+  console.log('Second instance detected, focusing existing window...');
+  
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore();
+    }
+    mainWindow.focus();
+    mainWindow.show();
+  }
+});
+
+// Window control handlers
+ipcMain.on('minimize-window', () => {
+  if (mainWindow) mainWindow.minimize();
+});
+
+ipcMain.on('maximize-window', () => {
+  if (mainWindow) {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+    } else {
+      mainWindow.maximize();
+    }
+  }
+});
+
+ipcMain.on('close-window', () => {
+  if (mainWindow) mainWindow.close();
+});
+
+
 function createMainWindow() {
   // Determine best available icon (prefer PNG timer-icon, fallback to others). If none, omit.
 
   mainWindow = new BrowserWindow({
-    width: 497,
-    height: 629,
+    width: 500,
+    height: 650,
     minWidth: 500,
     minHeight: 650,
     maxWidth: 500,
@@ -24,10 +133,14 @@ function createMainWindow() {
     },
     resizable: false,
     minimizable: true,
-    maximizable: true,
+    maximizable: false,
     frame: false,
     title: 'Timer App',
-    icon: path.join(__dirname, '../public/assets', 'icon.png')
+    icon: path.join(__dirname, '../public/assets', 'icon.png'),
+    backgroundColor: '#141418',
+    hasShadow: true,
+    titleBarStyle: 'hidden',
+    titleBarOverlay: false
   });
 
   mainWindow.loadFile(path.join(__dirname, '..', 'public', 'index.html'));

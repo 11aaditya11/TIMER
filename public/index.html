@@ -8,15 +8,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <header class="header">
+        <div class="app-title">Timer App</div>
+        <div class="window-controls">
+            <button class="window-btn minimize-btn" id="minBtn" title="Minimize"></button>
+            <button class="window-btn maximize-btn" id="maxBtn" title="Maximize" style="display: none;"></button>
+            <button class="window-btn close-btn" id="closeBtn" title="Close"></button>
+        </div>
+    </header>
     <div class="container">
-        <header class="header">
-            <div class="header-buttons">
-                <button class="min-btn" id="minBtn" title="Minimize">_</button>
-                <button class="close-btn" id="closeBtn" title="Close">
-                    ×
-                </button>
-            </div>
-        </header>
         
         <div class="tabs">
             <button class="tiny-btn" id="tinyBtn" title="Tiny Mode">
@@ -86,5 +86,6 @@
     </div>
 
     <script src="js/renderer.js"></script>
+    <script src="js/window-controls.js"></script>
 </body>
 </html>
