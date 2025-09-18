@@ -9,25 +9,36 @@ body {
     background: #0f0f12;
     color: #e7e7ea;
     min-height: 100vh;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden; /* Prevent scrolling on the body */
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE/Edge */
     user-select: none; /* Prevent text selection while dragging */
 }
 
-/* Hide WebKit scrollbars but keep scrolling */
-body::-webkit-scrollbar { width: 0; height: 0; }
+/* Hide scrollbar for Chrome, Safari and Opera */
+body::-webkit-scrollbar {
+    display: none;
+}
 
+/* Container styles */
 .container {
     max-width: 480px;
+    max-height: calc(100vh - 40px); /* Adjust based on your header height */
     margin: 0 auto;
     padding: 18px;
     background: #141418;
-    border-radius: 16px;
+    border-radius: 0 0 16px 16px;
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
-    margin-top: 16px;
-    margin-bottom: 16px;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    position: relative;
+    z-index: 1;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.container::-webkit-scrollbar {
+    display: none;
 }
 
 .tabs {
