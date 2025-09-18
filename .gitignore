@@ -63,3 +63,4 @@ pkg/
 Thumbs.db
 
 
+*.pkg.tar.zst
