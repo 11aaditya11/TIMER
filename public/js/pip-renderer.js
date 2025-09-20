@@ -4,10 +4,22 @@ class PiPTimer {
         this.totalTime = 0;
         this.isRunning = false;
         this.interval = null; // no local ticking; kept for safety cleanup
+        // PiP theming & fonts
+        this.pipThemes = ['pip-theme-ocean', 'pip-theme-sunset', 'pip-theme-forest', 'pip-theme-carbon', 'pip-theme-neon'];
+        this.pipFonts = [
+            "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            "'Courier New', monospace",
+            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+            "'Roboto Mono', monospace",
+            "'System UI', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+        ];
+        this.currentPipThemeIndex = 0;
+        this.currentPipFontIndex = 0;
         
         this.initializeElements();
         this.setupEventListeners();
         this.setupIpcListeners();
+        this.loadAndApplyPipThemeAndFont();
         this.updateDisplay();
         this.updateProgress();
         this.startSync();
@@ -44,6 +56,31 @@ class PiPTimer {
             this.closeBtn.addEventListener('click', () => this.closePiP());
         }
         // Tiny toggle removed in tidy PiP
+
+        // PiP window-only keyboard shortcuts (active window receives events)
+        document.addEventListener('keydown', (e) => {
+            // only act if focus is not in an input
+            const t = e.target && e.target.tagName;
+            if (t === 'INPUT' || t === 'TEXTAREA') return;
+
+            if (e.shiftKey && (e.key === 'ArrowRight' || e.key === 'Right')) {
+                // Cycle PiP theme next
+                e.preventDefault();
+                this.cyclePipTheme(1);
+            } else if (e.shiftKey && (e.key === 'ArrowLeft' || e.key === 'Left')) {
+                // Cycle PiP theme prev
+                e.preventDefault();
+                this.cyclePipTheme(-1);
+            } else if (e.shiftKey && (e.key === 'ArrowUp' || e.key === 'Up')) {
+                // Cycle PiP font next
+                e.preventDefault();
+                this.cyclePipFont(1);
+            } else if (e.shiftKey && (e.key === 'ArrowDown' || e.key === 'Down')) {
+                // Cycle PiP font prev
+                e.preventDefault();
+                this.cyclePipFont(-1);
+            }
+        });
     }
 
     setupIpcListeners() {
@@ -147,6 +184,63 @@ class PiPTimer {
             this.pauseBtn.title = 'Start';
             this.pauseBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
         }
+    }
+
+    // ==========================
+    // PiP Theme & Font handling
+    // ==========================
+    loadAndApplyPipThemeAndFont() {
+        try {
+            const savedTheme = localStorage.getItem('pip-theme');
+            if (savedTheme && this.pipThemes.includes(savedTheme)) {
+                this.currentPipThemeIndex = this.pipThemes.indexOf(savedTheme);
+            }
+        } catch (_) {}
+        try {
+            const savedFont = localStorage.getItem('pip-font');
+            if (savedFont) {
+                const idx = this.pipFonts.indexOf(savedFont);
+                if (idx >= 0) this.currentPipFontIndex = idx;
+            }
+        } catch (_) {}
+        this.applyPipTheme(this.pipThemes[this.currentPipThemeIndex]);
+        this.applyPipFont(this.pipFonts[this.currentPipFontIndex]);
+        try { console.log('[PiP Theme] Loaded:', this.pipThemes[this.currentPipThemeIndex]); } catch (e) {}
+        try { console.log('[PiP Font] Loaded:', this.pipFonts[this.currentPipFontIndex]); } catch (e) {}
+    }
+
+    applyPipTheme(themeClass) {
+        try {
+            const body = document.body;
+            this.pipThemes.forEach(t => body.classList.remove(t));
+            if (themeClass) body.classList.add(themeClass);
+            try { localStorage.setItem('pip-theme', themeClass); } catch (_) {}
+            try { console.log('[PiP Theme] Applied:', themeClass, 'Classes:', Array.from(body.classList).join(' ')); } catch (e) {}
+        } catch (_) {}
+    }
+
+    cyclePipTheme(direction = 1) {
+        const len = this.pipThemes.length;
+        this.currentPipThemeIndex = (this.currentPipThemeIndex + (direction % len) + len) % len;
+        const nextTheme = this.pipThemes[this.currentPipThemeIndex];
+        try { console.log('[PiP Theme] Cycling', direction > 0 ? 'next' : 'prev', '->', nextTheme); } catch (e) {}
+        this.applyPipTheme(nextTheme);
+    }
+
+    applyPipFont(fontFamily) {
+        try {
+            document.body.style.setProperty('--pip-font', fontFamily);
+            try { localStorage.setItem('pip-font', fontFamily); } catch (_) {}
+            try { console.log('[PiP Font] Applied:', fontFamily); } catch (e) {}
+        } catch (_) {}
+    }
+
+    cyclePipFont(direction = 1) {
+        const len = this.pipFonts.length;
+        this.currentPipFontIndex = (this.currentPipFontIndex + (direction % len) + len) % len;
+        const nextFont = this.pipFonts[this.currentPipFontIndex];
+        try { console.log('[PiP Font] Cycling', direction > 0 ? 'next' : 'prev', '->', nextFont); } catch (e) {}
+        this.applyPipFont(nextFont);
     }
 
     timerComplete() {

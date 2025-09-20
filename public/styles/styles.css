@@ -1334,6 +1334,14 @@ html, body { height: 100%; }
     overflow: hidden !important; /* clip inner content to radii */
 }
 
+/* Ensure the main content area scrolls internally to the bottom */
+.container {
+    max-height: calc(100vh - 40px) !important; /* constrain height to viewport */
+    height: calc(100vh - 40px) !important;
+    overflow-y: auto !important; /* allow vertical scrolling */
+    -webkit-overflow-scrolling: touch; /* smooth on touchpads */
+}
+
 /* Add horizontal padding to the New Timer tab only */
 #tab-new {
     padding-left: 14px !important;
