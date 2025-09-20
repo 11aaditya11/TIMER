@@ -7,7 +7,6 @@ class TinyTimer {
         
         this.initializeElements();
         this.setupEventListeners();
-        this.setupFocusHandlers();
         this.setupIpcListeners();
         this.updateDisplay();
         this.startSync();
@@ -17,13 +16,6 @@ class TinyTimer {
         this.timeDisplay = document.getElementById('tinyTimeDisplay');
         this.closeBtn = document.getElementById('tinyCloseBtn');
         this.container = document.querySelector('.tiny-container');
-        // Make container focusable to leverage :focus-within CSS selectors
-        if (this.container) {
-            try {
-                this.container.setAttribute('tabindex', '0');
-                this.container.style.outline = 'none';
-            } catch (_) {}
-        }
     }
 
     setupEventListeners() {
@@ -37,29 +29,6 @@ class TinyTimer {
                 try { document.body.classList.remove('tiny-hover'); } catch (_) {}
             });
         }
-    }
-
-    setupFocusHandlers() {
-        const applyFocusClass = () => {
-            try {
-                if (document.hasFocus()) {
-                    document.body.classList.add('tiny-focused');
-                    // also focus the container to enable :focus-within rules
-                    if (this.container && typeof this.container.focus === 'function') {
-                        this.container.focus();
-                    }
-                } else {
-                    document.body.classList.remove('tiny-focused');
-                }
-            } catch (_) { /* ignore */ }
-        };
-        // Initial state
-        applyFocusClass();
-        // React to focus/blur
-        window.addEventListener('focus', applyFocusClass);
-        window.addEventListener('blur', applyFocusClass);
-        // Safety: also toggle on visibility change (some WMs)
-        document.addEventListener('visibilitychange', applyFocusClass);
     }
 
     setupIpcListeners() {
@@ -87,17 +56,7 @@ class TinyTimer {
     }
 
     startSync() {
-        // Initial sync only - don't keep polling
-        this.syncWithMainWindow();
-    }
-
-    async syncWithMainWindow() {
-        try {
-            // Only do initial sync, real updates come via IPC
-            console.log('Initial tiny window sync');
-        } catch (error) {
-            console.log('Could not sync with main window:', error);
-        }
+        // Timer sync is handled via IPC events from main window
     }
 
     updateFromMainWindow(timerState) {
@@ -117,7 +76,7 @@ class TinyTimer {
         console.log('Tiny window new state:', { timeLeft: this.timeLeft, isRunning: this.isRunning });
         
         this.updateDisplay();
-        this.updateButtonStates();
+        // No button states to update in tiny mode
         
         // Handle timer state changes
         if (this.isRunning && !wasRunning) {
@@ -155,10 +114,6 @@ class TinyTimer {
         const minutes = Math.floor(this.timeLeft / 60);
         const seconds = this.timeLeft % 60;
         this.timeDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
-
-    updateButtonStates() {
-        // No buttons to update in tiny mode
     }
 
     timerComplete() {
@@ -205,20 +160,6 @@ class TinyTimer {
         } catch (error) {
             window.close();
         }
-    }
-
-    // Method to set time from external source
-    setTime(minutes, seconds) {
-        this.timeLeft = minutes * 60 + seconds;
-        this.totalTime = this.timeLeft;
-        this.updateDisplay();
-        this.resetTimer();
-    }
-
-    resetTimer() {
-        this.stopLocalTimer();
-        this.timeLeft = this.totalTime;
-        this.updateDisplay();
     }
 }
 
