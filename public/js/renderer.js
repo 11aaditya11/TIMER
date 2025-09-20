@@ -254,21 +254,18 @@ class Timer {
             console.error('Invalid preset index:', index);
             return;
         }
-        
-        const preset = this.preferredTimes[index];
-        if (confirm(`Are you sure you want to delete "${preset.name}"?`)) {
-            try {
-                const success = await window.electronAPI.deletePreferredTime(index);
-                if (success) {
-                    this.preferredTimes.splice(index, 1);
-                    this.renderPresetTimes();
-                } else {
-                    alert('Failed to delete preset');
-                }
-            } catch (error) {
-                console.error('Failed to delete preferred time:', error);
-                alert('Failed to delete preset');
+        // Optimistic delete: update UI first
+        this.preferredTimes.splice(index, 1);
+        this.renderPresetTimes();
+        try {
+            const success = await window.electronAPI.deletePreferredTime(index);
+            if (!success) {
+                console.warn('Delete preset failed (IPC returned false); reloading presets');
+                await this.loadPreferredTimes();
             }
+        } catch (error) {
+            console.error('Failed to delete preferred time:', error);
+            await this.loadPreferredTimes();
         }
     }
 
