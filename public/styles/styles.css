@@ -365,6 +365,7 @@ body {
     z-index: 9999;
     overflow: hidden;
     perspective: 800px; /* Add depth */
+    contain: layout paint style; /* isolate to prevent bleed */
 }
 
 .confetti-piece {
@@ -375,7 +376,7 @@ body {
     background: #ff6b6b;
     animation: confetti-fall linear forwards;
     opacity: 0.9;
-    box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+    box-shadow: none; /* avoid glow artifacts / afterimages */
     transform-style: preserve-3d;
 }
 
@@ -396,9 +397,8 @@ body {
     10% {
         opacity: 1;
     }
-    90% {
-        opacity: 0.8;
-    }
+    70% { opacity: 0.6; }
+    85% { opacity: 0.15; }
     100% {
         transform: translateY(calc(100vh + 40px)) rotate(720deg) translateX(var(--drift, 0px));
         opacity: 0;
@@ -461,6 +461,7 @@ body {
         transform: translate(-50%, -50%) scale(1);
         opacity: 1;
     }
+    80% { opacity: 0.12; }
     100% {
         transform: translate(calc(-50% + var(--burst-x)), calc(-50% + var(--burst-y))) scale(0.3) rotate(720deg);
         opacity: 0;
@@ -481,6 +482,8 @@ body {
         transform: translateX(0) rotate(0deg);
         opacity: 1;
     }
+    70% { opacity: 0.6; }
+    85% { opacity: 0.12; }
     100% {
         transform: translateX(calc(100vw + 50px)) translateY(50vh) rotate(720deg);
         opacity: 0;
@@ -492,6 +495,8 @@ body {
         transform: translateX(0) rotate(0deg);
         opacity: 1;
     }
+    70% { opacity: 0.6; }
+    85% { opacity: 0.12; }
     100% {
         transform: translateX(calc(-100vw - 50px)) translateY(50vh) rotate(-720deg);
         opacity: 0;
@@ -501,6 +506,25 @@ body {
 /* Top falling confetti */
 .confetti-piece.top-fall {
     animation: confetti-fall linear forwards;
+}
+
+/* Edge-bang opacity fade before end */
+@keyframes edge-bang {
+    0% {
+        transform: translate3d(0, 0, 0) scale(0.9) rotate3d(0, 0, 1, 0deg);
+        opacity: 1;
+    }
+    70% {
+        transform: translate3d(var(--burst-x, 0px), var(--burst-y, 0px), var(--burst-z, 0px)) scale(1) rotate3d(1, 1, 0, var(--rot, 540deg));
+        opacity: 0.7;
+    }
+    85% {
+        opacity: 0.15;
+    }
+    100% {
+        transform: translate3d(calc(var(--burst-x, 0px) * 1.25), calc(var(--burst-y, 0px) * 1.25), calc(var(--burst-z, 0px) * 0.5)) scale(0.8) rotate3d(1, 1, 0, calc(var(--rot, 540deg) * 1.2));
+        opacity: 0;
+    }
 }
 
 /* Directional "bang" confetti from edges */
@@ -563,6 +587,8 @@ body {
 
 @keyframes bottom-rise {
     0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    70% { opacity: 0.6; }
+    85% { opacity: 0.12; }
     100% { transform: translateY(calc(-100vh - 40px)) rotate(720deg); opacity: 0; }
 }
 

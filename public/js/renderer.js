@@ -355,6 +355,9 @@ class Timer {
         // Create main confetti container
         const confettiContainer = document.createElement('div');
         confettiContainer.className = 'confetti-container';
+        confettiContainer.style.opacity = '1';
+        confettiContainer.style.transition = 'opacity 0.2s ease';
+        confettiContainer.style.willChange = 'opacity, transform';
         document.body.appendChild(confettiContainer);
 
         // Vibrant color palette
@@ -389,6 +392,50 @@ class Timer {
             return Math.round(min + (max - min) * (0.3 * t + 0.7 * (1 - Math.abs(0.5 - eased) * 2)));
         };
 
+        // Ensure total runtime <= 2.5s per piece
+        const MAX_TOTAL = 2.5;
+        const setCappedTiming = (el, options) => {
+            const { minDur = 1.0, maxDur = 2.0, maxDelay = 0.6, fastBias = 0.0 } = options || {};
+            // choose delay and duration with some variability
+            let delay = Math.random() * Math.max(0, maxDelay);
+            const fast = Math.random() < fastBias;
+            let dur;
+            if (fast) {
+                dur = minDur + Math.random() * (Math.max(minDur + 0.5, (maxDur + minDur) / 2) - minDur);
+            } else {
+                dur = minDur + Math.random() * (maxDur - minDur);
+            }
+            // Cap to keep delay + duration within MAX_TOTAL
+            const maxDurAllowed = Math.max(0.25, (MAX_TOTAL - 0.05) - delay);
+            if (dur > maxDurAllowed) dur = maxDurAllowed;
+            if (dur < 0.25) dur = 0.25;
+            el.style.animationDelay = `${delay}s`;
+            el.style.animationDuration = `${dur}s`;
+            return { delay, dur };
+        };
+
+        // Helper: schedule a mid-flight disappearance to avoid traces
+        const scheduleRemoval = (el, delaySec, durSec) => {
+            const total = Math.max(0, delaySec) + Math.max(0.1, durSec);
+            // Cut off between 55% and 90% of total time
+            const cutoffFrac = 0.55 + Math.random() * 0.35;
+            const cutoffMs = total * cutoffFrac * 1000;
+            // Prepare for fade
+            el.style.willChange = 'opacity, transform';
+            el.style.backfaceVisibility = 'hidden';
+            setTimeout(() => {
+                el.style.transition = 'opacity 120ms ease';
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    if (el && el.parentNode) el.parentNode.removeChild(el);
+                }, 180);
+            }, cutoffMs);
+            // Hard safety cleanup at total time + small buffer
+            setTimeout(() => {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+            }, total * 1000 + 120);
+        };
+
         // Center burst removed for a cleaner edge-focused celebration
 
         // Create side confetti (left side - 60 pieces)
@@ -399,14 +446,28 @@ class Timer {
             const color = pick(colors);
             confetti.style.backgroundColor = color;
             
-            confetti.style.left = '-10px';
-            confetti.style.top = Math.random() * 100 + '%';
+            // Randomize: sometimes use edge-bang instead of side-left
+            const useEdgeLeft = Math.random() < 0.5;
+            if (useEdgeLeft) {
+                const typeL = Math.random() < 0.35 ? 'streamer' : (Math.random() < 0.6 ? 'sparkle' : '');
+                confetti.className = `confetti-piece edge-bang${typeL ? ' ' + typeL : ''}`;
+                confetti.style.left = '-10px';
+                confetti.style.top = Math.random() * 100 + 'vh';
+                const burstXL = (Math.random() * 60 + 40) * (window.innerWidth / 100);
+                const burstYL = (Math.random() * 60 - 30) * (window.innerHeight / 100) * 0.3;
+                const burstZL = (Math.random() * 2 - 1) * 80;
+                const rotL = Math.floor(Math.random() * 720 + 360) + 'deg';
+                confetti.style.setProperty('--burst-x', burstXL + 'px');
+                confetti.style.setProperty('--burst-y', burstYL + 'px');
+                confetti.style.setProperty('--burst-z', burstZL + 'px');
+                confetti.style.setProperty('--rot', rotL);
+            } else {
+                confetti.style.left = '-10px';
+                confetti.style.top = Math.random() * 100 + '%';
+            }
             
-            confetti.style.animationDelay = Math.random() * 1.6 + 's';
-            // Mix of faster and slower particles
-            const fast = Math.random() < 0.35;
-            confetti.style.animationDuration = (fast ? Math.random() * 0.8 + 2.2 : Math.random() * 1.6 + 3.4) + 's';
-            confetti.style.animationTimingFunction = fast ? 'ease-out' : 'ease-in-out';
+            const { delay, dur } = setCappedTiming(confetti, { minDur: 1.0, maxDur: 2.0, maxDelay: 0.6, fastBias: 0.35 });
+            confetti.style.animationTimingFunction = dur < 1.3 ? 'ease-out' : 'ease-in-out';
             
             const size = randomSize(4, 10);
             confetti.style.width = size + 'px';
@@ -414,6 +475,7 @@ class Timer {
             assignShape(confetti);
             
             confettiContainer.appendChild(confetti);
+            scheduleRemoval(confetti, delay, dur);
         }
 
         // Create side confetti (right side - 60 pieces)
@@ -424,13 +486,28 @@ class Timer {
             const color = pick(colors);
             confetti.style.backgroundColor = color;
             
-            confetti.style.right = '-10px';
-            confetti.style.top = Math.random() * 100 + '%';
+            // Randomize: sometimes use edge-bang instead of side-right
+            const useEdgeRight = Math.random() < 0.5;
+            if (useEdgeRight) {
+                const typeR = Math.random() < 0.35 ? 'streamer' : (Math.random() < 0.6 ? 'sparkle' : '');
+                confetti.className = `confetti-piece edge-bang${typeR ? ' ' + typeR : ''}`;
+                confetti.style.right = '-10px';
+                confetti.style.top = Math.random() * 100 + 'vh';
+                const burstXR = -(Math.random() * 60 + 40) * (window.innerWidth / 100);
+                const burstYR = (Math.random() * 60 - 30) * (window.innerHeight / 100) * 0.3;
+                const burstZR = (Math.random() * 2 - 1) * 80;
+                const rotR = Math.floor(Math.random() * 720 + 360) + 'deg';
+                confetti.style.setProperty('--burst-x', burstXR + 'px');
+                confetti.style.setProperty('--burst-y', burstYR + 'px');
+                confetti.style.setProperty('--burst-z', burstZR + 'px');
+                confetti.style.setProperty('--rot', rotR);
+            } else {
+                confetti.style.right = '-10px';
+                confetti.style.top = Math.random() * 100 + '%';
+            }
             
-            confetti.style.animationDelay = Math.random() * 1.6 + 's';
-            const fastR = Math.random() < 0.35;
-            confetti.style.animationDuration = (fastR ? Math.random() * 0.8 + 2.2 : Math.random() * 1.6 + 3.4) + 's';
-            confetti.style.animationTimingFunction = fastR ? 'ease-out' : 'ease-in-out';
+            const { delay: delayR, dur: durR } = setCappedTiming(confetti, { minDur: 1.0, maxDur: 2.0, maxDelay: 0.6, fastBias: 0.35 });
+            confetti.style.animationTimingFunction = durR < 1.3 ? 'ease-out' : 'ease-in-out';
             
             const size = randomSize(4, 10);
             confetti.style.width = size + 'px';
@@ -438,6 +515,7 @@ class Timer {
             assignShape(confetti);
             
             confettiContainer.appendChild(confetti);
+            scheduleRemoval(confetti, delayR, durR);
         }
 
         // Create top falling confetti (100 pieces)
@@ -448,13 +526,28 @@ class Timer {
             const color = pick(colors);
             confetti.style.backgroundColor = color;
             
-            confetti.style.left = Math.random() * 100 + 'vw';
-            confetti.style.top = '-20px';
+            // Randomize: sometimes use edge-bang upward burst instead of pure fall
+            const useEdgeTop = Math.random() < 0.4;
+            if (useEdgeTop) {
+                const typeT = Math.random() < 0.35 ? 'streamer' : (Math.random() < 0.6 ? 'sparkle' : '');
+                confetti.className = `confetti-piece edge-bang${typeT ? ' ' + typeT : ''}`;
+                confetti.style.top = '-10px';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                const burstXT = (Math.random() * 60 - 30) * (window.innerWidth / 100) * 0.4;
+                const burstYT = (Math.random() * 50 + 30) * (window.innerHeight / 100);
+                const burstZT = (Math.random() * 2 - 1) * 80;
+                const rotT = Math.floor(Math.random() * 720 + 360) + 'deg';
+                confetti.style.setProperty('--burst-x', burstXT + 'px');
+                confetti.style.setProperty('--burst-y', burstYT + 'px');
+                confetti.style.setProperty('--burst-z', burstZT + 'px');
+                confetti.style.setProperty('--rot', rotT);
+            } else {
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-20px';
+            }
             
-            confetti.style.animationDelay = Math.random() * 2.2 + 's';
-            const fastT = Math.random() < 0.3;
-            confetti.style.animationDuration = (fastT ? Math.random() * 0.8 + 2.8 : Math.random() * 2.2 + 4.2) + 's';
-            confetti.style.animationTimingFunction = fastT ? 'ease-in' : 'ease-in-out';
+            const { delay: delayT, dur: durT } = setCappedTiming(confetti, { minDur: 1.2, maxDur: 2.2, maxDelay: 0.8, fastBias: 0.3 });
+            confetti.style.animationTimingFunction = durT < 1.4 ? 'ease-in' : 'ease-in-out';
             
             const size = randomSize(4, 10);
             confetti.style.width = size + 'px';
@@ -462,6 +555,7 @@ class Timer {
             assignShape(confetti);
             
             confettiContainer.appendChild(confetti);
+            scheduleRemoval(confetti, delayT, durT);
         }
 
         // Add prettier directional "bang" bursts from all edges
@@ -515,13 +609,11 @@ class Timer {
                 piece.style.setProperty('--burst-z', burstZ + 'px');
                 piece.style.setProperty('--rot', rot);
 
-                // Timings: mix of faster and slower
-                const fastE = Math.random() < 0.4;
-                piece.style.animationDelay = (Math.random() * 0.25) + 's';
-                piece.style.animationDuration = (fastE ? Math.random() * 0.7 + 1.6 : Math.random() * 1.4 + 2.6) + 's';
-                piece.style.animationTimingFunction = fastE ? 'cubic-bezier(0.25, 1, 0.5, 1)' : 'cubic-bezier(0.22, 1, 0.36, 1)';
+                const { delay: delayE, dur: durE } = setCappedTiming(piece, { minDur: 1.0, maxDur: 2.0, maxDelay: 0.3, fastBias: 0.4 });
+                piece.style.animationTimingFunction = durE < 1.3 ? 'cubic-bezier(0.25, 1, 0.5, 1)' : 'cubic-bezier(0.22, 1, 0.36, 1)';
 
                 confettiContainer.appendChild(piece);
+                scheduleRemoval(piece, delayE, durE);
             }
         };
 
@@ -539,23 +631,30 @@ class Timer {
             piece.style.left = Math.random() * 100 + 'vw';
             piece.style.bottom = '-20px';
             piece.style.top = 'auto';
-            piece.style.animationDelay = (Math.random() * 1.4) + 's';
-            const fastB = Math.random() < 0.3;
-            piece.style.animationDuration = (fastB ? Math.random() * 1.0 + 2.2 : Math.random() * 1.8 + 3.4) + 's';
-            piece.style.animationTimingFunction = fastB ? 'ease-out' : 'ease-in-out';
+            const { delay: delayB, dur: durB } = setCappedTiming(piece, { minDur: 1.0, maxDur: 2.0, maxDelay: 0.6, fastBias: 0.3 });
+            piece.style.animationTimingFunction = durB < 1.4 ? 'ease-out' : 'ease-in-out';
             const s = randomSize(3, 9);
             piece.style.width = s + 'px';
             piece.style.height = s + 'px';
             assignShape(piece);
             confettiContainer.appendChild(piece);
+            scheduleRemoval(piece, delayB, durB);
         }
 
-        // Remove confetti after animation
+        // Strict final cleanup at 2.5s: fade, clear children, remove container
         setTimeout(() => {
-            if (confettiContainer.parentNode) {
-                confettiContainer.parentNode.removeChild(confettiContainer);
-            }
-        }, 8000);
+            confettiContainer.style.opacity = '0';
+        }, 2350);
+        setTimeout(() => {
+            try {
+                while (confettiContainer.firstChild) {
+                    confettiContainer.removeChild(confettiContainer.firstChild);
+                }
+                if (confettiContainer.parentNode) {
+                    confettiContainer.parentNode.removeChild(confettiContainer);
+                }
+            } catch (_) { /* ignore */ }
+        }, 2500);
     }
 
     createBangEffect() {
@@ -577,9 +676,111 @@ class Timer {
     }
 
     playNotificationSound() {
-        // Disabled sound for main window to avoid conflicts with confetti
-        // Sound is still available in PiP and Tiny modes
-        console.log('Sound disabled for main window');
+        // Try to play bundled audio file first; fall back to synthesized chime if it fails
+        try {
+            const audio = new Audio('assets/sound1.wav');
+            audio.volume = 1.0; // max per element
+            audio.currentTime = 0;
+            // Layer a second instance for perceived louder output
+            const audioLayer = new Audio('assets/sound1.wav');
+            audioLayer.volume = 0.6; // blended layer
+            // Play once only (no replay)
+
+            Promise.allSettled([audio.play(), audioLayer.play()]).then(() => {
+                // Played successfully; skip synthesized chime
+            }).catch(() => {
+                // If play() is blocked, fall through to synth chime
+                throw new Error('Audio play blocked');
+            });
+            return;
+        } catch (e) {}
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+
+            // Reuse a single AudioContext if possible
+            if (!this._audioCtx) {
+                this._audioCtx = new AudioCtx();
+            }
+
+            const ctx = this._audioCtx;
+
+            // Ensure context is running (some browsers suspend until user gesture)
+            if (ctx.state === 'suspended') {
+                ctx.resume().catch(() => {});
+            }
+
+            const now = ctx.currentTime + 0.02; // slight delay to avoid pops
+
+            // Master gain with gentle fade-out
+            const master = ctx.createGain();
+            master.gain.setValueAtTime(0.0001, now);
+            master.gain.exponentialRampToValueAtTime(0.18, now + 0.03); // fade in
+            master.gain.exponentialRampToValueAtTime(0.0001, now + 1.6); // fade out
+            master.connect(ctx.destination);
+
+            // A pleasant two-note chime (major sixth interval)
+            const notes = [
+                { freq: 987.77, time: 0.00, dur: 1.6 }, // B5
+                { freq: 1318.51, time: 0.18, dur: 2.2 } // E6
+            ];
+
+            notes.forEach(({ freq, time, dur }, idx) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const filter = ctx.createBiquadFilter();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now + time);
+                // Slight detune on the second to add shimmer
+                if (idx === 1) {
+                    osc.detune.setValueAtTime(6, now + time);
+                }
+
+                // Soft bell-like envelope
+                const attack = 0.02;
+                const decay = 0.25;
+                const sustain = 0.26;
+                const release = 0.9;
+
+                gain.gain.setValueAtTime(0.0001, now + time);
+                gain.gain.exponentialRampToValueAtTime(0.9, now + time + attack);
+                gain.gain.exponentialRampToValueAtTime(sustain, now + time + attack + decay);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + time + Math.max(dur, release));
+
+                // Gentle low-pass to smooth highs
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(5000, now + time);
+                filter.Q.value = 0.7;
+
+                osc.connect(gain);
+                gain.connect(filter);
+                filter.connect(master);
+
+                osc.start(now + time);
+                osc.stop(now + time + Math.max(dur, release) + 0.05);
+            });
+
+            // Optional tiny sparkle using very quiet noise burst
+            const buffer = ctx.createBuffer(1, ctx.sampleRate * 0.2, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < data.length; i++) {
+                data[i] = (Math.random() * 2 - 1) * (1 - i / data.length) * 0.02; // decaying
+            }
+            const noiseSrc = ctx.createBufferSource();
+            const noiseGain = ctx.createGain();
+            noiseSrc.buffer = buffer;
+            noiseGain.gain.setValueAtTime(0.0001, now + 0.05);
+            noiseGain.gain.exponentialRampToValueAtTime(0.06, now + 0.08);
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+            noiseSrc.connect(noiseGain);
+            noiseGain.connect(master);
+            noiseSrc.start(now + 0.05);
+            noiseSrc.stop(now + 0.5);
+        } catch (e) {
+            // Fallback: ignore sound errors silently
+            console.warn('Notification sound failed:', e);
+        }
     }
 
     openPiP() {
