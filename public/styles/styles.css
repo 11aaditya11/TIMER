@@ -1353,6 +1353,11 @@ html, body { height: 100%; }
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
 }
+
+/* Hide PiP/Tiny bar when New Timer tab is active */
+.new-tab-active .tabs {
+    display: none !important;
+}
 .container {
     border-radius: 0 !important;
 }

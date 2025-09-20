@@ -107,6 +107,12 @@ class Timer {
                 btn.classList.add('active');
                 const panel = document.getElementById(target);
                 if (panel) panel.classList.add('active');
+                // Toggle body class to hide PiP/Tiny buttons on New Timer tab
+                if (target === 'tab-new') {
+                    document.body.classList.add('new-tab-active');
+                } else {
+                    document.body.classList.remove('new-tab-active');
+                }
             });
         });
 
@@ -134,6 +140,8 @@ class Timer {
                 // Activate timer tab
                 const timerPanel = document.getElementById('tab-timer');
                 if (timerPanel) timerPanel.classList.add('active');
+                // Ensure PiP/Tiny buttons are visible again
+                document.body.classList.remove('new-tab-active');
             });
         }
 
