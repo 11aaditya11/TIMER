@@ -376,6 +376,13 @@ function createMenu() {
 
 app.whenReady().then(() => {
   app.setName('Timer App');
+  // On Linux, set desktop name so DEs can associate the running app with the .desktop entry
+  try {
+    if (process.platform === 'linux' && typeof app.setDesktopName === 'function') {
+      // Match the desktop file name installed by PKGBUILD
+      app.setDesktopName('timer-app.desktop');
+    }
+  } catch (_) { /* ignore */ }
   createMainWindow();
   createMenu();
 

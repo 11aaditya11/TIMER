@@ -1,0 +1,14 @@
+post_install() {
+    command -v gtk-update-icon-cache >/dev/null 2>&1 && gtk-update-icon-cache -q /usr/share/icons/hicolor || true
+    command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database -q || true
+}
+
+post_upgrade() {
+    command -v gtk-update-icon-cache >/dev/null 2>&1 && gtk-update-icon-cache -q /usr/share/icons/hicolor || true
+    command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database -q || true
+}
+
+post_remove() {
+    command -v gtk-update-icon-cache >/dev/null 2>&1 && gtk-update-icon-cache -q /usr/share/icons/hicolor || true
+    command -v update-desktop-database >/dev/null 2>&1 && update-desktop-database -q || true
+}
