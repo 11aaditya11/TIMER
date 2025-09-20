@@ -137,8 +137,9 @@ function createMainWindow() {
     frame: false,
     title: 'Timer App',
     icon: path.join(__dirname, '../public/assets', 'icon.png'),
-    backgroundColor: '#141418',
-    hasShadow: true,
+    backgroundColor: '#00000000', // fully transparent to remove corner artifacts
+    transparent: true,
+    hasShadow: false,
     titleBarStyle: 'hidden',
     titleBarOverlay: false
   });
@@ -547,28 +548,7 @@ ipcMain.handle('request-timer-state-from-main', () => {
   return true;
 });
 
-// Window control IPC handlers
-const { ipcMain: _ipcMain } = require('electron');
-_ipcMain.on('minimize-window', () => {
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.minimize();
-  }
-});
-
-_ipcMain.on('maximize-window', () => {
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    if (mainWindow.isMaximized()) {
-      mainWindow.unmaximize();
-    } else {
-      mainWindow.maximize();
-    }
-  }
-});
-
-_ipcMain.on('close-window', () => {
-  // Quit entire app
-  app.quit();
-});
+// (Removed duplicate window control IPC handlers to prevent conflicts)
 
 // Notification IPC: show native notification from renderer
 ipcMain.on('show-notification', (event, title, body) => {

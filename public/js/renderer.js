@@ -96,24 +96,7 @@ class Timer {
         this.addPresetBtn.addEventListener('click', () => this.addPreferredTime());
         this.pipBtn.addEventListener('click', () => this.openPiP());
         this.tinyBtn.addEventListener('click', () => this.openTinyMode());
-        if (this.minBtn) {
-            this.minBtn.addEventListener('click', () => {
-                try {
-                    window.electronAPI.minimize();
-                } catch (e) {
-                    // no-op in non-electron env
-                }
-            });
-        }
-        if (this.closeBtn) {
-            this.closeBtn.addEventListener('click', () => {
-                try {
-                    window.electronAPI.close();
-                } catch (e) {
-                    window.close();
-                }
-            });
-        }
+        // Note: Window control handlers are centralized in public/js/window-controls.js
 
         // Tab switching
         this.tabButtons.forEach(btn => {

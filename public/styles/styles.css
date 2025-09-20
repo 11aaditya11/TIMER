@@ -84,8 +84,7 @@ body::-webkit-scrollbar {
     -webkit-app-region: drag; /* Make header draggable */
     position: relative;
     z-index: 1000;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+
 }
 
 /* App title in title bar */
@@ -1225,4 +1224,155 @@ body { background: var(--bg); color: var(--text); }
 .tab-btn:hover {
     background: var(--action-hover-bg);
     border-color: var(--action-hover-border);
+}
+
+/* Remove horizontal padding in main window (header + container) */
+.header {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+.container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+/* Make preset timers a bit smaller with left/right padding */
+.preset-times {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+}
+.preset-grid {
+    padding-left: 2px !important;  /* subtle inner breathing */
+    padding-right: 2px !important;
+}
+
+/* Move close/minimize buttons slightly left */
+.window-controls {
+    margin-right: 20px !important; /* moved 10px further left from previous 10px */
+    -webkit-app-region: no-drag !important;
+    pointer-events: auto !important;
+}
+
+/* Improve window control hit area slightly to avoid needing multiple clicks */
+.window-btn {
+    width: 14px !important;
+    height: 14px !important;
+    pointer-events: auto !important;
+}
+
+/* Ensure titlebar dot buttons don't inherit large button styles */
+.window-controls .window-btn {
+    padding: 0 !important;
+    border-radius: 50% !important;
+    box-shadow: none !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+}
+.window-controls .window-btn.close-btn,
+.window-controls .window-btn.minimize-btn,
+.window-controls .window-btn.maximize-btn {
+    padding: 0 !important;
+}
+
+/* Restore close button elongated pill shape */
+.window-controls .close-btn {
+    width: 36px !important;
+    height: 14px !important;
+    border-radius: 999px !important; /* semi-circles on both ends */
+    background-color: #ff5555 !important; /* keep red */
+    margin-left: 8px !important; /* preserve spacing from minimize */
+}
+
+/* Unify rounding: apply to whole window rather than header/container separately */
+html, body {
+    border-radius: 16px !important;
+    overflow: hidden !important; /* clip inner content to rounded corners */
+    background-clip: padding-box !important;
+    clip-path: inset(0 round 16px) !important; /* enforce perfect rounding */
+}
+
+/* Top strip mask matching header background to cover any aliasing at window edge */
+body {
+    position: relative;
+}
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 24px; /* slightly larger than header radius zone */
+    background: var(--header-bg);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Bottom strip mask matching content background to perfect bottom corners */
+body::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 24px; /* slightly larger than corner radius zone */
+    background: var(--container-bg);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Make the container reach the bottom and own the bottom radii */
+html, body { height: 100%; }
+.container {
+    margin-bottom: 0 !important;
+    min-height: calc(100vh - 40px) !important; /* header height is 40px */
+    border-bottom-left-radius: 16px !important;
+    border-bottom-right-radius: 16px !important;
+    overflow: hidden !important; /* clip inner content to radii */
+}
+
+/* Add horizontal padding to the New Timer tab only */
+#tab-new {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+}
+
+/* Remove section-specific radii to prevent corner gaps */
+.header {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+.container {
+    border-radius: 0 !important;
+}
+
+/* Ensure top bar corners are perfectly rounded and filled */
+.header {
+    border-top-left-radius: 16px !important;
+    border-top-right-radius: 16px !important;
+    overflow: visible !important; /* allow corner bleed overlay */
+}
+
+/* Top-corner anti-aliasing helper for transparent windows */
+.header::before {
+    content: '';
+    position: absolute;
+    top: -16px; /* stronger upward bleed */
+    left: -16px; /* stronger sideways bleed */
+    right: -16px;
+    height: 48px; /* cover beyond radius */
+    background: var(--header-bg);
+    border-top-left-radius: 32px; /* larger than header radius */
+    border-top-right-radius: 32px;
+    pointer-events: none;
+    z-index: 0; /* under header children but visible */
+}
+
+/* Ensure header children sit above the bleed overlay */
+.header > * {
+    position: relative;
+    z-index: 1;
 }
