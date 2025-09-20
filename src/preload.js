@@ -40,4 +40,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onRequestTimerStateForPip: (callback) => ipcRenderer.on('request-timer-state-for-pip', callback),
   onRequestTimerStateForTiny: (callback) => ipcRenderer.on('request-timer-state-for-tiny', callback),
   onAutoStartTimer: (callback) => ipcRenderer.on('auto-start-timer', callback),
+  // Theme cycling from main (global shortcut)
+  onCycleTheme: (callback) => ipcRenderer.on('cycle-theme', (_event, direction) => {
+    try { callback(direction); } catch (_) {}
+  }),
 });

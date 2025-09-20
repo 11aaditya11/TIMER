@@ -383,6 +383,26 @@ app.whenReady().then(() => {
     createPipWindow();
   });
 
+  // Theme cycling global shortcuts
+  try {
+    globalShortcut.register('Shift+Right', () => {
+      try {
+        if (mainWindow && mainWindow.webContents) {
+          mainWindow.webContents.send('cycle-theme', 1);
+        }
+      } catch (_) {}
+    });
+    globalShortcut.register('Shift+Left', () => {
+      try {
+        if (mainWindow && mainWindow.webContents) {
+          mainWindow.webContents.send('cycle-theme', -1);
+        }
+      } catch (_) {}
+    });
+  } catch (err) {
+    console.error('Failed to register theme cycling shortcuts:', err);
+  }
+
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createMainWindow();
@@ -394,6 +414,13 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('will-quit', () => {
+  try { globalShortcut.unregister('CommandOrControl+Shift+P'); } catch (_) {}
+  try { globalShortcut.unregister('Shift+Right'); } catch (_) {}
+  try { globalShortcut.unregister('Shift+Left'); } catch (_) {}
+  try { globalShortcut.unregisterAll(); } catch (_) {}
 });
 
 // IPC handlers for timer functionality

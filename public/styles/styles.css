@@ -882,3 +882,347 @@ body {
 * {
     transition: all 0.3s ease;
 }
+
+/* ==========================
+   Theme Overrides (Main Window)
+   Apply with body.theme-*
+   ========================== */
+
+/* Helper: reset theme classes easily */
+body[class*="theme-"] .progress-ring-circle,
+body[class*="theme-"] .progress-ring-circle-bg,
+body[class*="theme-"] .control-btn,
+body[class*="theme-"] .tab-btn,
+body[class*="theme-"] .tiny-btn,
+body[class*="theme-"] .pip-btn,
+body[class*="theme-"] .set-btn,
+body[class*="theme-"] .add-btn,
+body[class*="theme-"] .back-btn {
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Midnight: mirrors the default styling (dark, cool blue accent) */
+body.theme-midnight {
+    background: #0f0f12;
+    color: #e7e7ea;
+}
+body.theme-midnight .header { background-color: #1a1a1f; }
+body.theme-midnight .container { background: #141418; }
+body.theme-midnight .control-btn.primary { background: #2a2a30; color: #e7e7ea; box-shadow: 0 2px 10px rgba(0,0,0,0.35); }
+body.theme-midnight .control-btn.secondary { background: #1c1c20; color: #c8c8cc; border-color: #2a2a30; }
+body.theme-midnight .tab-btn,
+body.theme-midnight .tiny-btn,
+body.theme-midnight .pip-btn,
+body.theme-midnight .set-btn,
+body.theme-midnight .add-btn,
+body.theme-midnight .back-btn { background: #2a2a30; color: #e7e7ea; border-color: #3a3a40; }
+body.theme-midnight .progress-ring-circle { stroke: #4a90e2; }
+body.theme-midnight .progress-ring-circle-bg { stroke: rgba(231,231,234,0.08); }
+
+/* Ocean: deep blue background with teal/cyan accents */
+body.theme-ocean { background: linear-gradient(180deg, #0b1020 0%, #0a1726 100%); color: #e6f7ff; }
+body.theme-ocean .header { background-color: #0f2138; }
+body.theme-ocean .container { background: #0e1a2b; box-shadow: 0 12px 28px rgba(0, 40, 80, 0.45); }
+body.theme-ocean .time { color: #e6f7ff; }
+body.theme-ocean .control-btn.primary { background: #12395c; color: #e6f7ff; box-shadow: 0 6px 16px rgba(0, 120, 200, 0.25); }
+body.theme-ocean .control-btn.primary:hover { box-shadow: 0 10px 24px rgba(0, 160, 255, 0.35); }
+body.theme-ocean .control-btn.secondary { background: #0c2a43; color: #cfefff; border: 2px solid #114063; }
+body.theme-ocean .tab-btn,
+body.theme-ocean .tiny-btn,
+body.theme-ocean .pip-btn,
+body.theme-ocean .set-btn,
+body.theme-ocean .add-btn,
+body.theme-ocean .back-btn { background: #0f2d49; color: #dcf6ff; border: 2px solid #144667; }
+body.theme-ocean .tab-btn:hover,
+body.theme-ocean .tiny-btn:hover,
+body.theme-ocean .pip-btn:hover,
+body.theme-ocean .set-btn:hover,
+body.theme-ocean .add-btn:hover,
+body.theme-ocean .back-btn:hover { background: #12395c; border-color: #1c5d8b; }
+body.theme-ocean .progress-ring-circle { stroke: #22d3ee; }
+body.theme-ocean .progress-ring-circle-bg { stroke: rgba(255,255,255,0.08); }
+
+/* Sunset: warm gradient with coral/orange accents */
+body.theme-sunset { background: radial-gradient(120% 120% at 50% 0%, #2b0e19 0%, #1a0d12 100%); color: #ffe9e2; }
+body.theme-sunset .header { background-color: #3b1120; }
+body.theme-sunset .container { background: #2a0f18; box-shadow: 0 12px 28px rgba(120, 20, 40, 0.45); }
+body.theme-sunset .time { color: #ffe9e2; }
+body.theme-sunset .control-btn.primary { background: #7a2434; color: #fff7f4; box-shadow: 0 6px 16px rgba(255, 119, 89, 0.25); }
+body.theme-sunset .control-btn.primary:hover { box-shadow: 0 10px 24px rgba(255, 140, 102, 0.4); }
+body.theme-sunset .control-btn.secondary { background: #40131f; color: #ffd6cc; border: 2px solid #5a1a2a; }
+body.theme-sunset .tab-btn,
+body.theme-sunset .tiny-btn,
+body.theme-sunset .pip-btn,
+body.theme-sunset .set-btn,
+body.theme-sunset .add-btn,
+body.theme-sunset .back-btn { background: #511726; color: #ffe5dc; border: 2px solid #6a1e30; }
+body.theme-sunset .tab-btn:hover,
+body.theme-sunset .tiny-btn:hover,
+body.theme-sunset .pip-btn:hover,
+body.theme-sunset .set-btn:hover,
+body.theme-sunset .add-btn:hover,
+body.theme-sunset .back-btn:hover { background: #6a1e30; border-color: #8c2a40; }
+body.theme-sunset .progress-ring-circle { stroke: #ff8243; }
+body.theme-sunset .progress-ring-circle-bg { stroke: rgba(255, 233, 226, 0.12); }
+
+/* Forest: dark moss background with lime/green accents */
+body.theme-forest { background: linear-gradient(180deg, #0e1a12 0%, #0b140f 100%); color: #e8ffe9; }
+body.theme-forest .header { background-color: #13241a; }
+body.theme-forest .container { background: #0f1d15; box-shadow: 0 12px 28px rgba(0, 60, 20, 0.45); }
+body.theme-forest .time { color: #e8ffe9; }
+body.theme-forest .control-btn.primary { background: #1c4a2f; color: #e8ffe9; box-shadow: 0 6px 16px rgba(0, 120, 60, 0.25); }
+body.theme-forest .control-btn.primary:hover { box-shadow: 0 10px 24px rgba(0, 160, 80, 0.35); }
+body.theme-forest .control-btn.secondary { background: #102a1b; color: #c6ffd0; border: 2px solid #1c4a2f; }
+body.theme-forest .tab-btn,
+body.theme-forest .tiny-btn,
+body.theme-forest .pip-btn,
+body.theme-forest .set-btn,
+body.theme-forest .add-btn,
+body.theme-forest .back-btn { background: #153823; color: #e8ffe9; border: 2px solid #215c3a; }
+body.theme-forest .tab-btn:hover,
+body.theme-forest .tiny-btn:hover,
+body.theme-forest .pip-btn:hover,
+body.theme-forest .set-btn:hover,
+body.theme-forest .add-btn:hover,
+body.theme-forest .back-btn:hover { background: #1c4a2f; border-color: #2a7a4d; }
+body.theme-forest .progress-ring-circle { stroke: #34d399; }
+body.theme-forest .progress-ring-circle-bg { stroke: rgba(232, 255, 233, 0.12); }
+
+/* Neon: near-black background with hot pink and electric purple accents */
+body.theme-neon { background: radial-gradient(120% 120% at 50% 0%, #0b0b12 0%, #07070b 100%); color: #fbe8ff; }
+body.theme-neon .header { background-color: #151525; }
+body.theme-neon .container { background: #0f0f18; box-shadow: 0 12px 28px rgba(60, 0, 120, 0.45); }
+body.theme-neon .time { color: #fbe8ff; text-shadow: 0 0 8px rgba(255, 0, 150, 0.35); }
+body.theme-neon .control-btn.primary { background: #2a1a3a; color: #ffe6ff; box-shadow: 0 6px 16px rgba(255, 0, 150, 0.25); }
+body.theme-neon .control-btn.primary:hover { box-shadow: 0 10px 24px rgba(150, 0, 255, 0.35); }
+body.theme-neon .control-btn.secondary { background: #181224; color: #e6ccff; border: 2px solid #3a2a6a; }
+body.theme-neon .tab-btn,
+body.theme-neon .tiny-btn,
+body.theme-neon .pip-btn,
+body.theme-neon .set-btn,
+body.theme-neon .add-btn,
+body.theme-neon .back-btn { background: #1d1430; color: #ffe6ff; border: 2px solid #3a2a6a; }
+body.theme-neon .tab-btn:hover,
+body.theme-neon .tiny-btn:hover,
+body.theme-neon .pip-btn:hover,
+body.theme-neon .set-btn:hover,
+body.theme-neon .add-btn:hover,
+body.theme-neon .back-btn:hover { background: #2a1a3a; border-color: #6a3aaa; }
+body.theme-neon .progress-ring-circle { stroke: #ff2aa1; }
+body.theme-neon .progress-ring-circle-bg { stroke: rgba(251, 232, 255, 0.12); }
+
+/* ==========================
+   Polished Variable-Driven Theming (Consistent across UI)
+   ========================== */
+
+/* Default (Midnight-like) variables */
+:root {
+    --bg: #0f0f12;
+    --text: #e7e7ea;
+    --header-bg: #1a1a1f;
+    --container-bg: #141418;
+
+    --time-text: var(--text);
+
+    --accent: #667eea;
+    --progress-ring: #4a90e2;
+    --progress-bg: rgba(231, 231, 234, 0.08);
+
+    --btn-primary-bg: #2a2a30;
+    --btn-primary-text: #e7e7ea;
+    --btn-primary-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+    --btn-primary-hover-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+
+    --btn-secondary-bg: #1c1c20;
+    --btn-secondary-text: #c8c8cc;
+    --btn-secondary-border: #2a2a30;
+    --btn-secondary-hover-bg: rgba(102, 126, 234, 0.2);
+    --btn-secondary-hover-border: #3a3a40;
+
+    --action-bg: #2a2a30; /* tiny/pip/set/add/back, tab button in quick start */
+    --action-text: #e7e7ea;
+    --action-border: #3a3a40;
+    --action-hover-bg: #232329;
+    --action-hover-border: #4a4a50;
+}
+
+/* Theme variable overrides */
+body.theme-midnight {
+    --bg: #0f0f12;
+    --text: #e7e7ea;
+    --header-bg: #1a1a1f;
+    --container-bg: #141418;
+    --time-text: #e7e7ea;
+    --accent: #667eea;
+    --progress-ring: #4a90e2;
+    --progress-bg: rgba(231, 231, 234, 0.08);
+    --btn-primary-bg: #2a2a30;
+    --btn-primary-text: #e7e7ea;
+    --btn-primary-shadow: 0 2px 10px rgba(0,0,0,0.35);
+    --btn-primary-hover-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    --btn-secondary-bg: #1c1c20;
+    --btn-secondary-text: #c8c8cc;
+    --btn-secondary-border: #2a2a30;
+    --btn-secondary-hover-bg: rgba(102, 126, 234, 0.2);
+    --btn-secondary-hover-border: #3a3a40;
+    --action-bg: #2a2a30;
+    --action-text: #e7e7ea;
+    --action-border: #3a3a40;
+    --action-hover-bg: #232329;
+    --action-hover-border: #4a4a50;
+}
+
+body.theme-ocean {
+    --bg: linear-gradient(180deg, #0b1020 0%, #0a1726 100%);
+    --text: #e6f7ff;
+    --header-bg: #0f2138;
+    --container-bg: #0e1a2b;
+    --time-text: #e6f7ff;
+    --accent: #22d3ee;
+    --progress-ring: #22d3ee;
+    --progress-bg: rgba(255, 255, 255, 0.08);
+    --btn-primary-bg: #12395c;
+    --btn-primary-text: #e6f7ff;
+    --btn-primary-shadow: 0 6px 16px rgba(0, 120, 200, 0.25);
+    --btn-primary-hover-shadow: 0 10px 24px rgba(0, 160, 255, 0.35);
+    --btn-secondary-bg: #0c2a43;
+    --btn-secondary-text: #cfefff;
+    --btn-secondary-border: #114063;
+    --btn-secondary-hover-bg: #12395c;
+    --btn-secondary-hover-border: #1c5d8b;
+    --action-bg: #0f2d49;
+    --action-text: #dcf6ff;
+    --action-border: #144667;
+    --action-hover-bg: #12395c;
+    --action-hover-border: #1c5d8b;
+}
+
+body.theme-sunset {
+    --bg: radial-gradient(120% 120% at 50% 0%, #2b0e19 0%, #1a0d12 100%);
+    --text: #ffe9e2;
+    --header-bg: #3b1120;
+    --container-bg: #2a0f18;
+    --time-text: #ffe9e2;
+    --accent: #ff8243;
+    --progress-ring: #ff8243;
+    --progress-bg: rgba(255, 233, 226, 0.12);
+    --btn-primary-bg: #7a2434;
+    --btn-primary-text: #fff7f4;
+    --btn-primary-shadow: 0 6px 16px rgba(255, 119, 89, 0.25);
+    --btn-primary-hover-shadow: 0 10px 24px rgba(255, 140, 102, 0.4);
+    --btn-secondary-bg: #40131f;
+    --btn-secondary-text: #ffd6cc;
+    --btn-secondary-border: #5a1a2a;
+    --btn-secondary-hover-bg: #6a1e30;
+    --btn-secondary-hover-border: #8c2a40;
+    --action-bg: #511726;
+    --action-text: #ffe5dc;
+    --action-border: #6a1e30;
+    --action-hover-bg: #6a1e30;
+    --action-hover-border: #8c2a40;
+}
+
+body.theme-forest {
+    --bg: linear-gradient(180deg, #0e1a12 0%, #0b140f 100%);
+    --text: #e8ffe9;
+    --header-bg: #13241a;
+    --container-bg: #0f1d15;
+    --time-text: #e8ffe9;
+    --accent: #34d399;
+    --progress-ring: #34d399;
+    --progress-bg: rgba(232, 255, 233, 0.12);
+    --btn-primary-bg: #1c4a2f;
+    --btn-primary-text: #e8ffe9;
+    --btn-primary-shadow: 0 6px 16px rgba(0, 120, 60, 0.25);
+    --btn-primary-hover-shadow: 0 10px 24px rgba(0, 160, 80, 0.35);
+    --btn-secondary-bg: #102a1b;
+    --btn-secondary-text: #c6ffd0;
+    --btn-secondary-border: #1c4a2f;
+    --btn-secondary-hover-bg: #1c4a2f;
+    --btn-secondary-hover-border: #2a7a4d;
+    --action-bg: #153823;
+    --action-text: #e8ffe9;
+    --action-border: #215c3a;
+    --action-hover-bg: #1c4a2f;
+    --action-hover-border: #2a7a4d;
+}
+
+body.theme-neon {
+    --bg: radial-gradient(120% 120% at 50% 0%, #0b0b12 0%, #07070b 100%);
+    --text: #fbe8ff;
+    --header-bg: #151525;
+    --container-bg: #0f0f18;
+    --time-text: #fbe8ff;
+    --accent: #ff2aa1;
+    --progress-ring: #ff2aa1;
+    --progress-bg: rgba(251, 232, 255, 0.12);
+    --btn-primary-bg: #2a1a3a;
+    --btn-primary-text: #ffe6ff;
+    --btn-primary-shadow: 0 6px 16px rgba(255, 0, 150, 0.25);
+    --btn-primary-hover-shadow: 0 10px 24px rgba(150, 0, 255, 0.35);
+    --btn-secondary-bg: #181224;
+    --btn-secondary-text: #e6ccff;
+    --btn-secondary-border: #3a2a6a;
+    --btn-secondary-hover-bg: #2a1a3a;
+    --btn-secondary-hover-border: #6a3aaa;
+    --action-bg: #1d1430;
+    --action-text: #ffe6ff;
+    --action-border: #3a2a6a;
+    --action-hover-bg: #2a1a3a;
+    --action-hover-border: #6a3aaa;
+}
+
+/* Unified component styles using variables (default + themed)
+   Placed at end to ensure precedence */
+
+/* Backgrounds and containers */
+body { background: var(--bg); color: var(--text); }
+.header { background-color: var(--header-bg); }
+.container { background: var(--container-bg); }
+.time { color: var(--time-text); }
+
+/* Progress ring */
+.progress-ring-circle { stroke: var(--progress-ring); }
+.progress-ring-circle-bg { stroke: var(--progress-bg); }
+
+/* Primary and secondary control buttons */
+.control-btn.primary {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+    box-shadow: var(--btn-primary-shadow);
+}
+.control-btn.primary:hover:not(:disabled) {
+    box-shadow: var(--btn-primary-hover-shadow);
+}
+.control-btn.secondary {
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 2px solid var(--btn-secondary-border);
+}
+.control-btn.secondary:hover:not(:disabled) {
+    background: var(--btn-secondary-hover-bg);
+    border-color: var(--btn-secondary-hover-border);
+}
+
+/* Action buttons: tiny/pip/set/add/back and quick start tab button */
+.tiny-btn,
+.pip-btn,
+.set-btn,
+.add-btn,
+.back-btn,
+.preset-times .tab-btn,
+.tab-btn {
+    background: var(--action-bg);
+    color: var(--action-text);
+    border-color: var(--action-border);
+}
+.tiny-btn:hover,
+.pip-btn:hover,
+.set-btn:hover,
+.add-btn:hover,
+.back-btn:hover,
+.preset-times .tab-btn:hover,
+.tab-btn:hover {
+    background: var(--action-hover-bg);
+    border-color: var(--action-hover-border);
+}

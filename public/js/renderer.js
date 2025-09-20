@@ -7,6 +7,10 @@ class Timer {
         this.preferredTimes = [];
         
         this.initializeElements();
+        // Theme setup
+        this.themes = ['theme-midnight', 'theme-ocean', 'theme-sunset', 'theme-forest', 'theme-neon'];
+        this.currentThemeIndex = 0;
+        this.loadAndApplyTheme();
         this.loadPreferredTimes();
         this.setupEventListeners();
         this.setDefaultTime(15, 0);
@@ -163,8 +167,51 @@ class Timer {
             } else if (e.key === 't' || e.key === 'T') {
                 e.preventDefault();
                 this.openTinyMode();
+            } else if (e.shiftKey && (e.key === 'ArrowRight' || e.key === 'Right')) {
+                // Cycle next theme
+                e.preventDefault();
+                this.cycleTheme(1);
+            } else if (e.shiftKey && (e.key === 'ArrowLeft' || e.key === 'Left')) {
+                // Cycle previous theme
+                e.preventDefault();
+                this.cycleTheme(-1);
             }
         });
+    }
+
+    // =====================
+    // Theme management
+    // =====================
+    loadAndApplyTheme() {
+        try {
+            const saved = localStorage.getItem('timer-app-theme');
+            if (saved && this.themes.includes(saved)) {
+                this.currentThemeIndex = this.themes.indexOf(saved);
+            }
+        } catch (_) { /* ignore storage errors */ }
+        this.applyTheme(this.themes[this.currentThemeIndex]);
+        try { console.log('[Theme] Loaded theme:', this.themes[this.currentThemeIndex]); } catch (_) {}
+    }
+
+    applyTheme(themeClass) {
+        try {
+            const body = document.body;
+            // Remove any previous theme classes
+            this.themes.forEach(t => body.classList.remove(t));
+            // Apply new
+            if (themeClass) body.classList.add(themeClass);
+            // Persist
+            try { localStorage.setItem('timer-app-theme', themeClass); } catch (_) {}
+            try { console.log('[Theme] Applied theme:', themeClass); } catch (_) {}
+        } catch (_) { /* ignore */ }
+    }
+
+    cycleTheme(direction = 1) {
+        const len = this.themes.length;
+        this.currentThemeIndex = (this.currentThemeIndex + (direction % len) + len) % len;
+        const nextTheme = this.themes[this.currentThemeIndex];
+        try { console.log('[Theme] Cycling', direction > 0 ? 'next' : 'prev', '->', nextTheme); } catch (_) {}
+        this.applyTheme(nextTheme);
     }
 
     setDefaultTime(minutes, seconds) {
@@ -901,6 +948,15 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Received PiP timer update:', update);
         window.timer.receivePiPUpdate(update);
     });
+
+    // Listen for theme cycle requests from main (global shortcuts)
+    try {
+        window.electronAPI.onCycleTheme((direction) => {
+            if (typeof direction === 'number') {
+                window.timer.cycleTheme(direction);
+            }
+        });
+    } catch (_) { /* ignore */ }
 });
 
 // Listen for messages from PiP window
