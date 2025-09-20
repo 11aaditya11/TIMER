@@ -150,6 +150,10 @@ class Timer {
             } else if (e.key === 't' || e.key === 'T') {
                 e.preventDefault();
                 this.openTinyMode();
+            } else if (e.altKey && (e.key === 'd' || e.key === 'D')) {
+                // Restore default preset timers
+                e.preventDefault();
+                this.restoreDefaultPresets();
             } else if (e.shiftKey && (e.key === 'ArrowRight' || e.key === 'Right')) {
                 // Cycle next theme
                 e.preventDefault();
@@ -265,6 +269,44 @@ class Timer {
             }
         } catch (error) {
             console.error('Failed to delete preferred time:', error);
+            await this.loadPreferredTimes();
+        }
+    }
+
+    // Returns the app's default preset list
+    getDefaultPresets() {
+        return [
+            { name: 'Fifteen', minutes: 15 },
+            { name: 'Hour', minutes: 60 },
+            { name: 'TwentyFive', minutes: 25 },
+            { name: 'FortyFive', minutes: 45 }
+        ];
+    }
+
+    // Restores default presets: optimistic UI then persist
+    async restoreDefaultPresets() {
+        const defaults = this.getDefaultPresets();
+        // Optimistic UI update
+        this.preferredTimes = [...defaults];
+        this.renderPresetTimes();
+
+        try {
+            // Fetch currently saved presets and delete them from storage (delete from end to start)
+            const existing = await window.electronAPI.getPreferredTimes();
+            if (Array.isArray(existing)) {
+                for (let i = existing.length - 1; i >= 0; i--) {
+                    try { await window.electronAPI.deletePreferredTime(i); } catch (_) {}
+                }
+            }
+            // Save defaults
+            for (const preset of defaults) {
+                try { await window.electronAPI.savePreferredTime(preset); } catch (_) {}
+            }
+            // Reload to ensure consistency with disk
+            await this.loadPreferredTimes();
+        } catch (err) {
+            console.error('Failed to restore default presets:', err);
+            // Reload to reflect actual state if something went wrong
             await this.loadPreferredTimes();
         }
     }
