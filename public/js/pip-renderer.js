@@ -3,7 +3,7 @@ class PiPTimer {
         this.timeLeft = 0; // Start with 0, will sync from main
         this.totalTime = 0;
         this.isRunning = false;
-        this.interval = null;
+        this.interval = null; // no local ticking; kept for safety cleanup
         
         this.initializeElements();
         this.setupEventListeners();
@@ -78,8 +78,6 @@ class PiPTimer {
     updateFromMainWindow(timerState) {
         if (!timerState || typeof timerState !== 'object') return;
         
-        const wasRunning = this.isRunning;
-        
         this.timeLeft = timerState.timeLeft || 0;
         this.totalTime = timerState.totalTime || 0;
         this.isRunning = timerState.isRunning || false;
@@ -87,60 +85,31 @@ class PiPTimer {
         this.updateDisplay();
         this.updateProgress();
         this.updateButtonStates();
-        
-        // Handle timer state changes
-        if (this.isRunning && !wasRunning) {
-            this.startLocalTimer();
-        } else if (!this.isRunning && wasRunning) {
-            this.stopLocalTimer();
-        }
+        // No local timer; rely on main window's periodic updates for accuracy
     }
 
-    startLocalTimer() {
-        if (this.interval) return; // Already running
-        
-        this.interval = setInterval(() => {
-            if (this.timeLeft > 0) {
-                this.timeLeft--;
-                this.updateDisplay();
-                this.updateProgress();
-                
-                if (this.timeLeft <= 0) {
-                    this.timerComplete();
-                }
-            }
-        }, 1000);
-    }
-
-    stopLocalTimer() {
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
-    }
+    // Removed local ticking; keep methods no-op for backward compatibility
+    startLocalTimer() {}
+    stopLocalTimer() {}
 
     startTimer() {
         if (this.timeLeft <= 0) return;
         
-        this.isRunning = true;
+        this.isRunning = true; // optimistic; real state will arrive via IPC
         this.updateButtonStates();
-        this.startLocalTimer();
-        
         // Notify main window
         this.notifyMainWindow('start');
     }
 
     pauseTimer() {
-        this.isRunning = false;
+        this.isRunning = false; // optimistic; real state will arrive via IPC
         this.updateButtonStates();
-        this.stopLocalTimer();
-        
         // Notify main window
         this.notifyMainWindow('pause');
     }
 
     resetTimer() {
-        this.pauseTimer();
+        this.isRunning = false; // optimistic
         this.timeLeft = this.totalTime;
         this.updateDisplay();
         this.updateProgress();

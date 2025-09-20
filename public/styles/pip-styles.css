@@ -1,3 +1,31 @@
+/*
+  PiP Color Palette (edit any of these and refresh PiP):
+  --pip-bg options (solid or gradient stops):
+    #0f0f14 (Deep Ink)
+    #12131a (Midnight Slate)
+    #10151c (Abyss Blue)
+    #16121a (Plum Black)
+    #0f1714 (Forest Night)
+    #121212 (Carbon)
+  --pip-accent options:
+    #6ea8fe (Sky Blue)
+    #9b87f5 (Lavender)
+    #7ee787 (Mint)
+    #f28b82 (Coral)
+    #fdd663 (Amber)
+    #66d9e8 (Teal)
+*/
+
+:root {
+  --pip-bg: #10151c; /* pick from list above */
+  --pip-bg-2: #0b0f14; /* slightly darker stop for gradient */
+  --pip-accent: #9b87f5; /* used for subtle strokes/hover */
+}
+
+/* Ensure no bottom padding/margin on last element */
+.pip-controls:last-child { margin-bottom: 0; padding-bottom: 0; }
+body > *:last-child { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+
 * {
     margin: 0;
     padding: 0;
@@ -6,28 +34,26 @@
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #0b0b0c 0%, #141416 100%);
+    /* Non-transparent background using palette */
+    background:
+      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 60%),
+      linear-gradient(160deg, var(--pip-bg) 0%, var(--pip-bg-2) 100%);
     color: white;
     overflow: hidden;
     user-select: none;
     -webkit-app-region: drag;
-}
-
-.pip-container {
-    width: 100%;
-    height: 100%;
+    /* Unify window and content: no padding, stack at top */
+    margin: 0;
+    padding: 0;
+    position: relative;
     display: flex;
     flex-direction: column;
-    padding: 4px;
-    background:
-        radial-gradient(800px 200px at -10% -10%, rgba(255, 255, 255, 0.04), transparent 60%),
-        linear-gradient(145deg, #0d0d10 0%, #15161a 60%, #0d0d10 100%);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    position: relative;
+    align-items: stretch; /* stretch children to full width */
+    justify-content: flex-start; /* stick to the top */
+    gap: 0;
 }
+
+/* .pip-container removed from DOM; not used anymore */
 
 /* Header removed for tidy PiP */
 
@@ -101,11 +127,13 @@ body {
 }
 
 .pip-time {
-    font-size: 24px;
+    width: 100%; /* remove side gaps */
+    font-size: 24px; /* keep time size the same */
     font-weight: 700;
     color: #e7e7ea;
     font-family: 'Courier New', monospace;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    margin-top: 0; /* flush towards top */
     margin-bottom: 0;
     text-align: center;
     letter-spacing: 1px;
@@ -114,31 +142,32 @@ body {
 /* Progress removed for tidy PiP */
 
 .pip-controls {
+    width: 100%; /* remove side gaps */
     display: flex;
-    gap: 6px;
+    gap: 4px; /* tight gap */
     align-items: center;
-    justify-content: center;
+    justify-content: center; /* buttons centered but container spans full width */
     -webkit-app-region: no-drag;
-    margin-top: 0;
+    margin: 1px 0 0; /* close under time */
+    padding: 0;
 }
 
 .pip-control-btn {
     background: rgba(42, 42, 48, 0.9);
     border: 1px solid rgba(58, 58, 64, 0.8);
     color: #e7e7ea;
-    padding: 4px;
-    border-radius: 6px;
+    padding: 2px 6px; /* smaller height */
+    border-radius: 999px;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 24px;
-    min-height: 24px;
+    min-width: 20px;
+    min-height: 20px;
     -webkit-app-region: no-drag;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    margin-right: 8px;
+    backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .pip-control-btn svg {
@@ -147,7 +176,7 @@ body {
 }
 
 .pip-control-btn:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.22);
     transform: translateY(-2px) scale(1.05);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }

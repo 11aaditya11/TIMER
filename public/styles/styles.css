@@ -780,6 +780,59 @@ body {
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
+/* PiP specific tweaks */
+.pip-container {
+    /* shrink width and add rounded, beautiful look */
+    max-width: 240px;
+    width: 90vw; /* responsive on tiny screens */
+    margin: 8px auto;
+    padding: 10px 12px;
+    border-radius: 18px;
+    background: radial-gradient(120% 120% at 50% 0%, #17171c 0%, #121217 100%);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+    overflow: hidden;
+}
+
+/* Keep time size the same; center it snugly */
+#pipTimeDisplay {
+    display: block;
+    text-align: center;
+    margin: 6px 0 10px;
+}
+
+/* PiP controls row tighter and centered */
+.pip-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 6px auto 4px;
+}
+
+/* Reduce start (pause toggle) and reset buttons */
+#pipPauseBtn,
+#pipResetBtn {
+    padding: 6px 10px;
+    min-width: 0;
+    border-radius: 999px; /* pill / round */
+    font-size: 12px;
+    line-height: 1;
+}
+
+/* Make icon-only look compact if using SVGs */
+#pipPauseBtn svg,
+#pipResetBtn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Subtle hover for PiP buttons */
+#pipPauseBtn:hover,
+#pipResetBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+}
+
 /* Responsive design */
 @media (max-width: 480px) {
     .container {

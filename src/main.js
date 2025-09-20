@@ -171,8 +171,8 @@ function createPipWindow() {
   }
 
   pipWindow = new BrowserWindow({
-    width: 160,
-    height: 63,
+    width: 140,
+    height: 60,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -187,13 +187,36 @@ function createPipWindow() {
     title: 'Timer - PiP',
     frame: false,
     transparent: true,
-    minWidth: 160,
-    minHeight: 80,
-    maxWidth: 160,
-    maxHeight: 80
+    minWidth: 120,
+    minHeight: 44,
+    maxWidth: 220,
+    maxHeight: 200
   });
 
   pipWindow.loadFile(path.join(__dirname, '..', 'public', 'pip.html'));
+
+  // After load, measure content size and size window tightly to remove any extra bars/side gaps
+  pipWindow.webContents.on('did-finish-load', () => {
+    try {
+      const sizeScript = `({
+        w: Math.ceil(document.body.scrollWidth),
+        h: Math.ceil(document.body.scrollHeight)
+      })`;
+      pipWindow.webContents.executeJavaScript(sizeScript).then((dim) => {
+        const contentWidth = Number(dim && dim.w) || 140;
+        const contentHeight = Number(dim && dim.h) || 60;
+        const safeW = Math.max(120, Math.min(220, contentWidth));
+        const safeH = Math.max(44, Math.min(200, contentHeight));
+        // Keep bottom-right anchor when resizing
+        const { screen } = require('electron');
+        const primaryDisplay = screen.getPrimaryDisplay();
+        const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
+        const x = screenWidth - safeW - 20;
+        const y = screenHeight - safeH - 20;
+        pipWindow.setBounds({ x, y, width: safeW, height: safeH });
+      }).catch(() => {});
+    } catch (_) {}
+  });
 
   pipWindow.on('closed', () => {
     pipWindow = null;
@@ -207,8 +230,8 @@ function createPipWindow() {
   const { screen } = require('electron');
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
-  const x = screenWidth - 160 - 20; // window width + margin
-  const y = screenHeight - 80 - 20; // window height + margin
+  const x = screenWidth - 140 - 20; // initial guess; will be corrected after load
+  const y = screenHeight - 60 - 20; // initial guess; will be corrected after load
   pipWindow.setPosition(x, y);
 
   // Minimize main window when PiP opens

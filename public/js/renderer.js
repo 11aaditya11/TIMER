@@ -787,6 +787,14 @@ class Timer {
         // Request the main process to open PiP window
         try {
             window.electronAPI.openPipWindow();
+            // Proactively push current state so PiP shows the correct time immediately
+            const pushState = () => {
+                try { this.sendUpdateToPip(); } catch (_) {}
+            };
+            // Push immediately and with a couple of short retries to cover window init time
+            pushState();
+            setTimeout(pushState, 80);
+            setTimeout(pushState, 200);
         } catch (error) {
             console.error('Failed to open PiP window:', error);
             // Fallback: show message to user
