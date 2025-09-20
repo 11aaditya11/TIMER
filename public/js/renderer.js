@@ -350,9 +350,8 @@ class Timer {
     }
 
     showConfetti() {
-        // Create bang effect first
-        this.createBangEffect();
-        
+        // Middle bang removed per request (keep edge bursts only)
+
         // Create main confetti container
         const confettiContainer = document.createElement('div');
         confettiContainer.className = 'confetti-container';
@@ -368,114 +367,187 @@ class Timer {
             '#2196F3', '#03DAC6', '#4CAF50', '#8BC34A', '#CDDC39'
         ];
 
-        // Create center burst confetti (300 pieces)
-        for (let i = 0; i < 300; i++) {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti-piece center-burst';
-            
-            // Random vibrant color
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.backgroundColor = color;
-            
-            // Center positioning for burst effect
-            confetti.style.left = '50%';
-            confetti.style.top = '50%';
-            
-            // Burst direction
-            const angle = (Math.PI * 2 * i) / 300;
-            const velocity = Math.random() * 200 + 100;
-            confetti.style.setProperty('--burst-x', Math.cos(angle) * velocity + 'px');
-            confetti.style.setProperty('--burst-y', Math.sin(angle) * velocity + 'px');
-            
-            // Stagger timing
-            confetti.style.animationDelay = Math.random() * 0.3 + 's';
-            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            
-            // Random shapes and sizes
-            const size = Math.random() * 10 + 3;
-            confetti.style.width = size + 'px';
-            confetti.style.height = size + 'px';
-            
-            if (Math.random() > 0.5) {
-                confetti.style.borderRadius = '50%';
-            }
-            
-            confettiContainer.appendChild(confetti);
-        }
+        // Helper to random pick
+        const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+        // Helper to assign varied shapes
+        const assignShape = (el) => {
+            const r = Math.random();
+            if (r < 0.2) {
+                el.classList.add('triangle');
+            } else if (r < 0.4) {
+                el.classList.add('diamond');
+            } else if (r < 0.7) {
+                el.style.borderRadius = '50%';
+            } else if (r < 0.85) {
+                el.style.borderRadius = '6px';
+            } // else keep as square/rect
+        };
+        // Helper to varied size with a soft bias toward medium
+        const randomSize = (min = 3, max = 14) => {
+            const t = Math.random();
+            const eased = Math.sqrt(t); // bias toward larger within range slightly
+            return Math.round(min + (max - min) * (0.3 * t + 0.7 * (1 - Math.abs(0.5 - eased) * 2)));
+        };
 
-        // Create side confetti (left side - 150 pieces)
-        for (let i = 0; i < 150; i++) {
+        // Center burst removed for a cleaner edge-focused celebration
+
+        // Create side confetti (left side - 60 pieces)
+        for (let i = 0; i < 60; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti-piece side-left';
             
-            const color = colors[Math.floor(Math.random() * colors.length)];
+            const color = pick(colors);
             confetti.style.backgroundColor = color;
             
             confetti.style.left = '-10px';
             confetti.style.top = Math.random() * 100 + '%';
             
-            confetti.style.animationDelay = Math.random() * 1.5 + 's';
-            confetti.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+            confetti.style.animationDelay = Math.random() * 1.6 + 's';
+            // Mix of faster and slower particles
+            const fast = Math.random() < 0.35;
+            confetti.style.animationDuration = (fast ? Math.random() * 0.8 + 2.2 : Math.random() * 1.6 + 3.4) + 's';
+            confetti.style.animationTimingFunction = fast ? 'ease-out' : 'ease-in-out';
             
-            const size = Math.random() * 8 + 4;
+            const size = randomSize(4, 10);
             confetti.style.width = size + 'px';
             confetti.style.height = size + 'px';
-            
-            if (Math.random() > 0.6) {
-                confetti.style.borderRadius = '50%';
-            }
+            assignShape(confetti);
             
             confettiContainer.appendChild(confetti);
         }
 
-        // Create side confetti (right side - 150 pieces)
-        for (let i = 0; i < 150; i++) {
+        // Create side confetti (right side - 60 pieces)
+        for (let i = 0; i < 60; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti-piece side-right';
             
-            const color = colors[Math.floor(Math.random() * colors.length)];
+            const color = pick(colors);
             confetti.style.backgroundColor = color;
             
             confetti.style.right = '-10px';
             confetti.style.top = Math.random() * 100 + '%';
             
-            confetti.style.animationDelay = Math.random() * 1.5 + 's';
-            confetti.style.animationDuration = (Math.random() * 2 + 2.5) + 's';
+            confetti.style.animationDelay = Math.random() * 1.6 + 's';
+            const fastR = Math.random() < 0.35;
+            confetti.style.animationDuration = (fastR ? Math.random() * 0.8 + 2.2 : Math.random() * 1.6 + 3.4) + 's';
+            confetti.style.animationTimingFunction = fastR ? 'ease-out' : 'ease-in-out';
             
-            const size = Math.random() * 8 + 4;
+            const size = randomSize(4, 10);
             confetti.style.width = size + 'px';
             confetti.style.height = size + 'px';
-            
-            if (Math.random() > 0.6) {
-                confetti.style.borderRadius = '50%';
-            }
+            assignShape(confetti);
             
             confettiContainer.appendChild(confetti);
         }
 
-        // Create top falling confetti (200 pieces)
-        for (let i = 0; i < 200; i++) {
+        // Create top falling confetti (100 pieces)
+        for (let i = 0; i < 100; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti-piece top-fall';
             
-            const color = colors[Math.floor(Math.random() * colors.length)];
+            const color = pick(colors);
             confetti.style.backgroundColor = color;
             
             confetti.style.left = Math.random() * 100 + 'vw';
             confetti.style.top = '-20px';
             
-            confetti.style.animationDelay = Math.random() * 2 + 's';
-            confetti.style.animationDuration = (Math.random() * 2 + 3) + 's';
+            confetti.style.animationDelay = Math.random() * 2.2 + 's';
+            const fastT = Math.random() < 0.3;
+            confetti.style.animationDuration = (fastT ? Math.random() * 0.8 + 2.8 : Math.random() * 2.2 + 4.2) + 's';
+            confetti.style.animationTimingFunction = fastT ? 'ease-in' : 'ease-in-out';
             
-            const size = Math.random() * 8 + 4;
+            const size = randomSize(4, 10);
             confetti.style.width = size + 'px';
             confetti.style.height = size + 'px';
-            
-            if (Math.random() > 0.6) {
-                confetti.style.borderRadius = '50%';
-            }
+            assignShape(confetti);
             
             confettiContainer.appendChild(confetti);
+        }
+
+        // Add prettier directional "bang" bursts from all edges
+        const addEdgeBurst = (direction, count) => {
+            for (let i = 0; i < count; i++) {
+                const piece = document.createElement('div');
+                // Randomly choose type for richer visuals
+                const type = Math.random() < 0.35 ? 'streamer' : (Math.random() < 0.6 ? 'sparkle' : '');
+                piece.className = `confetti-piece edge-bang${type ? ' ' + type : ''}`;
+                const color = pick(colors);
+                piece.style.backgroundColor = color;
+
+                // Random size tweak per type
+                if (!type) {
+                    const s = Math.random() * 10 + 4;
+                    piece.style.width = s + 'px';
+                    piece.style.height = s + 'px';
+                    if (Math.random() > 0.5) piece.style.borderRadius = '40%';
+                }
+
+                // Starting position & target vector
+                let burstX = 0, burstY = 0;
+                if (direction === 'left') {
+                    piece.style.left = '-10px';
+                    piece.style.top = Math.random() * 100 + 'vh';
+                    burstX = (Math.random() * 60 + 40) * (window.innerWidth / 100);
+                    burstY = (Math.random() * 60 - 30) * (window.innerHeight / 100) * 0.3;
+                } else if (direction === 'right') {
+                    piece.style.right = '-10px';
+                    piece.style.top = Math.random() * 100 + 'vh';
+                    burstX = -(Math.random() * 60 + 40) * (window.innerWidth / 100);
+                    burstY = (Math.random() * 60 - 30) * (window.innerHeight / 100) * 0.3;
+                } else if (direction === 'top') {
+                    piece.style.top = '-10px';
+                    piece.style.left = Math.random() * 100 + 'vw';
+                    burstX = (Math.random() * 60 - 30) * (window.innerWidth / 100) * 0.4;
+                    burstY = (Math.random() * 50 + 30) * (window.innerHeight / 100);
+                } else if (direction === 'bottom') {
+                    piece.style.bottom = '-10px';
+                    piece.style.top = 'auto';
+                    piece.style.left = Math.random() * 100 + 'vw';
+                    burstX = (Math.random() * 60 - 30) * (window.innerWidth / 100) * 0.4;
+                    burstY = -(Math.random() * 50 + 30) * (window.innerHeight / 100);
+                }
+
+                // Depth and rotation for 3D feel
+                const burstZ = (Math.random() * 2 - 1) * 80; // -80..80px
+                const rot = Math.floor(Math.random() * 720 + 360) + 'deg';
+                piece.style.setProperty('--burst-x', burstX + 'px');
+                piece.style.setProperty('--burst-y', burstY + 'px');
+                piece.style.setProperty('--burst-z', burstZ + 'px');
+                piece.style.setProperty('--rot', rot);
+
+                // Timings: mix of faster and slower
+                const fastE = Math.random() < 0.4;
+                piece.style.animationDelay = (Math.random() * 0.25) + 's';
+                piece.style.animationDuration = (fastE ? Math.random() * 0.7 + 1.6 : Math.random() * 1.4 + 2.6) + 's';
+                piece.style.animationTimingFunction = fastE ? 'cubic-bezier(0.25, 1, 0.5, 1)' : 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+                confettiContainer.appendChild(piece);
+            }
+        };
+
+        addEdgeBurst('left', 40);
+        addEdgeBurst('right', 40);
+        addEdgeBurst('top', 30);
+        addEdgeBurst('bottom', 30);
+
+        // Bottom rise subtle field to fill space (40 pieces)
+        for (let i = 0; i < 40; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece bottom-rise';
+            const color = pick(colors);
+            piece.style.backgroundColor = color;
+            piece.style.left = Math.random() * 100 + 'vw';
+            piece.style.bottom = '-20px';
+            piece.style.top = 'auto';
+            piece.style.animationDelay = (Math.random() * 1.4) + 's';
+            const fastB = Math.random() < 0.3;
+            piece.style.animationDuration = (fastB ? Math.random() * 1.0 + 2.2 : Math.random() * 1.8 + 3.4) + 's';
+            piece.style.animationTimingFunction = fastB ? 'ease-out' : 'ease-in-out';
+            const s = randomSize(3, 9);
+            piece.style.width = s + 'px';
+            piece.style.height = s + 'px';
+            assignShape(piece);
+            confettiContainer.appendChild(piece);
         }
 
         // Remove confetti after animation

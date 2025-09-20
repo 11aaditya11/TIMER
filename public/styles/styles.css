@@ -364,6 +364,7 @@ body {
     pointer-events: none;
     z-index: 9999;
     overflow: hidden;
+    perspective: 800px; /* Add depth */
 }
 
 .confetti-piece {
@@ -375,6 +376,16 @@ body {
     animation: confetti-fall linear forwards;
     opacity: 0.9;
     box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+    transform-style: preserve-3d;
+}
+
+/* Shape variants */
+.confetti-piece.triangle {
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.confetti-piece.diamond {
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 }
 
 @keyframes confetti-fall {
@@ -490,6 +501,69 @@ body {
 /* Top falling confetti */
 .confetti-piece.top-fall {
     animation: confetti-fall linear forwards;
+}
+
+/* Directional "bang" confetti from edges */
+.confetti-piece.edge-bang {
+    animation: edge-bang 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes edge-bang {
+    0% {
+        transform: translate3d(0, 0, 0) scale(0.9) rotate3d(0, 0, 1, 0deg);
+        opacity: 1;
+    }
+    70% {
+        transform: translate3d(var(--burst-x, 0px), var(--burst-y, 0px), var(--burst-z, 0px)) scale(1) rotate3d(1, 1, 0, var(--rot, 540deg));
+        opacity: 1;
+    }
+    100% {
+        transform: translate3d(calc(var(--burst-x, 0px) * 1.25), calc(var(--burst-y, 0px) * 1.25), calc(var(--burst-z, 0px) * 0.5)) scale(0.8) rotate3d(1, 1, 0, calc(var(--rot, 540deg) * 1.2));
+        opacity: 0;
+    }
+}
+
+/* Streamers (ribbons) */
+.confetti-piece.streamer {
+    width: 4px;
+    height: 22px;
+    border-radius: 2px;
+    animation-name: edge-bang, streamer-twist;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1), linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes streamer-twist {
+    0% { transform: rotate3d(1, 0, 0, 0deg); }
+    100% { transform: rotate3d(1, 0, 0, 720deg); }
+}
+
+/* Sparkles (small glowing dots) */
+.confetti-piece.sparkle {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    box-shadow: 0 0 12px currentColor, 0 0 20px rgba(255,255,255,0.5);
+    animation-name: edge-bang, sparkle-blink;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1), ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+@keyframes sparkle-blink {
+    0%, 100% { filter: brightness(1); opacity: 1; }
+    50% { filter: brightness(1.6); opacity: 0.85; }
+}
+
+/* Bottom to top rise effect */
+.confetti-piece.bottom-rise {
+    bottom: -20px;
+    top: auto;
+    animation: bottom-rise 3.2s linear forwards;
+}
+
+@keyframes bottom-rise {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(calc(-100vh - 40px)) rotate(720deg); opacity: 0; }
 }
 
 /* Bang effect styles */
