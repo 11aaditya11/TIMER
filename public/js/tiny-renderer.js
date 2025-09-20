@@ -7,6 +7,7 @@ class TinyTimer {
         
         this.initializeElements();
         this.setupEventListeners();
+        this.setupFocusHandlers();
         this.setupIpcListeners();
         this.updateDisplay();
         this.startSync();
@@ -15,10 +16,50 @@ class TinyTimer {
     initializeElements() {
         this.timeDisplay = document.getElementById('tinyTimeDisplay');
         this.closeBtn = document.getElementById('tinyCloseBtn');
+        this.container = document.querySelector('.tiny-container');
+        // Make container focusable to leverage :focus-within CSS selectors
+        if (this.container) {
+            try {
+                this.container.setAttribute('tabindex', '0');
+                this.container.style.outline = 'none';
+            } catch (_) {}
+        }
     }
 
     setupEventListeners() {
         this.closeBtn.addEventListener('click', () => this.closeTinyWindow());
+        // Hover handling via JS to avoid any platform quirks with :hover and drag regions
+        if (this.container) {
+            this.container.addEventListener('mouseenter', () => {
+                try { document.body.classList.add('tiny-hover'); } catch (_) {}
+            });
+            this.container.addEventListener('mouseleave', () => {
+                try { document.body.classList.remove('tiny-hover'); } catch (_) {}
+            });
+        }
+    }
+
+    setupFocusHandlers() {
+        const applyFocusClass = () => {
+            try {
+                if (document.hasFocus()) {
+                    document.body.classList.add('tiny-focused');
+                    // also focus the container to enable :focus-within rules
+                    if (this.container && typeof this.container.focus === 'function') {
+                        this.container.focus();
+                    }
+                } else {
+                    document.body.classList.remove('tiny-focused');
+                }
+            } catch (_) { /* ignore */ }
+        };
+        // Initial state
+        applyFocusClass();
+        // React to focus/blur
+        window.addEventListener('focus', applyFocusClass);
+        window.addEventListener('blur', applyFocusClass);
+        // Safety: also toggle on visibility change (some WMs)
+        document.addEventListener('visibilitychange', applyFocusClass);
     }
 
     setupIpcListeners() {
@@ -28,6 +69,18 @@ class TinyTimer {
                 console.log('Tiny window received timer update:', timerState);
                 this.updateFromMainWindow(timerState);
             });
+            // Listen for window active/inactive from main process
+            if (window.electronAPI && typeof window.electronAPI.onWindowActive === 'function') {
+                window.electronAPI.onWindowActive((isActive) => {
+                    try {
+                        if (isActive) {
+                            document.body.classList.add('tiny-focused');
+                        } else {
+                            document.body.classList.remove('tiny-focused');
+                        }
+                    } catch (_) { /* ignore */ }
+                });
+            }
         } catch (error) {
             console.log('Could not set up main window update listener:', error);
         }

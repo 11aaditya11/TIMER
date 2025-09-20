@@ -280,6 +280,8 @@ function createTinyWindow() {
     title: 'Timer - Tiny',
     frame: false,
     transparent: true,
+    focusable: true,
+    acceptFirstMouse: true,
     minWidth: 85,
     minHeight: 65,
     maxWidth: 85,
@@ -287,6 +289,17 @@ function createTinyWindow() {
   });
 
   tinyWindow.loadFile(path.join(__dirname, '..', 'public', 'tiny.html'));
+
+  // After the tiny window finishes loading, send its current focus state
+  tinyWindow.webContents.on('did-finish-load', () => {
+    try {
+      const isFocused = tinyWindow.isFocused();
+      if (tinyWindow && tinyWindow.webContents) {
+        tinyWindow.webContents.send('window-active', isFocused);
+        console.log('Tiny window initial focus state sent:', isFocused);
+      }
+    } catch (_) {}
+  });
 
   tinyWindow.on('closed', () => {
     // Remove from tracking array when closed
@@ -299,6 +312,24 @@ function createTinyWindow() {
 
   // Add to tracking array
   tinyWindows.push(tinyWindow);
+
+  // Forward focus/blur state to the tiny renderer so it can show/hide controls
+  tinyWindow.on('focus', () => {
+    try {
+      if (tinyWindow && tinyWindow.webContents) {
+        tinyWindow.webContents.send('window-active', true);
+        console.log('Tiny window is active');
+      }
+    } catch (_) {}
+  });
+  tinyWindow.on('blur', () => {
+    try {
+      if (tinyWindow && tinyWindow.webContents) {
+        tinyWindow.webContents.send('window-active', false);
+        console.log('Tiny window is inactive');
+      }
+    } catch (_) {}
+  });
 
   // Send initial timer state to the new tiny window after a short delay
   setTimeout(() => {

@@ -40,6 +40,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onRequestTimerStateForPip: (callback) => ipcRenderer.on('request-timer-state-for-pip', callback),
   onRequestTimerStateForTiny: (callback) => ipcRenderer.on('request-timer-state-for-tiny', callback),
   onAutoStartTimer: (callback) => ipcRenderer.on('auto-start-timer', callback),
+  // Window activity (focus/blur) for small windows
+  onWindowActive: (callback) => ipcRenderer.on('window-active', (_event, isActive) => {
+    try { callback(isActive); } catch (_) {}
+  }),
   // Theme cycling from main (global shortcut)
   onCycleTheme: (callback) => ipcRenderer.on('cycle-theme', (_event, direction) => {
     try { callback(direction); } catch (_) {}
