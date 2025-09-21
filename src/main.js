@@ -173,7 +173,7 @@ function createPipWindow() {
 
   pipWindow = new BrowserWindow({
     width: 110,
-    height: 50,
+    height: 54,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -189,7 +189,7 @@ function createPipWindow() {
     frame: false,
     transparent: true,
     minWidth: 100,
-    minHeight: 38,
+    minHeight: 43,
     maxWidth: 180,
     maxHeight: 150,
     cornerRadius: 12 // Round the Electron window itself

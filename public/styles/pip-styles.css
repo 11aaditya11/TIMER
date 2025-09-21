@@ -50,6 +50,8 @@ body {
     width: 100vw;
     /* Apply background-clip to prevent bleed */
     background-clip: padding-box;
+    /* Apply theme font to body */
+    font-family: var(--pip-font, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
 }
 
 /* .pip-container removed from DOM; not used anymore */
@@ -79,6 +81,59 @@ body {
       linear-gradient(160deg, var(--pip-bg) 0%, var(--pip-bg-2) 100%);
     /* Apply background-clip to prevent bleed */
     background-clip: padding-box;
+}
+
+/* Theme-specific container backgrounds */
+body.pip-theme-shadow .pip-container {
+    background:
+      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.02), transparent 100%),
+      linear-gradient(160deg, var(--pip-bg1) 0%, var(--pip-bg2) 100%);
+}
+
+body.pip-theme-ocean .pip-container {
+    background:
+      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 100%),
+      linear-gradient(160deg, var(--pip-bg1) 0%, var(--pip-bg2) 100%);
+}
+
+body.pip-theme-sunset .pip-container {
+    background:
+      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 100%),
+      linear-gradient(160deg, var(--pip-bg1) 0%, var(--pip-bg2) 100%);
+}
+
+body.pip-theme-forest .pip-container {
+    background:
+      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 100%),
+      linear-gradient(160deg, var(--pip-bg1) 0%, var(--pip-bg2) 100%);
+}
+
+body.pip-theme-shadow .pip-container {
+    background:
+      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.002), transparent 100%),
+      linear-gradient(160deg, var(--pip-bg1) 0%, var(--pip-bg2) 100%);
+}
+
+/* Theme: Shadow (semi-transparent black) */
+body.pip-theme-shadow {
+  --pip-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --pip-bg1: rgba(0, 0, 0, 0.1);
+  --pip-bg2: rgba(0, 0, 0, 0.2);
+  --pip-time-color: rgba(255, 255, 255, 1.0);
+  --pip-btn-bg: rgba(255, 255, 255, 0.02);
+  --pip-btn-border: rgba(255, 255, 255, 0.05);
+  --pip-btn-hover-bg: rgba(255, 255, 255, 0.08);
+}
+
+/* Theme: Neon Pulse (different font) */
+body.pip-theme-neon {
+  --pip-font: 'Courier New', monospace;
+  --pip-bg1: #1a0f2a;
+  --pip-bg2: #0f0f18;
+  --pip-time-color: #fbe8ff;
+  --pip-btn-bg: rgba(29, 20, 48, 0.9);
+  --pip-btn-border: rgba(58, 42, 106, 0.8);
+  --pip-btn-hover-bg: rgba(255, 42, 161, 0.28);
 }
 
 .pip-hover-overlay {
@@ -170,14 +225,15 @@ body.pip-hover .pip-close-btn {
     margin: 0;
     padding: 0;
     flex: 0 0 auto; /* Don't grow/shrink */
+    font-family: var(--pip-font, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
 }
 
 .pip-time {
     width: 100%; /* remove side gaps */
     font-size: 24px; /* keep time size the same */
     font-weight: 700;
-    color: #e7e7ea;
-    font-family: 'Courier New', monospace;
+    color: var(--pip-time-color, #e7e7ea); /* Use theme variable with fallback */
+    font-family: inherit; /* Inherit from parent .pip-timer */
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     margin: 0; /* flush towards top */
     text-align: center;
@@ -290,8 +346,8 @@ body.pip-hover .pip-close-btn {
 /* Defaults (current look) */
 body {
   --pip-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --pip-bg1: var(--pip-bg);
-  --pip-bg2: var(--pip-bg-2);
+  --pip-bg: #141418;
+  --pip-bg-2: #0f0f12;
   --pip-time-color: #e7e7ea;
   --pip-btn-bg: rgba(42, 42, 48, 0.9);
   --pip-btn-border: rgba(58, 58, 64, 0.8);
@@ -322,7 +378,7 @@ body[class*="pip-theme-"] .pip-close-btn {
   background: rgba(0, 0, 0, 0.5) !important;
   border-color: rgba(255, 255, 255, 0.22) !important;
 }
-body[class*="pip-theme-"] .pip-close-btn:hover {
+body.pip-theme-shadow .pip-close-btn:hover {
   background: rgba(255, 255, 255, 0.25) !important;
 }
 /* Theme: Deep Ocean */
