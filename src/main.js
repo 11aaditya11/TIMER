@@ -191,7 +191,8 @@ function createPipWindow() {
     minWidth: 100,
     minHeight: 38,
     maxWidth: 180,
-    maxHeight: 150
+    maxHeight: 150,
+    cornerRadius: 12 // Round the Electron window itself
   });
 
   pipWindow.loadFile(path.join(__dirname, '..', 'public', 'pip.html'));
@@ -284,7 +285,7 @@ function createTinyWindow() {
   // Create a new tiny window (not reusing PiP window)
   const tinyWindow = new BrowserWindow({
     width: 85,
-    height: 65,
+    height: 60,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -303,7 +304,8 @@ function createTinyWindow() {
     minWidth: 85,
     minHeight: 65,
     maxWidth: 85,
-    maxHeight: 65
+    maxHeight: 65,
+    cornerRadius: 12 // Round the Electron window itself
   });
 
   tinyWindow.loadFile(path.join(__dirname, '..', 'public', 'tiny.html'));

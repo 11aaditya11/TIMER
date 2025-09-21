@@ -34,25 +34,22 @@ body > *:last-child { margin-bottom: 0 !important; padding-bottom: 0 !important;
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    /* Non-transparent background using palette */
-    background:
-      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 60%),
-      linear-gradient(160deg, var(--pip-bg) 0%, var(--pip-bg-2) 100%);
+    background: transparent; /* Make body transparent so only rounded container shows */
     color: white;
     overflow: hidden;
     user-select: none;
-    /* Removed drag region to allow mouse events */
-    /* Unify window and content: no padding, stack at top */
     margin: 0;
     padding: 0;
     position: relative;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center content horizontally */
-    justify-content: center; /* Center content vertically */
+    align-items: center;
+    justify-content: center;
     gap: 0;
-    height: 100vh; /* Ensure full height */
-    width: 100vw; /* Ensure full width */
+    height: 100vh;
+    width: 100vw;
+    /* Apply background-clip to prevent bleed */
+    background-clip: padding-box;
 }
 
 /* .pip-container removed from DOM; not used anymore */
@@ -74,6 +71,14 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none; /* Allow mouse events to pass through */
+    border-radius: 12px; /* Round the container */
+    overflow: hidden; /* Ensure content doesn't extend beyond rounded corners */
+    /* Apply the gradient background to the container */
+    background:
+      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 100%),
+      linear-gradient(160deg, var(--pip-bg) 0%, var(--pip-bg-2) 100%);
+    /* Apply background-clip to prevent bleed */
+    background-clip: padding-box;
 }
 
 .pip-hover-overlay {
@@ -86,6 +91,10 @@ body {
     height: 100%;
     pointer-events: auto; /* Capture mouse events */
     z-index: 5; /* Below close button but above everything else */
+    /* Ensure hover overlay doesn't show outside container */
+    border-radius: 12px;
+    overflow: hidden;
+    background: transparent;
 }
 
 .pip-close-btn {
@@ -113,6 +122,36 @@ body {
     opacity: 0;               /* hidden by default */
     visibility: hidden;       /* hidden by default */
     pointer-events: auto;     /* always allow mouse events for hover detection */
+    /* Ensure close button stays within container bounds */
+    max-width: calc(100% - 8px);
+    max-height: calc(100% - 8px);
+    overflow: hidden;
+}
+
+.pip-timer, .pip-controls, .pip-time, .pip-control-btn {
+    /* Ensure all content stays within container bounds */
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.pip-control-btn {
+    background: rgba(42, 42, 48, 0.9);
+    border: 1px solid rgba(58, 58, 64, 0.8);
+    color: #e7e7ea;
+    padding: 2px 6px; /* smaller height */
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    min-height: 20px;
+    -webkit-app-region: no-drag;
+    backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    /* Ensure buttons are clipped to container */
+    overflow: hidden;
 }
 
 /* Show close button when hovering the PiP window or when window is focused */
@@ -262,9 +301,7 @@ body {
 /* Apply variables */
 body {
   font-family: var(--pip-font);
-  background:
-    radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 60%),
-    linear-gradient(160deg, var(--pip-bg1) 0%, var(--pip-bg2) 100%);
+  /* Remove body background gradients since they're now on container */
 }
 
 /* Ensure theme variables override button-specific gradients when a pip theme is active */
