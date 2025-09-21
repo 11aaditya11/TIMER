@@ -15,7 +15,7 @@ class PiPTimer {
         ];
         this.currentPipThemeIndex = 0;
         this.currentPipFontIndex = 0;
-        
+
         this.initializeElements();
         this.setupEventListeners();
         this.setupIpcListeners();
@@ -37,7 +37,8 @@ class PiPTimer {
         this.pipControls = document.querySelector('.pip-controls');
         this.pipProgress = null;
         this.pipContainer = document.querySelector('.pip-container');
-        
+        this.pipHoverOverlay = document.getElementById('pipHoverOverlay');
+
         // Initialize tiny mode state
         this.isTinyMode = false;
     }
@@ -81,6 +82,55 @@ class PiPTimer {
                 this.cyclePipFont(-1);
             }
         });
+
+        // Focus handling for close button visibility
+        const handleFocusChange = () => {
+            try {
+                if (document.hasFocus()) {
+                    document.body.classList.add('pip-focused');
+                } else {
+                    document.body.classList.remove('pip-focused');
+                }
+            } catch (_) { /* ignore */ }
+        };
+
+        // Initial state
+        handleFocusChange();
+
+        // React to focus/blur events
+        window.addEventListener('focus', handleFocusChange);
+        window.addEventListener('blur', handleFocusChange);
+        document.addEventListener('visibilitychange', handleFocusChange);
+
+        // Hover handling for close button visibility
+        if (this.pipHoverOverlay) {
+            this.pipHoverOverlay.addEventListener('mouseenter', () => {
+                try {
+                    document.body.classList.add('pip-hover');
+                    console.log('PiP: Mouse entered hover overlay');
+                } catch (_) {}
+            });
+            this.pipHoverOverlay.addEventListener('mouseleave', () => {
+                try {
+                    document.body.classList.remove('pip-hover');
+                    console.log('PiP: Mouse left hover overlay');
+                } catch (_) {}
+            });
+        }
+
+        // Close button also maintains hover state
+        if (this.closeBtn) {
+            this.closeBtn.addEventListener('mouseenter', () => {
+                try {
+                    document.body.classList.add('pip-hover');
+                } catch (_) {}
+            });
+            this.closeBtn.addEventListener('mouseleave', () => {
+                try {
+                    document.body.classList.remove('pip-hover');
+                } catch (_) {}
+            });
+        }
     }
 
     setupIpcListeners() {
@@ -89,10 +139,24 @@ class PiPTimer {
             window.electronAPI.onMainTimerUpdate((event, timerState) => {
                 this.updateFromMainWindow(timerState);
             });
+
+            // Listen for window active/inactive from main process (for close button visibility)
+            if (window.electronAPI && typeof window.electronAPI.onWindowActive === 'function') {
+                window.electronAPI.onWindowActive((isActive) => {
+                    try {
+                        if (isActive) {
+                            document.body.classList.add('pip-focused');
+                        } else {
+                            document.body.classList.remove('pip-focused');
+                        }
+                    } catch (_) { /* ignore */ }
+                });
+            }
         } catch (error) {
             console.log('Could not set up main window update listener');
         }
     }
+
 
     startSync() {
         // Initial sync: ask main window to broadcast current state
@@ -114,11 +178,11 @@ class PiPTimer {
 
     updateFromMainWindow(timerState) {
         if (!timerState || typeof timerState !== 'object') return;
-        
+
         this.timeLeft = timerState.timeLeft || 0;
         this.totalTime = timerState.totalTime || 0;
         this.isRunning = timerState.isRunning || false;
-        
+
         this.updateDisplay();
         this.updateProgress();
         this.updateButtonStates();
@@ -126,12 +190,12 @@ class PiPTimer {
     }
 
     // Removed local ticking; keep methods no-op for backward compatibility
-    startLocalTimer() {}
-    stopLocalTimer() {}
+    startLocalTimer() { }
+    stopLocalTimer() { }
 
     startTimer() {
         if (this.timeLeft <= 0) return;
-        
+
         this.isRunning = true; // optimistic; real state will arrive via IPC
         this.updateButtonStates();
         // Notify main window
@@ -151,7 +215,7 @@ class PiPTimer {
         this.updateDisplay();
         this.updateProgress();
         this.updateButtonStates();
-        
+
         // Notify main window
         this.notifyMainWindow('reset');
     }
@@ -195,18 +259,18 @@ class PiPTimer {
             if (savedTheme && this.pipThemes.includes(savedTheme)) {
                 this.currentPipThemeIndex = this.pipThemes.indexOf(savedTheme);
             }
-        } catch (_) {}
+        } catch (_) { }
         try {
             const savedFont = localStorage.getItem('pip-font');
             if (savedFont) {
                 const idx = this.pipFonts.indexOf(savedFont);
                 if (idx >= 0) this.currentPipFontIndex = idx;
             }
-        } catch (_) {}
+        } catch (_) { }
         this.applyPipTheme(this.pipThemes[this.currentPipThemeIndex]);
         this.applyPipFont(this.pipFonts[this.currentPipFontIndex]);
-        try { console.log('[PiP Theme] Loaded:', this.pipThemes[this.currentPipThemeIndex]); } catch (e) {}
-        try { console.log('[PiP Font] Loaded:', this.pipFonts[this.currentPipFontIndex]); } catch (e) {}
+        try { console.log('[PiP Theme] Loaded:', this.pipThemes[this.currentPipThemeIndex]); } catch (e) { }
+        try { console.log('[PiP Font] Loaded:', this.pipFonts[this.currentPipFontIndex]); } catch (e) { }
     }
 
     applyPipTheme(themeClass) {
@@ -214,42 +278,42 @@ class PiPTimer {
             const body = document.body;
             this.pipThemes.forEach(t => body.classList.remove(t));
             if (themeClass) body.classList.add(themeClass);
-            try { localStorage.setItem('pip-theme', themeClass); } catch (_) {}
-            try { console.log('[PiP Theme] Applied:', themeClass, 'Classes:', Array.from(body.classList).join(' ')); } catch (e) {}
-        } catch (_) {}
+            try { localStorage.setItem('pip-theme', themeClass); } catch (_) { }
+            try { console.log('[PiP Theme] Applied:', themeClass, 'Classes:', Array.from(body.classList).join(' ')); } catch (e) { }
+        } catch (_) { }
     }
 
     cyclePipTheme(direction = 1) {
         const len = this.pipThemes.length;
         this.currentPipThemeIndex = (this.currentPipThemeIndex + (direction % len) + len) % len;
         const nextTheme = this.pipThemes[this.currentPipThemeIndex];
-        try { console.log('[PiP Theme] Cycling', direction > 0 ? 'next' : 'prev', '->', nextTheme); } catch (e) {}
+        try { console.log('[PiP Theme] Cycling', direction > 0 ? 'next' : 'prev', '->', nextTheme); } catch (e) { }
         this.applyPipTheme(nextTheme);
     }
 
     applyPipFont(fontFamily) {
         try {
             document.body.style.setProperty('--pip-font', fontFamily);
-            try { localStorage.setItem('pip-font', fontFamily); } catch (_) {}
-            try { console.log('[PiP Font] Applied:', fontFamily); } catch (e) {}
-        } catch (_) {}
+            try { localStorage.setItem('pip-font', fontFamily); } catch (_) { }
+            try { console.log('[PiP Font] Applied:', fontFamily); } catch (e) { }
+        } catch (_) { }
     }
 
     cyclePipFont(direction = 1) {
         const len = this.pipFonts.length;
         this.currentPipFontIndex = (this.currentPipFontIndex + (direction % len) + len) % len;
         const nextFont = this.pipFonts[this.currentPipFontIndex];
-        try { console.log('[PiP Font] Cycling', direction > 0 ? 'next' : 'prev', '->', nextFont); } catch (e) {}
+        try { console.log('[PiP Font] Cycling', direction > 0 ? 'next' : 'prev', '->', nextFont); } catch (e) { }
         this.applyPipFont(nextFont);
     }
 
     timerComplete() {
         this.pauseTimer();
         this.timeDisplay.classList.add('pip-timer-complete');
-        
+
         // Play notification sound
         this.playNotificationSound();
-        
+
         setTimeout(() => {
             this.timeDisplay.classList.remove('pip-timer-complete');
         }, 1000);
@@ -260,16 +324,16 @@ class PiPTimer {
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
-            
+
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
-            
+
             oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
             oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
-            
+
             gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-            
+
             oscillator.start(audioContext.currentTime);
             oscillator.stop(audioContext.currentTime + 0.3);
         } catch (error) {
@@ -289,7 +353,7 @@ class PiPTimer {
         if (this.interval) {
             clearInterval(this.interval);
         }
-        
+
         try {
             window.electronAPI.closePip();
         } catch (error) {

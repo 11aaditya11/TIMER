@@ -172,8 +172,8 @@ function createPipWindow() {
   }
 
   pipWindow = new BrowserWindow({
-    width: 140,
-    height: 60,
+    width: 110,
+    height: 50,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -188,10 +188,10 @@ function createPipWindow() {
     title: 'Timer - PiP',
     frame: false,
     transparent: true,
-    minWidth: 120,
-    minHeight: 44,
-    maxWidth: 220,
-    maxHeight: 200
+    minWidth: 100,
+    minHeight: 38,
+    maxWidth: 180,
+    maxHeight: 150
   });
 
   pipWindow.loadFile(path.join(__dirname, '..', 'public', 'pip.html'));
@@ -206,8 +206,8 @@ function createPipWindow() {
       pipWindow.webContents.executeJavaScript(sizeScript).then((dim) => {
         const contentWidth = Number(dim && dim.w) || 140;
         const contentHeight = Number(dim && dim.h) || 60;
-        const safeW = Math.max(120, Math.min(220, contentWidth));
-        const safeH = Math.max(44, Math.min(200, contentHeight));
+        const safeW = Math.max(100, Math.min(180, contentWidth));
+        const safeH = Math.max(38, Math.min(150, contentHeight));
         // Keep bottom-right anchor when resizing
         const { screen } = require('electron');
         const primaryDisplay = screen.getPrimaryDisplay();
@@ -216,6 +216,24 @@ function createPipWindow() {
         const y = screenHeight - safeH - 20;
         pipWindow.setBounds({ x, y, width: safeW, height: safeH });
       }).catch(() => {});
+    } catch (_) {}
+  });
+
+  // Forward focus/blur state to the PiP renderer so it can show/hide close button
+  pipWindow.on('focus', () => {
+    try {
+      if (pipWindow && pipWindow.webContents) {
+        pipWindow.webContents.send('window-active', true);
+        console.log('PiP window is active');
+      }
+    } catch (_) {}
+  });
+  pipWindow.on('blur', () => {
+    try {
+      if (pipWindow && pipWindow.webContents) {
+        pipWindow.webContents.send('window-active', false);
+        console.log('PiP window is inactive');
+      }
     } catch (_) {}
   });
 
@@ -231,8 +249,8 @@ function createPipWindow() {
   const { screen } = require('electron');
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
-  const x = screenWidth - 140 - 20; // initial guess; will be corrected after load
-  const y = screenHeight - 60 - 20; // initial guess; will be corrected after load
+  const x = screenWidth - 110 - 20; // initial guess; will be corrected after load
+  const y = screenHeight - 50 - 20; // initial guess; will be corrected after load
   pipWindow.setPosition(x, y);
 
   // Minimize main window when PiP opens

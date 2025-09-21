@@ -41,27 +41,51 @@ body {
     color: white;
     overflow: hidden;
     user-select: none;
-    -webkit-app-region: drag;
+    /* Removed drag region to allow mouse events */
     /* Unify window and content: no padding, stack at top */
     margin: 0;
     padding: 0;
     position: relative;
     display: flex;
     flex-direction: column;
-    align-items: stretch; /* stretch children to full width */
-    justify-content: flex-start; /* stick to the top */
+    align-items: center; /* Center content horizontally */
+    justify-content: center; /* Center content vertically */
     gap: 0;
+    height: 100vh; /* Ensure full height */
+    width: 100vw; /* Ensure full width */
 }
 
 /* .pip-container removed from DOM; not used anymore */
 
 /* Header removed for tidy PiP */
 
-.pip-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.95);
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+.pip-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Allow mouse events to pass through */
+}
+
+.pip-hover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: auto; /* Capture mouse events */
+    z-index: 5; /* Below close button but above everything else */
 }
 
 .pip-close-btn {
@@ -86,35 +110,17 @@ body {
     -webkit-app-region: no-drag;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    opacity: 0;               /* hidden by default */
+    visibility: hidden;       /* hidden by default */
+    pointer-events: auto;     /* always allow mouse events for hover detection */
 }
 
-.pip-close-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
-}
-
-.pip-tiny-toggle {
-    background: rgba(255, 255, 255, 0.15);
-    border: none;
-    color: white;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    -webkit-app-region: no-drag;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    margin-right: 8px;
-}
-
-.pip-tiny-toggle:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: scale(1.1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+/* Show close button when hovering the PiP window or when window is focused */
+body.pip-focused .pip-close-btn,
+body.pip-hover .pip-close-btn {
+    opacity: 1;
+    visibility: visible;
+    /* pointer-events already set to auto above */
 }
 
 .pip-timer {
@@ -124,6 +130,7 @@ body {
     justify-content: center;
     margin: 0;
     padding: 0;
+    flex: 0 0 auto; /* Don't grow/shrink */
 }
 
 .pip-time {
@@ -133,8 +140,7 @@ body {
     color: #e7e7ea;
     font-family: 'Courier New', monospace;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    margin-top: 0; /* flush towards top */
-    margin-bottom: 0;
+    margin: 0; /* flush towards top */
     text-align: center;
     letter-spacing: 1px;
 }
@@ -148,8 +154,9 @@ body {
     align-items: center;
     justify-content: center; /* buttons centered but container spans full width */
     -webkit-app-region: no-drag;
-    margin: 1px 0 0; /* close under time */
+    margin: 0; /* close under time */
     padding: 0;
+    flex: 0 0 auto; /* Don't grow/shrink */
 }
 
 .pip-control-btn {
@@ -235,49 +242,6 @@ body {
 }
 
 /* Smooth transitions */
-* {
-    transition: all 0.3s ease;
-}
-
-/* Hover effects for the entire container */
-.pip-container:hover {
-    transform: scale(1.02);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-}
-
-/* Progress bar animation */
-.pip-progress-bar {
-    background-size: 200% 100%;
-    animation: progressShine 2s ease-in-out infinite;
-}
-
-@keyframes progressShine {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* Button press effect */
-.pip-control-btn:active:not(:disabled) {
-    transform: translateY(1px) scale(0.95);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Tiny mode styles */
-.pip-container.tiny-mode {
-    padding: 20px;
-    justify-content: center;
-}
-
-.pip-container.tiny-mode .pip-time {
-    font-size: 36px;
-    margin-bottom: 0;
-    text-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-}
-
-/* Smooth transitions for tiny mode */
-.pip-container * {
-    transition: all 0.3s ease;
-}
 
 /* ==============================
    PiP Variable-driven Themes
@@ -301,14 +265,6 @@ body {
   background:
     radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 60%),
     linear-gradient(160deg, var(--pip-bg1) 0%, var(--pip-bg2) 100%);
-}
-.pip-time { color: var(--pip-time-color); }
-.pip-control-btn {
-  background: var(--pip-btn-bg);
-  border-color: var(--pip-btn-border);
-}
-.pip-control-btn:hover:not(:disabled) {
-  background: var(--pip-btn-hover-bg);
 }
 
 /* Ensure theme variables override button-specific gradients when a pip theme is active */
