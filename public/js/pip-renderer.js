@@ -118,6 +118,20 @@ class PiPTimer {
             });
         }
 
+        // Fallback hover handling directly on container (overlay may be non-interactive)
+        if (this.pipContainer) {
+            this.pipContainer.addEventListener('mouseenter', () => {
+                try {
+                    document.body.classList.add('pip-hover');
+                } catch (_) {}
+            });
+            this.pipContainer.addEventListener('mouseleave', () => {
+                try {
+                    document.body.classList.remove('pip-hover');
+                } catch (_) {}
+            });
+        }
+
         // Close button also maintains hover state
         if (this.closeBtn) {
             this.closeBtn.addEventListener('mouseenter', () => {
@@ -216,7 +230,7 @@ class PiPTimer {
         this.updateProgress();
         this.updateButtonStates();
 
-        // Notify main window
+        // Notify main window 
         this.notifyMainWindow('reset');
     }
 

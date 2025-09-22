@@ -340,7 +340,9 @@ class Timer {
 
         this.interval = setInterval(() => {
             const currentTime = Date.now();
-            const remainingSeconds = Math.ceil((targetTime - currentTime) / 1000);
+            // Use floor so the value drops as soon as each second elapses.
+            // This avoids visible 2s steps when the interval tick drifts earlier than the exact second.
+            const remainingSeconds = Math.floor((targetTime - currentTime) / 1000);
             this.timeLeft = Math.max(0, remainingSeconds);
 
             this.updateDisplay();
