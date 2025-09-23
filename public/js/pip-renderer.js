@@ -322,14 +322,15 @@ class PiPTimer {
     }
 
     timerComplete() {
+        // In tiny/PiP mode, avoid playing sounds to prevent duplicates with the main window.
+        // Provide only a subtle visual hint and pause state.
         this.pauseTimer();
-        this.timeDisplay.classList.add('pip-timer-complete');
-
-        // Play notification sound
-        this.playNotificationSound();
+        try {
+            this.timeDisplay.classList.add('pip-timer-complete');
+        } catch (_) {}
 
         setTimeout(() => {
-            this.timeDisplay.classList.remove('pip-timer-complete');
+            try { this.timeDisplay.classList.remove('pip-timer-complete'); } catch (_) {}
         }, 1000);
     }
 

@@ -3,7 +3,8 @@ class TinyTimer {
         this.timeLeft = 0; // Default 25 minutes
         this.totalTime = 0;
         this.isRunning = false;
-        this.interval = null;
+        this.interval = null; // no local ticking in tiny mode
+        this._completionShown = false; // ensures visual hint only once per run
         
         this.initializeElements();
         this.setupEventListeners();
@@ -67,8 +68,8 @@ class TinyTimer {
             return;
         }
         
-        const wasRunning = this.isRunning;
-        
+        const prevTimeLeft = this.timeLeft;
+
         this.timeLeft = timerState.timeLeft || 0;
         this.totalTime = timerState.totalTime || 0;
         this.isRunning = timerState.isRunning || false;
@@ -77,38 +78,23 @@ class TinyTimer {
         
         this.updateDisplay();
         // No button states to update in tiny mode
-        
-        // Handle timer state changes
-        if (this.isRunning && !wasRunning) {
-            console.log('Starting local timer in tiny window');
-            this.startLocalTimer();
-        } else if (!this.isRunning && wasRunning) {
-            console.log('Stopping local timer in tiny window');
-            this.stopLocalTimer();
+        // Do NOT run any local ticking; rely on main window for timing.
+
+        // Show a subtle completion pulse once when timer hits 0
+        if (prevTimeLeft > 0 && this.timeLeft <= 0 && !this._completionShown) {
+            this._completionShown = true;
+            this.timerComplete();
+        }
+
+        // Reset completion flag when a new run starts
+        if (this.isRunning && prevTimeLeft === 0 && this.timeLeft > 0) {
+            this._completionShown = false;
         }
     }
 
-    startLocalTimer() {
-        if (this.interval) return; // Already running
-        
-        this.interval = setInterval(() => {
-            if (this.timeLeft > 0) {
-                this.timeLeft--;
-                this.updateDisplay();
-                
-                if (this.timeLeft <= 0) {
-                    this.timerComplete();
-                }
-            }
-        }, 1000);
-    }
+    startLocalTimer() { }
 
-    stopLocalTimer() {
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
-    }
+    stopLocalTimer() { }
 
     updateDisplay() {
         const minutes = Math.floor(this.timeLeft / 60);
@@ -117,38 +103,15 @@ class TinyTimer {
     }
 
     timerComplete() {
-        this.stopLocalTimer();
-        this.timeDisplay.classList.add('tiny-timer-complete');
-        
-        // Play notification sound
-        this.playNotificationSound();
-        
+        // Visual hint only; no sound in tiny mode to prevent duplicates
+        try { this.timeDisplay.classList.add('tiny-timer-complete'); } catch (_) {}
         setTimeout(() => {
-            this.timeDisplay.classList.remove('tiny-timer-complete');
+            try { this.timeDisplay.classList.remove('tiny-timer-complete'); } catch (_) {}
         }, 1000);
     }
 
-    playNotificationSound() {
-        try {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-            oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
-            
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.3);
-        } catch (error) {
-            console.log('Audio not supported');
-        }
-    }
+    // Sound disabled in tiny mode
+    playNotificationSound() { }
 
     closeTinyWindow() {
         if (this.interval) {

@@ -5,6 +5,9 @@ class Timer {
         this.isRunning = false;
         this.interval = null;
         this.preferredTimes = [];
+        // One-time guards per run
+        this._completionFired = false;
+        this._soundPlayed = false;
         
         this.initializeElements();
         // Theme setup
@@ -219,6 +222,9 @@ class Timer {
         this.updateDisplay();
         this.updateProgress();
         this.resetTimer();
+        // Reset completion guards for new configured time
+        this._completionFired = false;
+        this._soundPlayed = false;
         
         // Send update to PiP window
         this.sendUpdateToPip();
@@ -378,6 +384,9 @@ class Timer {
         this.updateProgress();
         this.startBtn.disabled = false;
         this.pauseBtn.disabled = true;
+        // Reset guards on reset
+        this._completionFired = false;
+        this._soundPlayed = false;
         
         // Send update to PiP window
         this.sendUpdateToPip();
@@ -406,13 +415,17 @@ class Timer {
     }
 
     timerComplete() {
+        // Ensure we only fire completion effects once per run
+        if (this._completionFired) return;
+        this._completionFired = true;
+
         this.pauseTimer();
         this.timeDisplay.classList.add('timer-complete');
         
-        // Show confetti animation
+        // Show confetti animation (main window only)
         this.showConfetti();
         
-        // Show notification
+        // Show system notification
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Timer Complete!', {
                 body: 'Your timer has finished!',
@@ -420,7 +433,7 @@ class Timer {
             });
         }
         
-        // Play sound (you can add an audio file)
+        // Play sound once
         this.playNotificationSound();
         
         setTimeout(() => {
@@ -755,6 +768,8 @@ class Timer {
     }
 
     playNotificationSound() {
+        if (this._soundPlayed) return; // prevent re-trigger on focus regain
+        this._soundPlayed = true;
         // Try to play bundled audio file first; fall back to synthesized chime if it fails
         try {
             const audio = new Audio('assets/sound1.wav');
