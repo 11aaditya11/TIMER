@@ -1,6 +1,6 @@
 {
   "name": "timer",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "A feature-rich timer application with Electron and Picture-in-Picture mode",
   "main": "src/main.js",
   "homepage": ".",

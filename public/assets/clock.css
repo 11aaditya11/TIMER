@@ -1,0 +1,32 @@
+/* Retro 128x128 digital clock, no JS */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent; /* allow transparent page background if host supports it */
+}
+
+body {
+  display: grid;
+  place-items: center; /* center the clock in the viewport */
+}
+
+.clock {
+  width: 128px;
+  height: 128px;
+  background: blue  ; /* transparent tile */
+  color: #00ff6a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Orbitron", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 37px; /* sized to fit 15:00 within 128px with positive spacing */
+  letter-spacing: 3px; /* clearer separation between digits */
+  line-height: 1;
+  border-radius: 16px; /* smoother rounded corners */
+  border: 2px solid rgba(0, 255, 106, 0.4); /* subtle border to keep shape visible on transparency */
+  text-shadow: 0 0 6px rgba(0, 255, 106, 0.65);
+  box-shadow: 0 0 12px rgba(0, 255, 106, 0.2) inset, 0 0 8px rgba(0, 255, 106, 0.2);
+  box-sizing: border-box; /* keep total size 128x128 including border */
+}
