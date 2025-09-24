@@ -7,7 +7,37 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./clock.css" />
+    <style>
+      /* Inline styles: 128x128 retro clock centered on screen */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background: transparent;
+      }
+      body {
+        display: grid;
+        place-items: center;
+      }
+      .clock {
+        width: 128px;
+        height: 128px;
+        background: blue; /* tile background */
+        color: #00ff6a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Orbitron", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        font-weight: 700;
+        font-size: 33px;
+        letter-spacing: 3px;
+        line-height: 1;
+        border: 2px solid rgba(0, 255, 106, 0.4);
+        text-shadow: 0 0 6px rgba(0, 255, 106, 0.65);
+        box-shadow: 0 0 12px rgba(0, 255, 106, 0.2) inset, 0 0 8px rgba(0, 255, 106, 0.2);
+        box-sizing: border-box;
+      }
+    </style>
   </head>
   <body>
     <div class="clock" role="img" aria-label="Digital clock showing 15:00">15:00</div>
