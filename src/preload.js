@@ -20,6 +20,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   requestTimerStateFromMain: () => ipcRenderer.invoke('request-timer-state-from-main'),
   updateTimerFromPip: (update) => ipcRenderer.invoke('update-timer-from-pip', update),
   sendTimerUpdateToPip: (timerState) => ipcRenderer.invoke('send-timer-update-to-pip', timerState),
+
+  // Central TimerCore (single source of truth)
+  timerCoreGetState: () => ipcRenderer.invoke('timer-core:get-state'),
+  timerCoreStart: () => ipcRenderer.invoke('timer-core:start'),
+  timerCorePause: () => ipcRenderer.invoke('timer-core:pause'),
+  timerCoreReset: () => ipcRenderer.invoke('timer-core:reset'),
+  timerCoreSetTime: (minutes, seconds = 0) => ipcRenderer.invoke('timer-core:set-time', minutes, seconds),
   
   // Window management
   minimize: () => ipcRenderer.send('minimize-window'),

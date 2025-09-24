@@ -1,10 +1,19 @@
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Notification } = require('electron');
+const TimerCore = require('./timerCore');
 const path = require('path');
 const fs = require('fs');
 
 let mainWindow;
 let pipWindow;
 let tinyWindows = []; // Track all tiny windows
+
+// Ensure Chromium does not throttle timers or background renderers when windows are unfocused/minimized
+// This keeps the main renderer's 1s tick accurate even when the main window is minimized
+try {
+  app.commandLine.appendSwitch('disable-renderer-backgrounding');
+  app.commandLine.appendSwitch('disable-background-timer-throttling');
+  app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
+} catch (_) { /* ignore */ }
 
 
 // Single instance lock to prevent multiple app instances
@@ -129,7 +138,8 @@ function createMainWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      backgroundThrottling: false,
     },
     resizable: false,
     minimizable: true,
@@ -159,6 +169,55 @@ function createMainWindow() {
   mainWindow.setMenuBarVisibility(false);
 }
 
+// ============================
+// Timer Core (single source of truth)
+// ============================
+const timerCore = new TimerCore();
+// Set a sensible default so initial UI has non-zero time
+try { timerCore.setTime(15, 0); } catch (_) {}
+
+function broadcastTimerUpdate(state) {
+  try {
+    if (mainWindow && mainWindow.webContents) {
+      mainWindow.webContents.send('main-timer-update', state);
+    }
+  } catch (_) {}
+  try {
+    if (pipWindow && pipWindow.webContents) {
+      pipWindow.webContents.send('main-timer-update', state);
+    }
+  } catch (_) {}
+  try {
+    tinyWindows.forEach(tw => {
+      if (tw && !tw.isDestroyed() && tw.webContents) {
+        tw.webContents.send('main-timer-update', state);
+      }
+    });
+  } catch (_) {}
+}
+
+timerCore.on('update', (state) => {
+  broadcastTimerUpdate(state);
+});
+
+timerCore.on('complete', (state) => {
+  // Send a native notification safely
+  try {
+    if (Notification && Notification.isSupported()) {
+      const n = new Notification({ title: 'Timer Complete!', body: 'Your timer has finished!' });
+      n.show();
+    }
+  } catch (_) {}
+  broadcastTimerUpdate(state);
+});
+
+// IPC to control TimerCore from renderers
+ipcMain.handle('timer-core:get-state', () => timerCore.getState());
+ipcMain.handle('timer-core:start', () => { timerCore.start(); return true; });
+ipcMain.handle('timer-core:pause', () => { timerCore.pause(); return true; });
+ipcMain.handle('timer-core:reset', () => { timerCore.reset(); return true; });
+ipcMain.handle('timer-core:set-time', (_e, minutes, seconds) => { timerCore.setTime(minutes, seconds); return true; });
+
 function createPipWindow() {
   // Prevent opening PiP if tiny windows exist
   if (tinyWindows.length > 0) {
@@ -177,7 +236,8 @@ function createPipWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      backgroundThrottling: false,
     },
     useContentSize: true,
     resizable: false,
@@ -217,6 +277,12 @@ function createPipWindow() {
         const y = screenHeight - safeH - 20;
         pipWindow.setBounds({ x, y, width: safeW, height: safeH });
       }).catch(() => {});
+      // Push current timer state immediately
+      try {
+        if (pipWindow && pipWindow.webContents) {
+          pipWindow.webContents.send('main-timer-update', timerCore.getState());
+        }
+      } catch (_) {}
     } catch (_) {}
   });
 
@@ -289,7 +355,8 @@ function createTinyWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      backgroundThrottling: false,
     },
     resizable: false,
     minimizable: false,
@@ -317,6 +384,8 @@ function createTinyWindow() {
       if (tinyWindow && tinyWindow.webContents) {
         tinyWindow.webContents.send('window-active', isFocused);
         console.log('Tiny window initial focus state sent:', isFocused);
+        // Also push current timer state immediately
+        try { tinyWindow.webContents.send('main-timer-update', timerCore.getState()); } catch (_) {}
       }
     } catch (_) {}
   });
@@ -572,15 +641,14 @@ ipcMain.handle('resize-pip-window', (event, width, height) => {
 
 // New IPC handlers for timer synchronization
 ipcMain.handle('get-timer-state', () => {
-  // Return a safe default state instead of trying to execute JavaScript
-  return { timeLeft: 0, totalTime: 0, isRunning: false };
+  // Return centralized core state
+  return timerCore.getState();
 });
 
 // New IPC handler to request timer state from main window
 ipcMain.handle('request-timer-state-from-main', () => {
-  if (mainWindow && mainWindow.webContents) {
-    mainWindow.webContents.send('request-timer-state');
-  }
+  // Broadcast current core state to all windows
+  try { broadcastTimerUpdate(timerCore.getState()); } catch (_) {}
   return true;
 });
 
@@ -599,10 +667,21 @@ ipcMain.on('show-notification', (event, title, body) => {
 });
 
 ipcMain.handle('update-timer-from-pip', (event, update) => {
-  // Send update to main window
-  if (mainWindow && mainWindow.webContents) {
-    mainWindow.webContents.send('pip-timer-update', update);
-  }
+  try {
+    if (!update || typeof update !== 'object') return true;
+    const action = update.action;
+    if (action === 'start') {
+      timerCore.start();
+    } else if (action === 'pause') {
+      timerCore.pause();
+    } else if (action === 'reset') {
+      timerCore.reset();
+    } else if (action === 'setTime') {
+      const m = parseInt(update.minutes) || 0;
+      const s = parseInt(update.seconds) || 0;
+      timerCore.setTime(m, s);
+    }
+  } catch (_) {}
   return true;
 });
 

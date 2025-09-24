@@ -16,6 +16,7 @@ class Timer {
         this.loadAndApplyTheme();
         this.loadPreferredTimes();
         this.setupEventListeners();
+        this.setupIpcListeners();
         this.setDefaultTime(15, 0);
     }
 
@@ -176,6 +177,39 @@ class Timer {
             }
         });
     }
+    
+    // Listen for centralized timer updates from main (TimerCore) and sync UI
+    setupIpcListeners() {
+        try {
+            window.electronAPI.onMainTimerUpdate((event, state) => {
+                this.applyStateFromCore(state);
+            });
+        } catch (_) {}
+    }
+
+    // Pull initial state from the core (used on startup)
+    async syncFromCore() {
+        try {
+            const state = await window.electronAPI.timerCoreGetState();
+            this.applyStateFromCore(state);
+        } catch (_) {}
+    }
+
+    // Apply a state object from the centralized core
+    applyStateFromCore(state) {
+        if (!state || typeof state !== 'object') return;
+        const prev = this.timeLeft;
+        this.timeLeft = Number(state.timeLeft) || 0;
+        this.totalTime = Number(state.totalTime) || 0;
+        this.isRunning = !!state.isRunning;
+        this.updateDisplay();
+        this.updateProgress();
+        if (this.startBtn) this.startBtn.disabled = this.isRunning || this.timeLeft <= 0;
+        if (this.pauseBtn) this.pauseBtn.disabled = !this.isRunning;
+        if (prev > 0 && this.timeLeft <= 0) {
+            this.timerComplete();
+        }
+    }
 
     // =====================
     // Theme management
@@ -217,17 +251,20 @@ class Timer {
     }
 
     setTime(minutes, seconds) {
-        this.timeLeft = minutes * 60 + seconds;
+        // Update local state immediately for responsive UI
+        this.timeLeft = (parseInt(minutes) || 0) * 60 + (parseInt(seconds) || 0);
         this.totalTime = this.timeLeft;
         this.updateDisplay();
         this.updateProgress();
-        this.resetTimer();
+        if (this.startBtn) this.startBtn.disabled = this.timeLeft <= 0;
+        if (this.pauseBtn) this.pauseBtn.disabled = true;
+
+        // Notify centralized timer core
+        try { window.electronAPI.timerCoreSetTime(minutes, seconds); } catch (_) {}
+
         // Reset completion guards for new configured time
         this._completionFired = false;
         this._soundPlayed = false;
-        
-        // Send update to PiP window
-        this.sendUpdateToPip();
     }
 
     setCustomTime() {
@@ -326,70 +363,25 @@ class Timer {
     }
 
     startTimer() {
-        if (this.timeLeft <= 0 || this.isRunning) return;
-
-        this.isRunning = true;
-        this.startBtn.disabled = true;
-        this.pauseBtn.disabled = false;
-
-        // Countdown based on target timestamp so pause/resume preserves remaining time
-        const targetTime = Date.now() + (this.timeLeft * 1000);
-
-        // Clear any existing interval defensively
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
-
-        // Send immediate update so PiP/Tiny reflect state without delay
-        this.sendUpdateToPip();
-
-        this.interval = setInterval(() => {
-            const currentTime = Date.now();
-            // Use floor so the value drops as soon as each second elapses.
-            // This avoids visible 2s steps when the interval tick drifts earlier than the exact second.
-            const remainingSeconds = Math.floor((targetTime - currentTime) / 1000);
-            this.timeLeft = Math.max(0, remainingSeconds);
-
-            this.updateDisplay();
-            this.updateProgress();
-
-            // Send update to PiP/Tiny every tick for snappier sync
-            this.sendUpdateToPip();
-
-            if (this.timeLeft <= 0) {
-                this.timerComplete();
-            }
-        }, 1000);
+        try { window.electronAPI.timerCoreStart(); } catch (_) {}
+        // Optimistically update button state; source of truth will arrive via IPC
+        if (this.startBtn) this.startBtn.disabled = true;
+        if (this.pauseBtn) this.pauseBtn.disabled = false;
     }
 
     pauseTimer() {
-        this.isRunning = false;
-        this.startBtn.disabled = false;
-        this.pauseBtn.disabled = true;
-        
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
-        
-        // Send update to PiP window
-        this.sendUpdateToPip();
+        try { window.electronAPI.timerCorePause(); } catch (_) {}
+        if (this.startBtn) this.startBtn.disabled = false;
+        if (this.pauseBtn) this.pauseBtn.disabled = true;
     }
 
     resetTimer() {
-        this.pauseTimer();
-        this.timeLeft = this.totalTime;
-        this.updateDisplay();
-        this.updateProgress();
-        this.startBtn.disabled = false;
-        this.pauseBtn.disabled = true;
+        try { window.electronAPI.timerCoreReset(); } catch (_) {}
+        if (this.startBtn) this.startBtn.disabled = false;
+        if (this.pauseBtn) this.pauseBtn.disabled = true;
         // Reset guards on reset
         this._completionFired = false;
         this._soundPlayed = false;
-        
-        // Send update to PiP window
-        this.sendUpdateToPip();
     }
 
     updateDisplay() {
@@ -927,21 +919,15 @@ class Timer {
             this.resetTimer();
         } else if (update.action === 'setTime') {
             this.setTime(update.minutes, update.seconds);
+        } else if (update.action === 'update') {
+            this.timeLeft = update.timeLeft;
+            this.totalTime = update.totalTime;
+            this.isRunning = update.isRunning;
         }
     }
 
-    // New method to send updates to PiP window
-    sendUpdateToPip() {
-        try {
-            window.electronAPI.sendTimerUpdateToPip({
-                timeLeft: this.timeLeft,
-                totalTime: this.totalTime,
-                isRunning: this.isRunning
-            });
-        } catch (error) {
-            console.log('Could not send update to PiP window');
-        }
-    }
+    // No-op: Updates are broadcast from TimerCore in the main process
+    sendUpdateToPip() {}
 }
 
 // Initialize the timer when the page loads
@@ -951,14 +937,16 @@ document.addEventListener('DOMContentLoaded', () => {
         Notification.requestPermission();
     }
     
-    // Create and start the timer
+    // Create the timer
     window.timer = new Timer();
+    // Pull initial state from centralized core
+    try { window.timer.syncFromCore && window.timer.syncFromCore(); } catch (_) {}
     // Handle auto-start timer command from main process
     window.electronAPI.onAutoStartTimer(() => {
         console.log('Auto-start timer command received');
         if (!window.timer.isRunning) {
             console.log('Starting timer automatically');
-            window.timer.startTimer();
+            try { window.timer.startTimer(); } catch (_) {}
         } else {
             console.log('Timer already running, skipping auto-start');
         }
