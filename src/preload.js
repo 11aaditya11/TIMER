@@ -46,6 +46,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onThemeTokens: (callback) => ipcRenderer.on('theme:sync', (_event, data) => {
     try { callback(data); } catch (_) {}
   }),
+  cycleTheme: (direction = 1) => ipcRenderer.invoke('theme:cycle', direction),
 
   // Listeners for timer updates
   onMainTimerUpdate: (callback) => ipcRenderer.on('main-timer-update', callback),

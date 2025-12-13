@@ -563,6 +563,13 @@ ipcMain.handle('theme:update-aux-windows', (_event, payload) => {
 
 ipcMain.handle('theme:request-current', () => currentThemePayload);
 
+ipcMain.handle('theme:cycle', (_event, direction = 1) => {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    try { mainWindow.webContents.send('cycle-theme', direction); } catch (_) {}
+  }
+  return true;
+});
+
 // Get the path to the config file
 function getConfigPath() {
   return path.join(app.getPath('userData'), 'preferred-times.json');

@@ -5,10 +5,12 @@ class TinyTimer {
         this.isRunning = false;
         this.interval = null; // no local ticking in tiny mode
         this._completionShown = false; // ensures visual hint only once per run
+        this.currentTheme = null;
         
         this.initializeElements();
         this.setupEventListeners();
         this.setupIpcListeners();
+        this.setupThemeSync();
         this.updateDisplay();
         this.startSync();
     }
@@ -30,6 +32,21 @@ class TinyTimer {
                 try { document.body.classList.remove('tiny-hover'); } catch (_) {}
             });
         }
+
+        // Tiny window keyboard shortcuts for theme cycling
+        document.addEventListener('keydown', (e) => {
+            const t = e.target && e.target.tagName;
+            if (t === 'INPUT' || t === 'TEXTAREA') return;
+            if (!e.shiftKey) return;
+
+            if (e.key === 'ArrowRight' || e.key === 'Right') {
+                e.preventDefault();
+                this.requestThemeCycle(1);
+            } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
+                e.preventDefault();
+                this.requestThemeCycle(-1);
+            }
+        });
     }
 
     setupIpcListeners() {
@@ -54,6 +71,41 @@ class TinyTimer {
         } catch (error) {
             console.log('Could not set up main window update listener:', error);
         }
+    }
+
+    setupThemeSync() {
+        if (!window.electronAPI) return;
+        try {
+            window.electronAPI.onThemeTokens((payload) => {
+                this.applyThemeTokens(payload);
+            });
+        } catch (_) { /* ignore listener failures */ }
+
+        try {
+            const maybePromise = window.electronAPI.requestThemeTokens && window.electronAPI.requestThemeTokens();
+            if (maybePromise && typeof maybePromise.then === 'function') {
+                maybePromise.then((payload) => {
+                    if (payload) this.applyThemeTokens(payload);
+                }).catch(() => {});
+            } else if (maybePromise) {
+                this.applyThemeTokens(maybePromise);
+            }
+        } catch (_) { /* ignore */ }
+    }
+
+    applyThemeTokens(payload) {
+        if (!payload || !payload.tokens) return;
+        this.currentTheme = payload;
+        const { tokens, id, group } = payload;
+        const body = document.body;
+        try {
+            Object.entries(tokens).forEach(([key, value]) => {
+                body.style.setProperty(key, value);
+            });
+            if (id) body.dataset.themeId = id;
+            if (group) body.dataset.themeGroup = group;
+            try { console.log('[Tiny Theme] Synced theme:', id); } catch (_) {}
+        } catch (_) { /* ignore */ }
     }
 
     startSync() {
@@ -123,6 +175,18 @@ class TinyTimer {
         } catch (error) {
             window.close();
         }
+    }
+
+    requestThemeCycle(direction = 1) {
+        if (!window.electronAPI || typeof window.electronAPI.cycleTheme !== 'function') {
+            return;
+        }
+        try {
+            const maybePromise = window.electronAPI.cycleTheme(direction);
+            if (maybePromise && typeof maybePromise.then === 'function') {
+                maybePromise.catch(() => {});
+            }
+        } catch (_) { /* ignore */ }
     }
 }
 

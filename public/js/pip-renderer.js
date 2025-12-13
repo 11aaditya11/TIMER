@@ -53,7 +53,15 @@ class PiPTimer {
             // only act if focus is not in an input
             const t = e.target && e.target.tagName;
             if (t === 'INPUT' || t === 'TEXTAREA') return;
-            // PiP no longer handles its own theme cycling; shortcuts reserved.
+
+            if (!e.shiftKey) return;
+            if (e.key === 'ArrowRight' || e.key === 'Right') {
+                e.preventDefault();
+                this.requestThemeCycle(1);
+            } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
+                e.preventDefault();
+                this.requestThemeCycle(-1);
+            }
         });
 
         // Focus handling for close button visibility
@@ -316,6 +324,18 @@ class PiPTimer {
         } catch (error) {
             console.log('Could not notify main window:', error);
         }
+    }
+
+    requestThemeCycle(direction = 1) {
+        if (!window.electronAPI || typeof window.electronAPI.cycleTheme !== 'function') {
+            return;
+        }
+        try {
+            const maybePromise = window.electronAPI.cycleTheme(direction);
+            if (maybePromise && typeof maybePromise.then === 'function') {
+                maybePromise.catch(() => {});
+            }
+        } catch (_) { /* ignore */ }
     }
 
     closePiP() {
