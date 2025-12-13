@@ -233,6 +233,131 @@ const THEME_DEFINITIONS = [
         }
     },
     {
+        id: 'clear-glass',
+        name: 'Clear Glass',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#FFFFFF',
+            primaryText: '#111111',
+            secondaryText: '#444444',
+            accent: '#FF6B6B',
+            accentText: '#FFFFFF'
+        },
+        tokenOverrides: {
+            '--pip-bg': 'rgba(255, 255, 255, 0)',
+            '--pip-bg-2': 'rgba(255, 255, 255, 0)',
+            '--pip-time-color': '#111111',
+            '--pip-btn-bg': 'rgba(0, 0, 0, 0.08)',
+            '--pip-btn-border': 'rgba(0, 0, 0, 0.12)',
+            '--pip-btn-hover-bg': 'rgba(0, 0, 0, 0.18)',
+            '--pip-close-bg': 'rgba(0, 0, 0, 0.12)',
+            '--pip-close-border': 'rgba(0, 0, 0, 0.2)',
+            '--pip-shadow': 'none',
+            '--pip-container-bg': 'transparent',
+            '--pip-container-shadow': 'none',
+            '--pip-backdrop-filter': 'none',
+            '--pip-btn-backdrop-filter': 'none',
+            '--pip-time-shadow': '0 2px 8px rgba(0, 0, 0, 0.2)',
+            '--pip-btn-text-color': '#111111',
+            '--pip-close-color': '#111111',
+            '--tiny-bg': 'rgba(255, 255, 255, 0)',
+            '--tiny-shadow': 'none',
+            '--tiny-border': 'rgba(0, 0, 0, 0.18)',
+            '--tiny-text': '#111111',
+            '--tiny-close-bg': 'rgba(0, 0, 0, 0.12)',
+            '--tiny-close-bg-hover': 'rgba(0, 0, 0, 0.22)',
+            '--tiny-close-border': 'rgba(0, 0, 0, 0.18)',
+            '--tiny-backdrop-filter': 'none',
+            '--tiny-time-shadow': '0 2px 12px rgba(0, 0, 0, 0.18)',
+            '--tiny-close-color': '#111111'
+        }
+    },
+    {
+        id: 'classic-cobalt',
+        name: 'Classic Cobalt',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#102A43',
+            secondaryText: '#486581',
+            accent: '#2563EB'
+        }
+    },
+    {
+        id: 'classic-crimson',
+        name: 'Classic Crimson',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#3B0D0D',
+            secondaryText: '#7A2A2A',
+            accent: '#D92D20'
+        }
+    },
+    {
+        id: 'classic-emerald',
+        name: 'Classic Emerald',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#123524',
+            secondaryText: '#3F7057',
+            accent: '#16A34A'
+        }
+    },
+    {
+        id: 'classic-plum',
+        name: 'Classic Plum',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#32133B',
+            secondaryText: '#684067',
+            accent: '#9D4EDD'
+        }
+    },
+    {
+        id: 'classic-amber',
+        name: 'Classic Amber',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#392100',
+            secondaryText: '#7B4F0B',
+            accent: '#F59E0B'
+        }
+    },
+    {
+        id: 'classic-slate',
+        name: 'Classic Slate',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#1A1D23',
+            secondaryText: '#4B4F59',
+            accent: '#64748B'
+        }
+    },
+    {
+        id: 'classic-rose',
+        name: 'Classic Rose',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#3F1222',
+            secondaryText: '#7A3A53',
+            accent: '#EC4899'
+        }
+    },
+    {
         id: 'midnight',
         name: 'Midnight (Original)',
         group: 'dark',
@@ -242,6 +367,90 @@ const THEME_DEFINITIONS = [
             primaryText: '#E7E7EA',
             secondaryText: '#B7BCC2',
             accent: '#4A90E2'
+        }
+    },
+    {
+        id: 'midnight-ember',
+        name: 'Midnight Ember',
+        group: 'dark',
+        palette: {
+            background: '#0F0F12',
+            surface: '#141418',
+            primaryText: '#F8E6E0',
+            secondaryText: '#D9B8A8',
+            accent: '#FB6F3D'
+        }
+    },
+    {
+        id: 'midnight-aurora',
+        name: 'Midnight Aurora',
+        group: 'dark',
+        palette: {
+            background: '#0F0F12',
+            surface: '#141418',
+            primaryText: '#E4F8FF',
+            secondaryText: '#B2D4E4',
+            accent: '#38BDF8'
+        }
+    },
+    {
+        id: 'midnight-vine',
+        name: 'Midnight Vine',
+        group: 'dark',
+        palette: {
+            background: '#0F0F12',
+            surface: '#141418',
+            primaryText: '#E4F5E8',
+            secondaryText: '#B3D5C1',
+            accent: '#34D399'
+        }
+    },
+    {
+        id: 'midnight-amethyst',
+        name: 'Midnight Amethyst',
+        group: 'dark',
+        palette: {
+            background: '#0F0F12',
+            surface: '#141418',
+            primaryText: '#F1E6FF',
+            secondaryText: '#C8B4E8',
+            accent: '#A855F7'
+        }
+    },
+    {
+        id: 'midnight-ruby',
+        name: 'Midnight Ruby',
+        group: 'dark',
+        palette: {
+            background: '#0F0F12',
+            surface: '#141418',
+            primaryText: '#FFE5E9',
+            secondaryText: '#E9B7C1',
+            accent: '#F43F5E'
+        }
+    },
+    {
+        id: 'midnight-amber',
+        name: 'Midnight Amber',
+        group: 'dark',
+        palette: {
+            background: '#0F0F12',
+            surface: '#141418',
+            primaryText: '#FFEFD9',
+            secondaryText: '#DFC5A3',
+            accent: '#FBBF24'
+        }
+    },
+    {
+        id: 'midnight-ice',
+        name: 'Midnight Ice',
+        group: 'dark',
+        palette: {
+            background: '#0F0F12',
+            surface: '#141418',
+            primaryText: '#E1F2FF',
+            secondaryText: '#AFC8DE',
+            accent: '#60A5FA'
         }
     },
     {
@@ -468,15 +677,24 @@ const createThemeTokens = (theme) => {
     const pipCloseBg = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.14 : 0.36);
     const pipCloseBorder = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.18 : 0.4);
     const pipShadow = `0 12px 28px ${hexToRgba('#000000', group === 'light' ? 0.16 : 0.45)}`;
+    const pipContainerBackground = `radial-gradient(120% 120% at 50% -30%, ${hexToRgba('#FFFFFF', 0.045)}, transparent 100%), linear-gradient(160deg, ${pipBg} 0%, ${pipBg2} 100%)`;
+    const pipBackdropFilter = 'blur(14px)';
+    const pipBtnBackdropFilter = 'blur(3px)';
+    const pipTimeShadow = group === 'light' ? '0 1px 3px rgba(0, 0, 0, 0.45)' : '0 1px 4px rgba(0, 0, 0, 0.55)';
+    const pipBtnTextColor = textPrimary;
+    const pipCloseColor = textPrimary;
     const tinyMix = mixHex(surface, background, group === 'light' ? 0.12 : 0.28);
     const tinyBg = hexToRgba(tinyMix, group === 'light' ? 0.9 : 0.82);
     const tinyBorder = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.08 : 0.26);
     const tinyShadow = `0 8px 28px ${hexToRgba('#000000', group === 'light' ? 0.18 : 0.48)}`;
     const tinyCloseBg = hexToRgba(accent, group === 'light' ? 0.25 : 0.35);
     const tinyCloseBgHover = hexToRgba(accent, group === 'light' ? 0.35 : 0.45);
+    const tinyBackdropFilter = 'blur(20px)';
+    const tinyTimeShadow = '0 2px 8px rgba(0, 0, 0, 0.8)';
+    const tinyCloseColor = textPrimary;
     const sharedFont = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 
-    return {
+    const tokens = {
         '--bg': background,
         '--header-bg': headerBackground,
         '--container-bg': surface,
@@ -542,6 +760,13 @@ const createThemeTokens = (theme) => {
         '--pip-close-border': pipCloseBorder,
         '--pip-font': sharedFont,
         '--pip-shadow': pipShadow,
+        '--pip-container-bg': pipContainerBackground,
+        '--pip-container-shadow': pipShadow,
+        '--pip-backdrop-filter': pipBackdropFilter,
+        '--pip-btn-backdrop-filter': pipBtnBackdropFilter,
+        '--pip-time-shadow': pipTimeShadow,
+        '--pip-btn-text-color': pipBtnTextColor,
+        '--pip-close-color': pipCloseColor,
         '--pip-radius': '14px',
         '--tiny-bg': tinyBg,
         '--tiny-text': textPrimary,
@@ -550,8 +775,19 @@ const createThemeTokens = (theme) => {
         '--tiny-close-bg': tinyCloseBg,
         '--tiny-close-bg-hover': tinyCloseBgHover,
         '--tiny-close-border': tinyBorder,
+        '--tiny-backdrop-filter': tinyBackdropFilter,
+        '--tiny-time-shadow': tinyTimeShadow,
+        '--tiny-close-color': tinyCloseColor,
         '--tiny-font': sharedFont
     };
+
+    if (theme.tokenOverrides && typeof theme.tokenOverrides === 'object') {
+        Object.entries(theme.tokenOverrides).forEach(([key, value]) => {
+            tokens[key] = value;
+        });
+    }
+
+    return tokens;
 };
 
 class Timer {

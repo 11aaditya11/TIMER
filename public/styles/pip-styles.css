@@ -28,6 +28,26 @@
   --pip-close-border: rgba(255, 255, 255, 0.22);
   --pip-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --pip-shadow: 0 12px 28px rgba(0,0,0,0.45);
+  --pip-container-bg: radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 100%), linear-gradient(160deg, rgba(16,21,28,1) 0%, rgba(11,15,20,1) 100%);
+  --pip-container-shadow: 0 12px 28px rgba(0,0,0,0.45);
+  --pip-backdrop-filter: blur(14px);
+  --pip-btn-backdrop-filter: blur(3px);
+  --pip-time-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --pip-btn-text-color: var(--pip-time-color, #e7e7ea);
+  --pip-close-color: var(--pip-time-color, #ffffff);
+  --pip-close-backdrop-filter: blur(10px);
+  --pip-play-btn-bg: linear-gradient(135deg, #4caf50, #66bb6a);
+  --pip-play-btn-border: rgba(76, 175, 80, 0.3);
+  --pip-play-btn-hover-bg: linear-gradient(135deg, #66bb6a, #81c784);
+  --pip-play-btn-hover-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  --pip-pause-btn-bg: linear-gradient(135deg, #ff9800, #ffa726);
+  --pip-pause-btn-border: rgba(255, 152, 0, 0.3);
+  --pip-pause-btn-hover-bg: linear-gradient(135deg, #ffa726, #ffb74d);
+  --pip-pause-btn-hover-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+  --pip-reset-btn-bg: linear-gradient(135deg, #f44336, #ef5350);
+  --pip-reset-btn-border: rgba(244, 67, 54, 0.3);
+  --pip-reset-btn-hover-bg: linear-gradient(135deg, #ef5350, #e57373);
+  --pip-reset-btn-hover-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
   --pip-radius: 12px;
 }
 
@@ -86,11 +106,11 @@ body {
     border-radius: var(--pip-radius, 12px); /* Round the container */
     overflow: hidden; /* Ensure content doesn't extend beyond rounded corners */
     /* Apply the gradient background to the container */
-    background:
-      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 100%),
-      linear-gradient(160deg, var(--pip-bg, #10151c) 0%, var(--pip-bg-2, #0b0f14) 100%);
+    background: var(--pip-container-bg, radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 100%), linear-gradient(160deg, var(--pip-bg, #10151c) 0%, var(--pip-bg-2, #0b0f14) 100%));
     /* Apply background-clip to prevent bleed */
     background-clip: padding-box;
+    backdrop-filter: var(--pip-backdrop-filter, blur(14px));
+    box-shadow: var(--pip-container-shadow, 0 12px 28px rgba(0, 0, 0, 0.45));
 }
 
 /* Theme-specific container backgrounds */
@@ -116,7 +136,7 @@ body {
     right: 4px;
     background: var(--pip-close-bg, rgba(0, 0, 0, 0.8));
     border: 1px solid var(--pip-close-border, rgba(255, 255, 255, 0.2));
-    color: var(--pip-time-color, #ffffff);
+    color: var(--pip-close-color, var(--pip-time-color, #ffffff));
     width: 16px;
     height: 16px;
     border-radius: 4px;
@@ -130,7 +150,7 @@ body {
     flex-shrink: 0;
     z-index: 1000; /* ensure it's above any drag regions/overlays */
     -webkit-app-region: no-drag;
-    backdrop-filter: blur(10px);
+    backdrop-filter: var(--pip-close-backdrop-filter, blur(10px));
     border: 1px solid rgba(255, 255, 255, 0.2);
     opacity: 0;               /* hidden by default */
     visibility: hidden;       /* hidden by default */
@@ -150,7 +170,7 @@ body {
 .pip-control-btn {
     background: var(--pip-btn-bg, rgba(42, 42, 48, 0.9));
     border: 1px solid var(--pip-btn-border, rgba(58, 58, 64, 0.8));
-    color: var(--pip-time-color, #e7e7ea);
+    color: var(--pip-btn-text-color, var(--pip-time-color, #e7e7ea));
     padding: 2px 6px; /* smaller height */
     border-radius: 999px;
     cursor: pointer;
@@ -161,10 +181,30 @@ body {
     min-width: 20px;
     min-height: 20px;
     -webkit-app-region: no-drag;
-    backdrop-filter: blur(3px);
+    backdrop-filter: var(--pip-btn-backdrop-filter, blur(3px));
     border: 1px solid rgba(255, 255, 255, 0.18);
-    /* Ensure buttons are clipped to container */
-    overflow: hidden;
+}
+
+.pip-control-btn svg {
+    width: 12px;
+    height: 12px;
+}
+
+.pip-control-btn:hover:not(:disabled) {
+    background: var(--pip-btn-hover-bg, rgba(255, 255, 255, 0.22));
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.pip-control-btn:active:not(:disabled) {
+    transform: translateY(0) scale(0.95);
+}
+
+.pip-control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none;
 }
 
 /* Show close button when window is focused OR mouse is over PiP */
@@ -192,7 +232,7 @@ body.pip-hover .pip-close-btn {
     font-weight: 700;
     color: var(--pip-time-color, #e7e7ea); /* Use theme variable with fallback */
     font-family: inherit; /* Inherit from parent .pip-timer */
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    text-shadow: var(--pip-time-shadow, 0 1px 3px rgba(0, 0, 0, 0.5));
     margin: 0; /* flush towards top */
     text-align: center;
     letter-spacing: 1px;
@@ -211,24 +251,6 @@ body.pip-hover .pip-close-btn {
     margin: 0; /* close under time */
     padding: 0;
     flex: 0 0 auto; /* Don't grow/shrink */
-}
-
-.pip-control-btn {
-    background: rgba(42, 42, 48, 0.9);
-    border: 1px solid rgba(58, 58, 64, 0.8);
-    color: #e7e7ea;
-    padding: 2px 6px; /* smaller height */
-    border-radius: 999px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 20px;
-    min-height: 20px;
-    -webkit-app-region: no-drag;
-    backdrop-filter: blur(3px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .pip-control-btn svg {
@@ -255,33 +277,33 @@ body.pip-hover .pip-close-btn {
 
 /* Button-specific styles */
 .pip-control-btn.play-btn {
-    background: linear-gradient(135deg, #4caf50, #66bb6a);
-    border-color: rgba(76, 175, 80, 0.3);
+    background: var(--pip-play-btn-bg, linear-gradient(135deg, #4caf50, #66bb6a));
+    border-color: var(--pip-play-btn-border, rgba(76, 175, 80, 0.3));
 }
 
 .pip-control-btn.play-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #66bb6a, #81c784);
-    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    background: var(--pip-play-btn-hover-bg, linear-gradient(135deg, #66bb6a, #81c784));
+    box-shadow: var(--pip-play-btn-hover-shadow, 0 6px 20px rgba(76, 175, 80, 0.4));
 }
 
 .pip-control-btn.pause-btn {
-    background: linear-gradient(135deg, #ff9800, #ffa726);
-    border-color: rgba(255, 152, 0, 0.3);
+    background: var(--pip-pause-btn-bg, linear-gradient(135deg, #ff9800, #ffa726));
+    border-color: var(--pip-pause-btn-border, rgba(255, 152, 0, 0.3));
 }
 
 .pip-control-btn.pause-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #ffa726, #ffb74d);
-    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+    background: var(--pip-pause-btn-hover-bg, linear-gradient(135deg, #ffa726, #ffb74d));
+    box-shadow: var(--pip-pause-btn-hover-shadow, 0 6px 20px rgba(255, 152, 0, 0.4));
 }
 
 .pip-control-btn.reset-btn {
-    background: linear-gradient(135deg, #f44336, #ef5350);
-    border-color: rgba(244, 67, 54, 0.3);
+    background: var(--pip-reset-btn-bg, linear-gradient(135deg, #f44336, #ef5350));
+    border-color: var(--pip-reset-btn-border, rgba(244, 67, 54, 0.3));
 }
 
 .pip-control-btn.reset-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #ef5350, #e57373);
-    box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+    background: var(--pip-reset-btn-hover-bg, linear-gradient(135deg, #ef5350, #e57373));
+    box-shadow: var(--pip-reset-btn-hover-shadow, 0 6px 20px rgba(244, 67, 54, 0.4));
 }
 
 /* Animation for timer completion */
@@ -328,6 +350,7 @@ body[class*="pip-theme-"] .pip-control-btn.pause-btn,
 body[class*="pip-theme-"] .pip-control-btn.reset-btn {
   background: var(--pip-btn-bg) !important;
   border-color: var(--pip-btn-border) !important;
+  color: var(--pip-btn-text-color, var(--pip-time-color, #e7e7ea)) !important;
 }
 body[class*="pip-theme-"] .pip-control-btn.play-btn:hover:not(:disabled),
 body[class*="pip-theme-"] .pip-control-btn.pause-btn:hover:not(:disabled),
@@ -337,8 +360,9 @@ body[class*="pip-theme-"] .pip-control-btn.reset-btn:hover:not(:disabled) {
 
 /* Themed close button to match palette */
 body[class*="pip-theme-"] .pip-close-btn {
-  background: rgba(0, 0, 0, 0.5) !important;
-  border-color: rgba(255, 255, 255, 0.22) !important;
+  background: var(--pip-close-bg, rgba(0, 0, 0, 0.5)) !important;
+  border-color: var(--pip-close-border, rgba(255, 255, 255, 0.22)) !important;
+  color: var(--pip-close-color, var(--pip-time-color, #ffffff)) !important;
 }
 body.pip-theme-shadow .pip-close-btn:hover {
   background: rgba(255, 255, 255, 0.25) !important;
