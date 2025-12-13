@@ -16,10 +16,19 @@
     #66d9e8 (Teal)
 */
 
+/* Default PiP variables (overridden by main window theme tokens) */
 :root {
-  --pip-bg: #10151c; /* pick from list above */
-  --pip-bg-2: #0b0f14; /* slightly darker stop for gradient */
-  --pip-accent: #9b87f5; /* used for subtle strokes/hover */
+  --pip-bg: #141418;
+  --pip-bg-2: #0f0f12;
+  --pip-time-color: #e7e7ea;
+  --pip-btn-bg: rgba(42, 42, 48, 0.9);
+  --pip-btn-border: rgba(58, 58, 64, 0.8);
+  --pip-btn-hover-bg: rgba(255, 255, 255, 0.22);
+  --pip-close-bg: rgba(0, 0, 0, 0.5);
+  --pip-close-border: rgba(255, 255, 255, 0.22);
+  --pip-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --pip-shadow: 0 12px 28px rgba(0,0,0,0.45);
+  --pip-radius: 12px;
 }
 
 /* Ensure no bottom padding/margin on last element */
@@ -33,9 +42,9 @@ body > *:last-child { margin-bottom: 0 !important; padding-bottom: 0 !important;
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--pip-font, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
     background: transparent; /* Make body transparent so only rounded container shows */
-    color: white;
+    color: var(--pip-time-color, #ffffff);
     overflow: hidden;
     user-select: none;
     margin: 0;
@@ -74,69 +83,17 @@ body {
     height: 100%;
     pointer-events: auto; /* Allow mouse events on container and its children */
     -webkit-app-region: no-drag; /* Do not make entire container draggable */
-    border-radius: 12px; /* Round the container */
+    border-radius: var(--pip-radius, 12px); /* Round the container */
     overflow: hidden; /* Ensure content doesn't extend beyond rounded corners */
     /* Apply the gradient background to the container */
     background:
       radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 100%),
-      linear-gradient(160deg, var(--pip-bg) 0%, var(--pip-bg-2) 100%);
+      linear-gradient(160deg, var(--pip-bg, #10151c) 0%, var(--pip-bg-2, #0b0f14) 100%);
     /* Apply background-clip to prevent bleed */
     background-clip: padding-box;
 }
 
 /* Theme-specific container backgrounds */
-body.pip-theme-shadow .pip-container {
-    background:
-      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.02), transparent 100%),
-      linear-gradient(160deg, var(--pip-bg1) 0%, var(--pip-bg2) 100%);
-}
-
-body.pip-theme-ocean .pip-container {
-    background:
-      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 100%),
-      linear-gradient(160deg, var(--pip-bg1) 0%, var(--pip-bg2) 100%);
-}
-
-body.pip-theme-sunset .pip-container {
-    background:
-      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 100%),
-      linear-gradient(160deg, var(--pip-bg1) 0%, var(--pip-bg2) 100%);
-}
-
-body.pip-theme-forest .pip-container {
-    background:
-      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.045), transparent 100%),
-      linear-gradient(160deg, var(--pip-bg1) 0%, var(--pip-bg2) 100%);
-}
-
-body.pip-theme-shadow .pip-container {
-    background:
-      radial-gradient(120% 120% at 50% -30%, rgba(255,255,255,0.002), transparent 100%),
-      linear-gradient(160deg, var(--pip-bg1) 0%, var(--pip-bg2) 100%);
-}
-
-/* Theme: Shadow (semi-transparent black) */
-body.pip-theme-shadow {
-  --pip-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --pip-bg1: rgba(0, 0, 0, 0.1);
-  --pip-bg2: rgba(0, 0, 0, 0.2);
-  --pip-time-color: rgba(255, 255, 255, 1.0);
-  --pip-btn-bg: rgba(255, 255, 255, 0.02);
-  --pip-btn-border: rgba(255, 255, 255, 0.05);
-  --pip-btn-hover-bg: rgba(255, 255, 255, 0.08);
-}
-
-/* Theme: Neon Pulse (different font) */
-body.pip-theme-neon {
-  --pip-font: 'Courier New', monospace;
-  --pip-bg1: #1a0f2a;
-  --pip-bg2: #0f0f18;
-  --pip-time-color: #fbe8ff;
-  --pip-btn-bg: rgba(29, 20, 48, 0.9);
-  --pip-btn-border: rgba(58, 42, 106, 0.8);
-  --pip-btn-hover-bg: rgba(255, 42, 161, 0.28);
-}
-
 .pip-hover-overlay {
     position: absolute;
     top: 0;
@@ -157,9 +114,9 @@ body.pip-theme-neon {
     position: absolute;
     top: 4px;
     right: 4px;
-    background: rgba(0, 0, 0, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+    background: var(--pip-close-bg, rgba(0, 0, 0, 0.8));
+    border: 1px solid var(--pip-close-border, rgba(255, 255, 255, 0.2));
+    color: var(--pip-time-color, #ffffff);
     width: 16px;
     height: 16px;
     border-radius: 4px;
@@ -191,9 +148,9 @@ body.pip-theme-neon {
 }
 
 .pip-control-btn {
-    background: rgba(42, 42, 48, 0.9);
-    border: 1px solid rgba(58, 58, 64, 0.8);
-    color: #e7e7ea;
+    background: var(--pip-btn-bg, rgba(42, 42, 48, 0.9));
+    border: 1px solid var(--pip-btn-border, rgba(58, 58, 64, 0.8));
+    color: var(--pip-time-color, #e7e7ea);
     padding: 2px 6px; /* smaller height */
     border-radius: 999px;
     cursor: pointer;
@@ -280,7 +237,7 @@ body.pip-hover .pip-close-btn {
 }
 
 .pip-control-btn:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.22);
+    background: var(--pip-btn-hover-bg, rgba(255, 255, 255, 0.22));
     transform: translateY(-2px) scale(1.05);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
@@ -347,13 +304,16 @@ body.pip-hover .pip-close-btn {
 
 /* Defaults (current look) */
 body {
-  --pip-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--pip-font, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
   --pip-bg: #141418;
   --pip-bg-2: #0f0f12;
   --pip-time-color: #e7e7ea;
   --pip-btn-bg: rgba(42, 42, 48, 0.9);
   --pip-btn-border: rgba(58, 58, 64, 0.8);
   --pip-btn-hover-bg: rgba(255, 255, 255, 0.22);
+  --pip-close-bg: rgba(0, 0, 0, 0.5);
+  --pip-close-border: rgba(255, 255, 255, 0.22);
+  --pip-shadow: 0 12px 28px rgba(0,0,0,0.45);
 }
 
 /* Apply variables */

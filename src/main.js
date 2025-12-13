@@ -6,6 +6,7 @@ const fs = require('fs');
 let mainWindow;
 let pipWindow;
 let tinyWindows = []; // Track all tiny windows
+let currentThemePayload = null;
 
 // Ensure Chromium does not throttle timers or background renderers when windows are unfocused/minimized
 // This keeps the main renderer's 1s tick accurate even when the main window is minimized
@@ -123,7 +124,6 @@ ipcMain.on('maximize-window', () => {
 ipcMain.on('close-window', () => {
   if (mainWindow) mainWindow.close();
 });
-
 
 function createMainWindow() {
   // Determine best available icon (prefer PNG timer-icon, fallback to others). If none, omit.
@@ -283,6 +283,10 @@ function createPipWindow() {
           pipWindow.webContents.send('main-timer-update', timerCore.getState());
         }
       } catch (_) {}
+      // Provide initial theme payload if available
+      if (currentThemePayload) {
+        pipWindow.webContents.send('theme:sync', currentThemePayload);
+      }
     } catch (_) {}
   });
 
@@ -383,6 +387,10 @@ function createTinyWindow() {
       const isFocused = tinyWindow.isFocused();
       if (tinyWindow && tinyWindow.webContents) {
         tinyWindow.webContents.send('window-active', isFocused);
+        // Provide initial theme payload if available
+        if (currentThemePayload) {
+          tinyWindow.webContents.send('theme:sync', currentThemePayload);
+        }
         console.log('Tiny window initial focus state sent:', isFocused);
         // Also push current timer state immediately
         try { tinyWindow.webContents.send('main-timer-update', timerCore.getState()); } catch (_) {}
@@ -539,6 +547,21 @@ ipcMain.handle('open-tiny-window', () => {
   createTinyWindow();
   return true;
 });
+
+ipcMain.handle('theme:update-aux-windows', (_event, payload) => {
+  currentThemePayload = payload;
+  if (pipWindow && !pipWindow.isDestroyed()) {
+    try { pipWindow.webContents.send('theme:sync', payload); } catch (_) {}
+  }
+  tinyWindows.forEach((tiny) => {
+    if (tiny && !tiny.isDestroyed()) {
+      try { tiny.webContents.send('theme:sync', payload); } catch (_) {}
+    }
+  });
+  return true;
+});
+
+ipcMain.handle('theme:request-current', () => currentThemePayload);
 
 // Get the path to the config file
 function getConfigPath() {

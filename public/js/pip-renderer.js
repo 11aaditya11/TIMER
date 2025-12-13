@@ -4,22 +4,12 @@ class PiPTimer {
         this.totalTime = 0;
         this.isRunning = false;
         this.interval = null; // no local ticking; kept for safety cleanup
-        // PiP theming & fonts
-        this.pipThemes = ['pip-theme-ocean', 'pip-theme-sunset', 'pip-theme-forest', 'pip-theme-carbon', 'pip-theme-neon'];
-        this.pipFonts = [
-            "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-            "'Courier New', monospace",
-            "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-            "'Roboto Mono', monospace",
-            "'System UI', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-        ];
-        this.currentPipThemeIndex = 0;
-        this.currentPipFontIndex = 0;
+        this.currentTheme = null;
 
         this.initializeElements();
         this.setupEventListeners();
         this.setupIpcListeners();
-        this.loadAndApplyPipThemeAndFont();
+        this.setupThemeSync();
         this.updateDisplay();
         this.updateProgress();
         this.startSync();
@@ -63,24 +53,7 @@ class PiPTimer {
             // only act if focus is not in an input
             const t = e.target && e.target.tagName;
             if (t === 'INPUT' || t === 'TEXTAREA') return;
-
-            if (e.shiftKey && (e.key === 'ArrowRight' || e.key === 'Right')) {
-                // Cycle PiP theme next
-                e.preventDefault();
-                this.cyclePipTheme(1);
-            } else if (e.shiftKey && (e.key === 'ArrowLeft' || e.key === 'Left')) {
-                // Cycle PiP theme prev
-                e.preventDefault();
-                this.cyclePipTheme(-1);
-            } else if (e.shiftKey && (e.key === 'ArrowUp' || e.key === 'Up')) {
-                // Cycle PiP font next
-                e.preventDefault();
-                this.cyclePipFont(1);
-            } else if (e.shiftKey && (e.key === 'ArrowDown' || e.key === 'Down')) {
-                // Cycle PiP font prev
-                e.preventDefault();
-                this.cyclePipFont(-1);
-            }
+            // PiP no longer handles its own theme cycling; shortcuts reserved.
         });
 
         // Focus handling for close button visibility
@@ -265,60 +238,41 @@ class PiPTimer {
     }
 
     // ==========================
-    // PiP Theme & Font handling
+    // PiP Theme handling
     // ==========================
-    loadAndApplyPipThemeAndFont() {
+    setupThemeSync() {
+        if (!window.electronAPI) return;
         try {
-            const savedTheme = localStorage.getItem('pip-theme');
-            if (savedTheme && this.pipThemes.includes(savedTheme)) {
-                this.currentPipThemeIndex = this.pipThemes.indexOf(savedTheme);
+            window.electronAPI.onThemeTokens((payload) => {
+                this.applyThemeTokens(payload);
+            });
+        } catch (_) { /* ignore listener failures */ }
+
+        try {
+            const maybePromise = window.electronAPI.requestThemeTokens && window.electronAPI.requestThemeTokens();
+            if (maybePromise && typeof maybePromise.then === 'function') {
+                maybePromise.then((payload) => {
+                    if (payload) this.applyThemeTokens(payload);
+                }).catch(() => {});
+            } else if (maybePromise) {
+                this.applyThemeTokens(maybePromise);
             }
-        } catch (_) { }
+        } catch (_) { /* ignore */ }
+    }
+
+    applyThemeTokens(payload) {
+        if (!payload || !payload.tokens) return;
+        this.currentTheme = payload;
+        const { tokens, id, group } = payload;
+        const body = document.body;
         try {
-            const savedFont = localStorage.getItem('pip-font');
-            if (savedFont) {
-                const idx = this.pipFonts.indexOf(savedFont);
-                if (idx >= 0) this.currentPipFontIndex = idx;
-            }
-        } catch (_) { }
-        this.applyPipTheme(this.pipThemes[this.currentPipThemeIndex]);
-        this.applyPipFont(this.pipFonts[this.currentPipFontIndex]);
-        try { console.log('[PiP Theme] Loaded:', this.pipThemes[this.currentPipThemeIndex]); } catch (e) { }
-        try { console.log('[PiP Font] Loaded:', this.pipFonts[this.currentPipFontIndex]); } catch (e) { }
-    }
-
-    applyPipTheme(themeClass) {
-        try {
-            const body = document.body;
-            this.pipThemes.forEach(t => body.classList.remove(t));
-            if (themeClass) body.classList.add(themeClass);
-            try { localStorage.setItem('pip-theme', themeClass); } catch (_) { }
-            try { console.log('[PiP Theme] Applied:', themeClass, 'Classes:', Array.from(body.classList).join(' ')); } catch (e) { }
-        } catch (_) { }
-    }
-
-    cyclePipTheme(direction = 1) {
-        const len = this.pipThemes.length;
-        this.currentPipThemeIndex = (this.currentPipThemeIndex + (direction % len) + len) % len;
-        const nextTheme = this.pipThemes[this.currentPipThemeIndex];
-        try { console.log('[PiP Theme] Cycling', direction > 0 ? 'next' : 'prev', '->', nextTheme); } catch (e) { }
-        this.applyPipTheme(nextTheme);
-    }
-
-    applyPipFont(fontFamily) {
-        try {
-            document.body.style.setProperty('--pip-font', fontFamily);
-            try { localStorage.setItem('pip-font', fontFamily); } catch (_) { }
-            try { console.log('[PiP Font] Applied:', fontFamily); } catch (e) { }
-        } catch (_) { }
-    }
-
-    cyclePipFont(direction = 1) {
-        const len = this.pipFonts.length;
-        this.currentPipFontIndex = (this.currentPipFontIndex + (direction % len) + len) % len;
-        const nextFont = this.pipFonts[this.currentPipFontIndex];
-        try { console.log('[PiP Font] Cycling', direction > 0 ? 'next' : 'prev', '->', nextFont); } catch (e) { }
-        this.applyPipFont(nextFont);
+            Object.entries(tokens).forEach(([key, value]) => {
+                body.style.setProperty(key, value);
+            });
+            if (id) body.dataset.themeId = id;
+            if (group) body.dataset.themeGroup = group;
+            try { console.log('[PiP Theme] Synced theme:', id); } catch (_) {}
+        } catch (_) { /* ignore */ }
     }
 
     timerComplete() {

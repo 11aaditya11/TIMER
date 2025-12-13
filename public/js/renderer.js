@@ -253,6 +253,24 @@ const createThemeTokens = (theme) => {
     const themeCardHoverShadow = `0 24px 44px ${hexToRgba('#000000', group === 'light' ? 0.18 : 0.6)}`;
     const surfaceCard = group === 'light' ? lighten(surface, 0.1) : darken(surface, 0.1);
     const textInverse = getContrastColor(surface, '#101015', '#FFFFFF');
+    const windowRadius = '16px';
+    const headerHeight = '40px';
+    const headerControlHeight = '32px';
+    const pipBg = mixHex(surface, background, group === 'light' ? 0.32 : 0.14);
+    const pipBg2 = mixHex(surfaceElevated, background, group === 'light' ? 0.48 : 0.26);
+    const pipBtnBase = mixHex(surfaceMuted, accent, group === 'light' ? 0.18 : 0.12);
+    const pipBtnHover = mixHex(pipBtnBase, accent, 0.35);
+    const pipBtnBorder = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.12 : 0.28);
+    const pipCloseBg = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.14 : 0.36);
+    const pipCloseBorder = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.18 : 0.4);
+    const pipShadow = `0 12px 28px ${hexToRgba('#000000', group === 'light' ? 0.16 : 0.45)}`;
+    const tinyMix = mixHex(surface, background, group === 'light' ? 0.12 : 0.28);
+    const tinyBg = hexToRgba(tinyMix, group === 'light' ? 0.9 : 0.82);
+    const tinyBorder = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.08 : 0.26);
+    const tinyShadow = `0 8px 28px ${hexToRgba('#000000', group === 'light' ? 0.18 : 0.48)}`;
+    const tinyCloseBg = hexToRgba(accent, group === 'light' ? 0.25 : 0.35);
+    const tinyCloseBgHover = hexToRgba(accent, group === 'light' ? 0.35 : 0.45);
+    const sharedFont = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 
     return {
         '--bg': background,
@@ -306,7 +324,29 @@ const createThemeTokens = (theme) => {
         '--border-subtle': borderSubtle,
         '--border-strong': borderStrong,
         '--shadow-soft': shadowSoft,
-        '--shadow-raised': shadowRaised
+        '--shadow-raised': shadowRaised,
+        '--window-radius': windowRadius,
+        '--header-height': headerHeight,
+        '--header-control-height': headerControlHeight,
+        '--pip-bg': pipBg,
+        '--pip-bg-2': pipBg2,
+        '--pip-time-color': textPrimary,
+        '--pip-btn-bg': pipBtnBase,
+        '--pip-btn-border': pipBtnBorder,
+        '--pip-btn-hover-bg': pipBtnHover,
+        '--pip-close-bg': pipCloseBg,
+        '--pip-close-border': pipCloseBorder,
+        '--pip-font': sharedFont,
+        '--pip-shadow': pipShadow,
+        '--pip-radius': '14px',
+        '--tiny-bg': tinyBg,
+        '--tiny-text': textPrimary,
+        '--tiny-shadow': tinyShadow,
+        '--tiny-border': tinyBorder,
+        '--tiny-close-bg': tinyCloseBg,
+        '--tiny-close-bg-hover': tinyCloseBgHover,
+        '--tiny-close-border': tinyBorder,
+        '--tiny-font': sharedFont
     };
 };
 
@@ -318,15 +358,21 @@ class Timer {
         this.interval = null;
         this.preferredTimes = [];
         // One-time guards per run
-        this._completionFired = false;
-        this._soundPlayed = false;
-        
-        this.initializeElements();
+        this.hasRestoredTimes = false;
+        this.isSoundEnabled = true;
+        this.confettiTriggered = false;
+        this.lastBroadcastTimestamp = 0;
+        this.lastProgressUpdate = 0;
+        this.targetEndTime = null;
+        this.lastThemePayload = null;
+        this.manualOverride = false;
         this.handleThemeCardClick = this.handleThemeCardClick.bind(this);
+        this.initializeElements();
         this.setupThemeSystem();
         this.loadPreferredTimes();
         this.setupEventListeners();
         this.setupIpcListeners();
+        this.syncFromCore();
         this.setDefaultTime(15, 0);
     }
 
@@ -666,6 +712,7 @@ class Timer {
         body.classList.toggle('theme-light', theme.group === 'light');
 
         this.currentThemeId = themeId;
+        this.currentThemeTokens = tokens;
 
         if (!options.skipPersist) {
             try {
@@ -677,6 +724,7 @@ class Timer {
             console.log('[Theme] Applied theme:', themeId);
         } catch (_) {}
 
+        this.pushThemeToAuxWindows(theme, tokens);
         this.syncThemeUiState();
     }
 
@@ -702,6 +750,26 @@ class Timer {
         const normalized = (currentIndex + (direction % len) + len) % len;
         const nextTheme = this.themeOrder[normalized];
         this.applyThemeById(nextTheme);
+    }
+
+    pushThemeToAuxWindows(theme, tokens) {
+        if (!theme || !tokens) return;
+        if (!window.electronAPI || typeof window.electronAPI.updateAuxWindowTheme !== 'function') {
+            return;
+        }
+        const payload = {
+            id: theme.id,
+            group: theme.group,
+            tokens,
+            palette: theme.palette
+        };
+        try {
+            const result = window.electronAPI.updateAuxWindowTheme(payload);
+            if (result && typeof result.then === 'function') {
+                result.catch(() => {});
+            }
+            this.lastThemePayload = payload;
+        } catch (_) { /* ignore */ }
     }
 
     setDefaultTime(minutes, seconds) {

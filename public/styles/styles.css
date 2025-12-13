@@ -20,14 +20,18 @@ body::-webkit-scrollbar {
     display: none;
 }
 
+html, body {
+    border-radius: 16px 16px 0 0;
+}
+
 /* Container styles */
 .container {
     max-width: 480px;
-    max-height: calc(100vh - 40px);
+    max-height: calc(100vh - var(--header-height));
     margin: 0 auto;
     padding: 18px;
     background: var(--container-bg);
-    border-radius: 0 0 16px 16px;
+    border-radius: 0 0 var(--window-radius) var(--window-radius);
     box-shadow: var(--shadow-soft);
     overflow-y: auto;
     background-clip: padding-box;
@@ -82,13 +86,15 @@ body::-webkit-scrollbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 40px;
+    height: var(--header-height);
+    min-height: var(--header-height);
     padding: 0 16px;
     background-color: var(--header-bg);
     -webkit-app-region: drag; /* Make header draggable */
     position: relative;
     z-index: 1000;
-
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
 }
 
 /* App title in title bar */
@@ -882,6 +888,8 @@ body {
 
 :root {
     /* Midnight defaults ensure graceful load before JS applies theme */
+    --window-radius: 16px;
+    --header-height: 40px;
     --bg: #0f0f12;
     --header-bg: #1a1a1f;
     --container-bg: #141418;
@@ -1002,35 +1010,45 @@ body { background: var(--bg); color: var(--text); }
     border-color: var(--action-hover-border);
 }
 
-.theme-btn.active {
-    box-shadow: inset 0 0 0 2px var(--accent-soft);
+.theme-btn {
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--action-border);
+    background: var(--action-bg);
+    color: var(--action-text);
+    transition: all 0.25s ease;
+}
+
+.theme-btn:hover {
+    background: var(--action-hover-bg);
+    border-color: var(--action-hover-border);
 }
 
 /* Theme selector */
 .theme-panel {
     display: flex;
     flex-direction: column;
-    gap: 28px;
-    padding: 18px 6px 24px;
+    gap: 20px;
+    padding: 14px 4px 18px;
     color: var(--text-primary);
 }
 
 .theme-panel-header {
     display: flex;
     justify-content: space-between;
-    gap: 18px;
+    gap: 12px;
     align-items: flex-start;
     flex-wrap: wrap;
 }
 
 .theme-panel-header h3 {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 600;
     color: var(--text-heading);
 }
 
 .theme-panel-subtitle {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--text-secondary);
     margin-top: 4px;
 }
@@ -1041,20 +1059,20 @@ body { background: var(--bg); color: var(--text); }
     gap: 4px;
     background: var(--surface-muted);
     border: 1px solid var(--border-subtle);
-    border-radius: 12px;
-    padding: 12px 16px;
+    border-radius: 10px;
+    padding: 10px 14px;
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
 }
 
 .theme-panel-current-label {
-    font-size: 11px;
+    font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-secondary);
 }
 
 .theme-panel-current-name {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--text-heading);
 }
@@ -1062,7 +1080,7 @@ body { background: var(--bg); color: var(--text); }
 .theme-section {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 10px;
 }
 
 .theme-section-header {
@@ -1081,8 +1099,8 @@ body { background: var(--bg); color: var(--text); }
 
 .theme-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
+    gap: 10px;
     width: 100%;
 }
 
@@ -1090,9 +1108,9 @@ body { background: var(--bg); color: var(--text); }
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 16px;
-    border-radius: 14px;
+    gap: 6px;
+    padding: 10px;
+    border-radius: 12px;
     background: var(--theme-card-bg);
     border: 1px solid var(--theme-card-border);
     color: var(--text-primary);
@@ -1103,7 +1121,7 @@ body { background: var(--bg); color: var(--text); }
 }
 
 .theme-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
     border-color: var(--theme-card-hover-border);
     box-shadow: var(--theme-card-hover-shadow);
     background: var(--theme-card-hover-bg);
@@ -1121,13 +1139,13 @@ body { background: var(--bg); color: var(--text); }
 
 .theme-card-preview {
     display: flex;
-    gap: 6px;
+    gap: 4px;
 }
 
 .theme-swatch {
     flex: 1;
-    height: 36px;
-    border-radius: 10px;
+    height: 28px;
+    border-radius: 8px;
     border: 1px solid var(--theme-preview-border);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
@@ -1135,17 +1153,17 @@ body { background: var(--bg); color: var(--text); }
 .theme-card-info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
 }
 
 .theme-card-label {
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14px;
     color: var(--text-primary);
 }
 
 .theme-card-meta {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -1154,9 +1172,9 @@ body { background: var(--bg); color: var(--text); }
 .theme-card-active-indicator {
     position: absolute;
     top: 10px;
-    right: 12px;
-    width: 8px;
-    height: 8px;
+    right: 10px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: transparent;
     transition: all 0.25s ease;
@@ -1177,8 +1195,8 @@ body { background: var(--bg); color: var(--text); }
 
 .theme-panel::-webkit-scrollbar,
 .theme-grid::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
 }
 
 .theme-panel::-webkit-scrollbar-thumb,
@@ -1194,13 +1212,13 @@ body { background: var(--bg); color: var(--text); }
 
 @media (max-width: 520px) {
     .theme-panel {
-        padding: 16px 0 20px;
+        padding: 12px 0 16px;
     }
 
     .theme-panel-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 12px;
+        gap: 8px;
     }
 
     .theme-panel-current {
@@ -1271,10 +1289,10 @@ body { background: var(--bg); color: var(--text); }
 
 /* Unify rounding: apply to whole window rather than header/container separately */
 html, body {
-    border-radius: 16px !important;
+    border-radius: var(--window-radius) !important;
     overflow: hidden !important; /* clip inner content to rounded corners */
     background-clip: padding-box !important;
-    clip-path: inset(0 round 16px) !important; /* enforce perfect rounding */
+    clip-path: inset(0 round var(--window-radius)) !important; /* enforce perfect rounding */
 }
 
 /* Top strip mask matching header background to cover any aliasing at window edge */
@@ -1310,16 +1328,16 @@ body::after {
 html, body { height: 100%; }
 .container {
     margin-bottom: 0 !important;
-    min-height: calc(100vh - 40px) !important; /* header height is 40px */
-    border-bottom-left-radius: 16px !important;
-    border-bottom-right-radius: 16px !important;
+    min-height: calc(100vh - var(--header-height)) !important;
+    border-bottom-left-radius: var(--window-radius) !important;
+    border-bottom-right-radius: var(--window-radius) !important;
     overflow: hidden !important; /* clip inner content to radii */
 }
 
 /* Ensure the main content area scrolls internally to the bottom */
 .container {
-    max-height: calc(100vh - 40px) !important; /* constrain height to viewport */
-    height: calc(100vh - 40px) !important;
+    max-height: calc(100vh - var(--header-height)) !important; /* constrain height to viewport */
+    height: calc(100vh - var(--header-height)) !important;
     overflow-y: auto !important; /* allow vertical scrolling */
     -webkit-overflow-scrolling: touch; /* smooth on touchpads */
 }

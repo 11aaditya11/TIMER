@@ -39,7 +39,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Timer state forwarding
   forwardTimerStateToPip: (timerState) => ipcRenderer.invoke('forward-timer-state-to-pip', timerState),
   forwardTimerStateToTiny: (timerState) => ipcRenderer.invoke('forward-timer-state-to-tiny', timerState),
-  
+
+  // Theme synchronization
+  updateAuxWindowTheme: (payload) => ipcRenderer.invoke('theme:update-aux-windows', payload),
+  requestThemeTokens: () => ipcRenderer.invoke('theme:request-current'),
+  onThemeTokens: (callback) => ipcRenderer.on('theme:sync', (_event, data) => {
+    try { callback(data); } catch (_) {}
+  }),
+
   // Listeners for timer updates
   onMainTimerUpdate: (callback) => ipcRenderer.on('main-timer-update', callback),
   onPipTimerUpdate: (callback) => ipcRenderer.on('pip-timer-update', callback),
