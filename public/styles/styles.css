@@ -1,7 +1,6 @@
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
 body {
@@ -48,27 +47,17 @@ html, body {
 
 .tabs {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-bottom: 24px;
     justify-content: center;
-}
-
-.tab-btn {
-    padding: 8px 16px;
-    border-radius: 10px;
-    border: 1px solid var(--action-border);
-    background: var(--action-bg);
-    color: var(--action-text);
-    cursor: pointer;
-    font-weight: 600;
-    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+    padding: 0;
 }
 
 .tab-btn.active {
     background: var(--accent);
     color: var(--accent-contrast);
     border-color: transparent;
-    box-shadow: 0 18px 32px rgba(0, 0, 0, 0.26);
+    box-shadow: 0 20px 32px rgba(0, 0, 0, 0.26);
 }
 
 .tab-content { display: block; }
@@ -171,65 +160,42 @@ body {
     z-index: 1000;
 }
 
-.tiny-btn {
-    background: #2a2a30;
-    border: none;
-    color: #e7e7ea;
-    padding: 8px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+/* Action buttons inherit theme tokens */
+.tiny-btn,
+.pip-btn,
+.theme-btn,
+.set-btn,
+.add-btn,
+.back-btn,
+.preset-times .tab-btn,
+.tab-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 10px 16px;
+    background: var(--action-bg);
+    color: var(--action-text);
+    border: 1px solid var(--action-border);
+    border-radius: 12px;
+    font-weight: 500;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+    box-shadow: inset 0 0 0 0 rgba(0,0,0,0);
 }
 
-.tiny-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-}
-
-.pip-btn {
-    background: #2a2a30;
-    border: none;
-    color: #e7e7ea;
-    padding: 8px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
-}
-.min-btn {
-    background: #2a2a30;
-    border: none;
-    color: #e7e7ea;
-    padding: 8px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
-}
-.min-btn:hover {
-    background: #3a3a40;
-    transform: translateY(-2px);
-}
-.close-btn {
-    background: #b3261e;
-    border: none;
-    color: #ffffff;
-    padding: 8px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
-}
-
-.close-btn:hover {
-    background: #cf2f25;
-    transform: translateY(-2px);
-}
-
-.pip-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+.tiny-btn:hover,
+.pip-btn:hover,
+.theme-btn:hover,
+.set-btn:hover,
+.add-btn:hover,
+.back-btn:hover,
+.preset-times .tab-btn:hover,
+.tab-btn:hover {
+    background: var(--action-hover-bg);
+    border-color: var(--action-hover-border);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
 }
 
 .timer-display {
@@ -835,8 +801,8 @@ body {
 /* Responsive design */
 @media (max-width: 480px) {
     .container {
-        margin: 10px;
-        padding: 15px;
+        /* margin: 10px; */
+        /* padding: 15px; */
     }
     
     .time {
@@ -986,7 +952,7 @@ body { background: var(--bg); color: var(--text); }
     border-color: var(--btn-secondary-hover-border);
 }
 
-/* Action buttons: tiny/pip/set/add/back and quick start tab button */
+/* Action buttons: tiny/pip/theme/set/add/back/quick start */
 .tiny-btn,
 .pip-btn,
 .theme-btn,
@@ -995,33 +961,25 @@ body { background: var(--bg); color: var(--text); }
 .back-btn,
 .preset-times .tab-btn,
 .tab-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     background: var(--action-bg);
     color: var(--action-text);
-    border-color: var(--action-border);
-}
-.tiny-btn:hover,
-.pip-btn:hover,
-.set-btn:hover,
-.add-btn:hover,
-.back-btn:hover,
-.preset-times .tab-btn:hover,
-.tab-btn:hover {
-    background: var(--action-hover-bg);
-    border-color: var(--action-hover-border);
-}
-
-.theme-btn {
-    padding: 6px 10px;
-    border-radius: 10px;
     border: 1px solid var(--action-border);
-    background: var(--action-bg);
-    color: var(--action-text);
-    transition: all 0.25s ease;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-weight: 500;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+    box-shadow: inset 0 0 0 0 rgba(0,0,0,0);
 }
 
-.theme-btn:hover {
+.action-btn:hover {
     background: var(--action-hover-bg);
     border-color: var(--action-hover-border);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
 }
 
 /* Theme selector */
@@ -1029,14 +987,14 @@ body { background: var(--bg); color: var(--text); }
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 14px 4px 18px;
+    padding: 18px 10px 24px;
     color: var(--text-primary);
 }
 
 .theme-panel-header {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
+    gap: 16px;
     align-items: flex-start;
     flex-wrap: wrap;
 }
@@ -1060,7 +1018,7 @@ body { background: var(--bg); color: var(--text); }
     background: var(--surface-muted);
     border: 1px solid var(--border-subtle);
     border-radius: 10px;
-    padding: 10px 14px;
+    padding: 10px 2px;
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
 }
 
@@ -1102,6 +1060,7 @@ body { background: var(--bg); color: var(--text); }
     grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
     gap: 10px;
     width: 100%;
+    padding: 0 3px;
 }
 
 .theme-card {
@@ -1226,65 +1185,12 @@ body { background: var(--bg); color: var(--text); }
     }
 }
 
-/* Remove horizontal padding in main window (header + container) */
-.header {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-.container {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    max-width: 100% !important;
-    width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-}
-
-/* Make preset timers a bit smaller with left/right padding */
+/* Comfortable insets for preset and tabs sections */
 .preset-times {
-    padding-left: 14px !important;
-    padding-right: 14px !important;
+    padding: 0;
 }
 .preset-grid {
-    padding-left: 2px !important;  /* subtle inner breathing */
-    padding-right: 2px !important;
-}
-
-/* Move close/minimize buttons slightly left */
-.window-controls {
-    margin-right: 20px !important; /* moved 10px further left from previous 10px */
-    -webkit-app-region: no-drag !important;
-    pointer-events: auto !important;
-}
-
-/* Improve window control hit area slightly to avoid needing multiple clicks */
-.window-btn {
-    width: 14px !important;
-    height: 14px !important;
-    pointer-events: auto !important;
-}
-
-/* Ensure titlebar dot buttons don't inherit large button styles */
-.window-controls .window-btn {
-    padding: 0 !important;
-    border-radius: 50% !important;
-    box-shadow: none !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-}
-.window-controls .window-btn.close-btn,
-.window-controls .window-btn.minimize-btn,
-.window-controls .window-btn.maximize-btn {
-    padding: 0 !important;
-}
-
-/* Restore close button elongated pill shape */
-.window-controls .close-btn {
-    width: 36px !important;
-    height: 14px !important;
-    border-radius: 999px !important; /* semi-circles on both ends */
-    background-color: #ff5555 !important; /* keep red */
-    margin-left: 8px !important; /* preserve spacing from minimize */
+    padding: 0;
 }
 
 /* Unify rounding: apply to whole window rather than header/container separately */

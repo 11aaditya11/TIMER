@@ -137,6 +137,102 @@ const THEME_DEFINITIONS = [
         }
     },
     {
+        id: 'morning-sky',
+        name: 'Morning Sky',
+        group: 'light',
+        palette: {
+            background: '#F1F6FF',
+            surface: '#E2EDFF',
+            primaryText: '#1C2E4A',
+            secondaryText: '#5B708F',
+            accent: '#4B8CFF'
+        }
+    },
+    {
+        id: 'coastal-breeze',
+        name: 'Coastal Breeze',
+        group: 'light',
+        palette: {
+            background: '#F2FFFB',
+            surface: '#DEF5EE',
+            primaryText: '#123B34',
+            secondaryText: '#4A7B71',
+            accent: '#2DD4BF'
+        }
+    },
+    {
+        id: 'golden-hour',
+        name: 'Golden Hour',
+        group: 'light',
+        palette: {
+            background: '#FFF8ED',
+            surface: '#FFEBD1',
+            primaryText: '#3D2A14',
+            secondaryText: '#8C6D3B',
+            accent: '#FFB347'
+        }
+    },
+    {
+        id: 'peach-latte',
+        name: 'Peach Latte',
+        group: 'light',
+        palette: {
+            background: '#FFF3EE',
+            surface: '#FDE1D7',
+            primaryText: '#4C2A1F',
+            secondaryText: '#9F6B55',
+            accent: '#FF8A65'
+        }
+    },
+    {
+        id: 'icy-mint',
+        name: 'Icy Mint',
+        group: 'light',
+        palette: {
+            background: '#F4FFFE',
+            surface: '#E2F6F5',
+            primaryText: '#124C47',
+            secondaryText: '#4B7C75',
+            accent: '#2DD8A3'
+        }
+    },
+    {
+        id: 'linen-slate',
+        name: 'Linen Slate',
+        group: 'light',
+        palette: {
+            background: '#F9F8F4',
+            surface: '#ECE9E0',
+            primaryText: '#2D2A24',
+            secondaryText: '#6F6A5C',
+            accent: '#8D9CFF'
+        }
+    },
+    {
+        id: 'orchid-glow',
+        name: 'Orchid Glow',
+        group: 'light',
+        palette: {
+            background: '#FFF6FF',
+            surface: '#F6E7FF',
+            primaryText: '#351B43',
+            secondaryText: '#7C5C96',
+            accent: '#BA68C8'
+        }
+    },
+    {
+        id: 'fresh-snow',
+        name: 'Fresh Snow',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F1F3F6',
+            primaryText: '#1C2230',
+            secondaryText: '#5E6A7D',
+            accent: '#5C7CFA'
+        }
+    },
+    {
         id: 'midnight',
         name: 'Midnight (Original)',
         group: 'dark',
@@ -206,6 +302,114 @@ const THEME_DEFINITIONS = [
             primaryText: '#E2E8F0',
             secondaryText: '#94A3B8',
             accent: '#6366F1'
+        }
+    },
+    {
+        id: 'ember-glow',
+        name: 'Ember Glow',
+        group: 'dark',
+        palette: {
+            background: '#150912',
+            surface: '#1F0F1D',
+            primaryText: '#F8E6F2',
+            secondaryText: '#D6A8C4',
+            accent: '#FF5C8A'
+        }
+    },
+    {
+        id: 'northern-pine',
+        name: 'Northern Pine',
+        group: 'dark',
+        palette: {
+            background: '#0B1714',
+            surface: '#12211C',
+            primaryText: '#D9F5EB',
+            secondaryText: '#7FC4A9',
+            accent: '#34D399'
+        }
+    },
+    {
+        id: 'royal-plum',
+        name: 'Royal Plum',
+        group: 'dark',
+        palette: {
+            background: '#0E0518',
+            surface: '#1A0F29',
+            primaryText: '#EBD9FF',
+            secondaryText: '#BBA5E6',
+            accent: '#C084FC'
+        }
+    },
+    {
+        id: 'onyx-gold',
+        name: 'Onyx Gold',
+        group: 'dark',
+        palette: {
+            background: '#050505',
+            surface: '#16120A',
+            primaryText: '#F5EAC5',
+            secondaryText: '#D7C48A',
+            accent: '#F4C542'
+        }
+    },
+    {
+        id: 'aurora-teal',
+        name: 'Aurora Teal',
+        group: 'dark',
+        palette: {
+            background: '#03131F',
+            surface: '#102333',
+            primaryText: '#D3F8FF',
+            secondaryText: '#8FD3E7',
+            accent: '#22D3EE'
+        }
+    },
+    {
+        id: 'midnight-copper',
+        name: 'Midnight Copper',
+        group: 'dark',
+        palette: {
+            background: '#120D08',
+            surface: '#1E170F',
+            primaryText: '#FFE3CC',
+            secondaryText: '#D2B090',
+            accent: '#FF8F45'
+        }
+    },
+    {
+        id: 'void-magenta',
+        name: 'Void Magenta',
+        group: 'dark',
+        palette: {
+            background: '#08000C',
+            surface: '#150021',
+            primaryText: '#F8D8FF',
+            secondaryText: '#BF9BE2',
+            accent: '#FF55FF'
+        }
+    },
+    {
+        id: 'twilight-rust',
+        name: 'Twilight Rust',
+        group: 'dark',
+        palette: {
+            background: '#1C0F0C',
+            surface: '#2B1B16',
+            primaryText: '#FFD8C2',
+            secondaryText: '#E3A48A',
+            accent: '#FF7F50'
+        }
+    },
+    {
+        id: 'shadow-amber',
+        name: 'Shadow Amber',
+        group: 'dark',
+        palette: {
+            background: '#11100A',
+            surface: '#1F1E12',
+            primaryText: '#FFE3B0',
+            secondaryText: '#CFB27A',
+            accent: '#F59E0B'
         }
     }
 ];
