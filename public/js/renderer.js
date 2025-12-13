@@ -1,3 +1,315 @@
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+const hexToRgb = (hex) => {
+    if (!hex) return null;
+    const normalized = hex.replace('#', '');
+    const full = normalized.length === 3
+        ? normalized.split('').map((c) => c + c).join('')
+        : normalized;
+    const intVal = parseInt(full, 16);
+    if (Number.isNaN(intVal)) return null;
+    return {
+        r: (intVal >> 16) & 255,
+        g: (intVal >> 8) & 255,
+        b: intVal & 255
+    };
+};
+
+const rgbToHex = (r, g, b) => {
+    const toHex = (value) => clamp(Math.round(value), 0, 255).toString(16).padStart(2, '0');
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
+};
+
+const mixHex = (source, target, weight) => {
+    const sourceRgb = hexToRgb(source);
+    const targetRgb = hexToRgb(target);
+    const amount = clamp(weight, 0, 1);
+    if (!sourceRgb || !targetRgb) return source;
+    const r = sourceRgb.r * (1 - amount) + targetRgb.r * amount;
+    const g = sourceRgb.g * (1 - amount) + targetRgb.g * amount;
+    const b = sourceRgb.b * (1 - amount) + targetRgb.b * amount;
+    return rgbToHex(r, g, b);
+};
+
+const lighten = (hex, amount) => mixHex(hex, '#FFFFFF', amount);
+const darken = (hex, amount) => mixHex(hex, '#000000', amount);
+
+const hexToRgba = (hex, alpha = 1) => {
+    const rgb = hexToRgb(hex);
+    if (!rgb) return `rgba(0, 0, 0, ${alpha})`;
+    return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${clamp(alpha, 0, 1)})`;
+};
+
+const getContrastColor = (hex, lightFallback = '#101015', darkFallback = '#FFFFFF') => {
+    const rgb = hexToRgb(hex);
+    if (!rgb) return darkFallback;
+    const srgb = [rgb.r, rgb.g, rgb.b].map((component) => {
+        const channel = component / 255;
+        return channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
+    });
+    const luminance = 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+    return luminance > 0.6 ? lightFallback : darkFallback;
+};
+
+const THEME_DEFINITIONS = [
+    {
+        id: 'classic-minimal',
+        name: 'Classic Minimal',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#000000',
+            secondaryText: '#666666',
+            accent: '#4CAF50'
+        }
+    },
+    {
+        id: 'soft-mint',
+        name: 'Soft Mint',
+        group: 'light',
+        palette: {
+            background: '#F9FAFB',
+            surface: '#E0F2F1',
+            primaryText: '#263238',
+            secondaryText: '#607D8B',
+            accent: '#A0E7E5'
+        }
+    },
+    {
+        id: 'warm-blush',
+        name: 'Warm Blush',
+        group: 'light',
+        palette: {
+            background: '#FFF8E8',
+            surface: '#FAFAFA',
+            primaryText: '#333333',
+            secondaryText: '#8D8DAA',
+            accent: '#F4A7B9'
+        }
+    },
+    {
+        id: 'neutral-gray',
+        name: 'Neutral Gray',
+        group: 'light',
+        palette: {
+            background: '#FAFAFA',
+            surface: '#E4E5F1',
+            primaryText: '#484B6A',
+            secondaryText: '#9394A5',
+            accent: '#81C784'
+        }
+    },
+    {
+        id: 'polar-mist',
+        name: 'Polar Mist',
+        group: 'light',
+        palette: {
+            background: '#F5FAFF',
+            surface: '#E8F1FF',
+            primaryText: '#1C2A3A',
+            secondaryText: '#5C6B7C',
+            accent: '#2A9DF4'
+        }
+    },
+    {
+        id: 'sunlit-dune',
+        name: 'Sunlit Dune',
+        group: 'light',
+        palette: {
+            background: '#FFF7E6',
+            surface: '#FFE9C4',
+            primaryText: '#3E2723',
+            secondaryText: '#7A5E4B',
+            accent: '#FF9800'
+        }
+    },
+    {
+        id: 'lavender-haze',
+        name: 'Lavender Haze',
+        group: 'light',
+        palette: {
+            background: '#F8F5FF',
+            surface: '#EEE6FF',
+            primaryText: '#251B4A',
+            secondaryText: '#7A6BAF',
+            accent: '#8A79FF'
+        }
+    },
+    {
+        id: 'midnight',
+        name: 'Midnight (Original)',
+        group: 'dark',
+        palette: {
+            background: '#0F0F12',
+            surface: '#141418',
+            primaryText: '#E7E7EA',
+            secondaryText: '#B7BCC2',
+            accent: '#4A90E2'
+        }
+    },
+    {
+        id: 'elevated-gray',
+        name: 'Elevated Gray',
+        group: 'dark',
+        palette: {
+            background: '#121212',
+            surface: '#1E1E1E',
+            primaryText: '#FFFFFF',
+            secondaryText: '#B0B0B0',
+            accent: '#66BB6A'
+        }
+    },
+    {
+        id: 'deep-navy',
+        name: 'Deep Navy',
+        group: 'dark',
+        palette: {
+            background: '#0D1117',
+            surface: '#161B22',
+            primaryText: '#E0E0E0',
+            secondaryText: '#8B949E',
+            accent: '#58A6FF'
+        }
+    },
+    {
+        id: 'moody-charcoal',
+        name: 'Moody Charcoal',
+        group: 'dark',
+        palette: {
+            background: '#1C2526',
+            surface: '#263132',
+            primaryText: '#F0F0F0',
+            secondaryText: '#A0A0A0',
+            accent: '#FFAB91'
+        }
+    },
+    {
+        id: 'oled-black',
+        name: 'OLED Black',
+        group: 'dark',
+        palette: {
+            background: '#000000',
+            surface: '#121212',
+            primaryText: '#EDEDED',
+            secondaryText: '#909090',
+            accent: '#90CAF9'
+        }
+    },
+    {
+        id: 'cobalt-night',
+        name: 'Cobalt Night',
+        group: 'dark',
+        palette: {
+            background: '#111827',
+            surface: '#182235',
+            primaryText: '#E2E8F0',
+            secondaryText: '#94A3B8',
+            accent: '#6366F1'
+        }
+    }
+];
+
+const LEGACY_THEME_MAP = {
+    'theme-midnight': 'midnight',
+    'theme-ocean': 'deep-navy',
+    'theme-sunset': 'moody-charcoal',
+    'theme-forest': 'elevated-gray',
+    'theme-neon': 'oled-black'
+};
+
+const createThemeTokens = (theme) => {
+    const { palette, group } = theme;
+    const background = palette.background;
+    const surface = palette.surface || mixHex(background, group === 'light' ? '#FFFFFF' : '#000000', group === 'light' ? 0.08 : 0.12);
+    const surfaceElevated = group === 'light' ? lighten(surface, 0.08) : darken(surface, 0.08);
+    const surfaceMuted = group === 'light' ? lighten(surface, 0.04) : darken(surface, 0.06);
+    const surfaceMutedHover = group === 'light' ? darken(surfaceMuted, 0.06) : lighten(surfaceMuted, 0.08);
+    const headerBackground = palette.headerBackground || (group === 'light' ? darken(surface, 0.08) : darken(surface, 0.14));
+    const accent = palette.accent;
+    const accentContrast = palette.accentText || getContrastColor(accent);
+    const textPrimary = palette.primaryText;
+    const textSecondary = palette.secondaryText || mixHex(textPrimary, group === 'light' ? '#000000' : '#FFFFFF', 0.4);
+    const themeCardBg = group === 'light' ? lighten(surface, 0.12) : darken(surface, 0.12);
+    const themeCardHoverBg = group === 'light' ? darken(themeCardBg, 0.06) : lighten(themeCardBg, 0.08);
+    const borderSubtle = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.08 : 0.18);
+    const borderStrong = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.18 : 0.28);
+    const progressBg = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.12 : 0.1);
+    const accentSoft = hexToRgba(accent, group === 'light' ? 0.22 : 0.32);
+    const actionText = getContrastColor(surfaceMuted);
+    const inputBg = group === 'light' ? lighten(surface, 0.02) : darken(surface, 0.08);
+    const inputBorder = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.12 : 0.22);
+    const inputPlaceholder = hexToRgba(textPrimary, 0.5);
+    const focusRing = hexToRgba(accent, 0.55);
+    const actionBorder = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.12 : 0.24);
+    const actionHoverBg = group === 'light' ? darken(surfaceMuted, 0.06) : lighten(surfaceMuted, 0.08);
+    const secondaryBorder = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.15 : 0.25);
+    const secondaryHoverBorder = hexToRgba(accent, 0.55);
+    const shadowSoft = `0 16px 32px ${hexToRgba('#000000', group === 'light' ? 0.16 : 0.45)}`;
+    const shadowRaised = `0 24px 48px ${hexToRgba('#000000', group === 'light' ? 0.18 : 0.55)}`;
+    const themeCardBorder = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.08 : 0.22);
+    const themeCardHoverBorder = hexToRgba(accent, 0.55);
+    const themeCardShadow = `0 18px 36px ${hexToRgba('#000000', group === 'light' ? 0.16 : 0.5)}`;
+    const themeCardHoverShadow = `0 24px 44px ${hexToRgba('#000000', group === 'light' ? 0.18 : 0.6)}`;
+    const surfaceCard = group === 'light' ? lighten(surface, 0.1) : darken(surface, 0.1);
+    const textInverse = getContrastColor(surface, '#101015', '#FFFFFF');
+
+    return {
+        '--bg': background,
+        '--header-bg': headerBackground,
+        '--container-bg': surface,
+        '--surface': surface,
+        '--surface-elevated': surfaceElevated,
+        '--surface-muted': surfaceMuted,
+        '--surface-muted-hover': surfaceMutedHover,
+        '--surface-card': surfaceCard,
+        '--surface-card-hover': themeCardHoverBg,
+        '--text': textPrimary,
+        '--text-primary': textPrimary,
+        '--text-secondary': textSecondary,
+        '--text-heading': textPrimary,
+        '--text-inverse': textInverse,
+        '--time-text': textPrimary,
+        '--accent': accent,
+        '--accent-contrast': accentContrast,
+        '--accent-soft': accentSoft,
+        '--progress-ring': accent,
+        '--progress-bg': progressBg,
+        '--btn-primary-bg': accent,
+        '--btn-primary-text': accentContrast,
+        '--btn-primary-shadow': shadowSoft,
+        '--btn-primary-hover-shadow': shadowRaised,
+        '--btn-secondary-bg': surfaceMuted,
+        '--btn-secondary-text': textSecondary,
+        '--btn-secondary-border': secondaryBorder,
+        '--btn-secondary-hover-bg': actionHoverBg,
+        '--btn-secondary-hover-border': secondaryHoverBorder,
+        '--action-bg': surfaceMuted,
+        '--action-text': actionText,
+        '--action-border': actionBorder,
+        '--action-hover-bg': actionHoverBg,
+        '--action-hover-border': secondaryHoverBorder,
+        '--input-bg': inputBg,
+        '--input-border': inputBorder,
+        '--input-border-focus': focusRing,
+        '--input-placeholder': inputPlaceholder,
+        '--focus-ring': focusRing,
+        '--theme-card-bg': themeCardBg,
+        '--theme-card-hover-bg': themeCardHoverBg,
+        '--theme-card-border': themeCardBorder,
+        '--theme-card-hover-border': themeCardHoverBorder,
+        '--theme-card-shadow': themeCardShadow,
+        '--theme-card-hover-shadow': themeCardHoverShadow,
+        '--theme-chip-bg': hexToRgba(accent, group === 'light' ? 0.12 : 0.24),
+        '--theme-chip-text': accentContrast,
+        '--theme-preview-border': hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', 0.18),
+        '--border-subtle': borderSubtle,
+        '--border-strong': borderStrong,
+        '--shadow-soft': shadowSoft,
+        '--shadow-raised': shadowRaised
+    };
+};
+
 class Timer {
     constructor() {
         this.timeLeft = 0;
@@ -10,10 +322,8 @@ class Timer {
         this._soundPlayed = false;
         
         this.initializeElements();
-        // Theme setup
-        this.themes = ['theme-midnight', 'theme-ocean', 'theme-sunset', 'theme-forest', 'theme-neon'];
-        this.currentThemeIndex = 0;
-        this.loadAndApplyTheme();
+        this.handleThemeCardClick = this.handleThemeCardClick.bind(this);
+        this.setupThemeSystem();
         this.loadPreferredTimes();
         this.setupEventListeners();
         this.setupIpcListeners();
@@ -38,6 +348,12 @@ class Timer {
         this.closeBtn = document.getElementById('closeBtn');
         this.minBtn = document.getElementById('minBtn');
         this.backBtn = document.getElementById('backBtn');
+        this.themeBtn = document.getElementById('themeBtn');
+        this.backFromThemeBtn = document.getElementById('backFromThemeBtn');
+        this.lightThemeGrid = document.getElementById('lightThemeGrid');
+        this.darkThemeGrid = document.getElementById('darkThemeGrid');
+        this.currentThemeLabelEl = document.getElementById('currentThemeLabel');
+        this.themePanel = document.getElementById('tab-theme');
 
         // Tabs
         this.tabButtons = document.querySelectorAll('.tab-btn');
@@ -104,20 +420,7 @@ class Timer {
 
         // Tab switching
         this.tabButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const target = btn.getAttribute('data-tab');
-                this.tabButtons.forEach(b => b.classList.remove('active'));
-                this.tabPanels.forEach(p => p.classList.remove('active'));
-                btn.classList.add('active');
-                const panel = document.getElementById(target);
-                if (panel) panel.classList.add('active');
-                // Toggle body class to hide PiP/Tiny buttons on New Timer tab
-                if (target === 'tab-new') {
-                    document.body.classList.add('new-tab-active');
-                } else {
-                    document.body.classList.remove('new-tab-active');
-                }
-            });
+            btn.addEventListener('click', () => this.handleTabNavigation(btn));
         });
 
         // Enter key support for inputs
@@ -136,16 +439,19 @@ class Timer {
 
         // Back button event listener
         if (this.backBtn) {
-            this.backBtn.addEventListener('click', () => {
-                // Switch back to timer tab
-                this.tabButtons.forEach(b => b.classList.remove('active'));
-                this.tabPanels.forEach(p => p.classList.remove('active'));
-                
-                // Activate timer tab
-                const timerPanel = document.getElementById('tab-timer');
-                if (timerPanel) timerPanel.classList.add('active');
-                // Ensure PiP/Tiny buttons are visible again
-                document.body.classList.remove('new-tab-active');
+            this.backBtn.addEventListener('click', () => this.navigateToTab('tab-timer'));
+        }
+        if (this.backFromThemeBtn) {
+            this.backFromThemeBtn.addEventListener('click', () => this.navigateToTab('tab-timer'));
+        }
+        if (this.themeBtn) {
+            this.themeBtn.addEventListener('click', () => {
+                const isPressed = this.themeBtn.getAttribute('aria-pressed') === 'true';
+                if (!isPressed) {
+                    this.navigateToTab('tab-theme');
+                } else {
+                    this.navigateToTab('tab-timer');
+                }
             });
         }
 
@@ -214,36 +520,188 @@ class Timer {
     // =====================
     // Theme management
     // =====================
-    loadAndApplyTheme() {
-        try {
-            const saved = localStorage.getItem('timer-app-theme');
-            if (saved && this.themes.includes(saved)) {
-                this.currentThemeIndex = this.themes.indexOf(saved);
-            }
-        } catch (_) { /* ignore storage errors */ }
-        this.applyTheme(this.themes[this.currentThemeIndex]);
-        try { console.log('[Theme] Loaded theme:', this.themes[this.currentThemeIndex]); } catch (_) {}
+    handleTabNavigation(button) {
+        const target = button.getAttribute('data-tab');
+        this.navigateToTab(target, button);
     }
 
-    applyTheme(themeClass) {
+    navigateToTab(target, button) {
+        this.tabButtons.forEach(b => b.classList.remove('active'));
+        this.tabPanels.forEach(p => p.classList.remove('active'));
+        if (button) {
+            button.classList.add('active');
+        } else {
+            const matchingBtn = Array.from(this.tabButtons).find(b => b.getAttribute('data-tab') === target);
+            if (matchingBtn) {
+                matchingBtn.classList.add('active');
+                if (matchingBtn === this.themeBtn) {
+                    this.themeBtn.setAttribute('aria-pressed', 'true');
+                } else {
+                    this.themeBtn && this.themeBtn.setAttribute('aria-pressed', 'false');
+                }
+            }
+        }
+        const panel = document.getElementById(target);
+        if (panel) panel.classList.add('active');
+        if (target === 'tab-new') {
+            document.body.classList.add('new-tab-active');
+        } else {
+            document.body.classList.remove('new-tab-active');
+        }
+        if (target === 'tab-theme' && this.themeBtn) {
+            this.themeBtn.classList.add('active');
+            this.themeBtn.setAttribute('aria-pressed', 'true');
+        } else if (this.themeBtn) {
+            this.themeBtn.classList.remove('active');
+            this.themeBtn.setAttribute('aria-pressed', 'false');
+        }
+    }
+
+    setupThemeSystem() {
+        this.themeDefinitions = THEME_DEFINITIONS;
+        this.themeLookup = new Map(this.themeDefinitions.map(def => [def.id, def]));
+        this.groupedThemes = {
+            light: this.themeDefinitions.filter(theme => theme.group === 'light'),
+            dark: this.themeDefinitions.filter(theme => theme.group === 'dark')
+        };
+        this.themeOrder = this.themeDefinitions.map(theme => theme.id);
+        this.currentThemeId = this.themeOrder[0];
+
+        this.restoreThemePreference();
+        this.applyThemeById(this.currentThemeId, { skipPersist: true });
+        this.renderThemeGallery();
+        this.syncThemeUiState();
+    }
+
+    restoreThemePreference() {
+        let saved = null;
         try {
-            const body = document.body;
-            // Remove any previous theme classes
-            this.themes.forEach(t => body.classList.remove(t));
-            // Apply new
-            if (themeClass) body.classList.add(themeClass);
-            // Persist
-            try { localStorage.setItem('timer-app-theme', themeClass); } catch (_) {}
-            try { console.log('[Theme] Applied theme:', themeClass); } catch (_) {}
-        } catch (_) { /* ignore */ }
+            saved = localStorage.getItem('timer-app-theme');
+        } catch (_) {
+            saved = null;
+        }
+
+        if (!saved) {
+            this.currentThemeId = this.currentThemeId || 'midnight';
+            return;
+        }
+
+        if (this.themeLookup.has(saved)) {
+            this.currentThemeId = saved;
+            return;
+        }
+
+        const remapped = LEGACY_THEME_MAP[saved];
+        if (remapped && this.themeLookup.has(remapped)) {
+            this.currentThemeId = remapped;
+        }
+    }
+
+    renderThemeGallery() {
+        if (this.lightThemeGrid) {
+            this.lightThemeGrid.innerHTML = '';
+            this.groupedThemes.light.forEach((theme) => {
+                const card = this.createThemeCard(theme);
+                this.lightThemeGrid.appendChild(card);
+            });
+        }
+
+        if (this.darkThemeGrid) {
+            this.darkThemeGrid.innerHTML = '';
+            this.groupedThemes.dark.forEach((theme) => {
+                const card = this.createThemeCard(theme);
+                this.darkThemeGrid.appendChild(card);
+            });
+        }
+    }
+
+    createThemeCard(theme) {
+        const card = document.createElement('button');
+        card.className = 'theme-card';
+        card.type = 'button';
+        card.setAttribute('data-theme-id', theme.id);
+        card.setAttribute('role', 'listitem');
+        card.setAttribute('aria-pressed', theme.id === this.currentThemeId ? 'true' : 'false');
+        card.innerHTML = `
+            <span class="theme-card-preview">
+                <span class="theme-swatch" style="background:${theme.palette.background}"></span>
+                <span class="theme-swatch" style="background:${theme.palette.surface}"></span>
+                <span class="theme-swatch" style="background:${theme.palette.accent}"></span>
+            </span>
+            <span class="theme-card-info">
+                <span class="theme-card-label">${theme.name}</span>
+                <span class="theme-card-meta">${theme.group === 'light' ? 'Light' : 'Dark'} theme</span>
+            </span>
+            <span class="theme-card-active-indicator" aria-hidden="true"></span>
+        `;
+        card.addEventListener('click', this.handleThemeCardClick);
+        return card;
+    }
+
+    handleThemeCardClick(event) {
+        const target = event.currentTarget;
+        const themeId = target.getAttribute('data-theme-id');
+        if (!themeId || themeId === this.currentThemeId) {
+            return;
+        }
+        this.applyThemeById(themeId);
+        this.syncThemeUiState();
+    }
+
+    applyThemeById(themeId, options = {}) {
+        if (!this.themeLookup.has(themeId)) {
+            console.warn('Attempted to apply unknown theme', themeId);
+            return;
+        }
+        const theme = this.themeLookup.get(themeId);
+        const tokens = createThemeTokens(theme);
+        const body = document.body;
+
+        Object.entries(tokens).forEach(([key, value]) => {
+            body.style.setProperty(key, value);
+        });
+
+        body.dataset.themeGroup = theme.group;
+        body.classList.toggle('theme-dark', theme.group === 'dark');
+        body.classList.toggle('theme-light', theme.group === 'light');
+
+        this.currentThemeId = themeId;
+
+        if (!options.skipPersist) {
+            try {
+                localStorage.setItem('timer-app-theme', themeId);
+            } catch (_) {}
+        }
+
+        try {
+            console.log('[Theme] Applied theme:', themeId);
+        } catch (_) {}
+
+        this.syncThemeUiState();
+    }
+
+    syncThemeUiState() {
+        if (!this.themeLookup.has(this.currentThemeId)) return;
+        const theme = this.themeLookup.get(this.currentThemeId);
+        if (this.currentThemeLabelEl) {
+            this.currentThemeLabelEl.textContent = theme.name;
+        }
+
+        const allCards = document.querySelectorAll('.theme-card');
+        allCards.forEach((card) => {
+            const cardThemeId = card.getAttribute('data-theme-id');
+            const isActive = cardThemeId === this.currentThemeId;
+            card.classList.toggle('active', isActive);
+            card.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
     }
 
     cycleTheme(direction = 1) {
-        const len = this.themes.length;
-        this.currentThemeIndex = (this.currentThemeIndex + (direction % len) + len) % len;
-        const nextTheme = this.themes[this.currentThemeIndex];
-        try { console.log('[Theme] Cycling', direction > 0 ? 'next' : 'prev', '->', nextTheme); } catch (_) {}
-        this.applyTheme(nextTheme);
+        const len = this.themeOrder.length;
+        const currentIndex = this.themeOrder.indexOf(this.currentThemeId);
+        const normalized = (currentIndex + (direction % len) + len) % len;
+        const nextTheme = this.themeOrder[normalized];
+        this.applyThemeById(nextTheme);
     }
 
     setDefaultTime(minutes, seconds) {

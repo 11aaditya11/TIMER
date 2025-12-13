@@ -32,6 +32,19 @@
                     <path d="M12 6v6l4 2"></path>
                 </svg>
             </button>
+            <button class="theme-btn" id="themeBtn" data-tab="tab-theme" title="Theme selector" aria-label="Open theme selector" aria-pressed="false">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 3v3"></path>
+                    <path d="M21 12h-3"></path>
+                    <path d="M12 21v-3"></path>
+                    <path d="M6 12H3"></path>
+                    <path d="M16.95 7.05l-2.12 2.12"></path>
+                    <path d="M7.05 7.05l2.12 2.12"></path>
+                    <path d="M7.05 16.95l2.12-2.12"></path>
+                    <path d="M16.95 16.95l-2.12-2.12"></path>
+                </svg>
+            </button>
         </div>
 
         <div class="tab-content">
@@ -79,6 +92,37 @@
                         <input type="text" id="presetNameInput" placeholder="Timer name">
                         <input type="number" id="presetMinutesInput" placeholder="Minutes" min="1" max="999">
                         <button class="add-btn" id="addPresetBtn">Add</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="tab-theme">
+                <button class="back-btn" id="backFromThemeBtn">← Back to Timer</button>
+
+                <div class="theme-panel">
+                    <div class="theme-panel-header">
+                        <div>
+                            <h3>Choose Theme</h3>
+                            <p class="theme-panel-subtitle">Preview and apply a theme. Use Shift + ←/→ to cycle quickly.</p>
+                        </div>
+                        <div class="theme-panel-current">
+                            <span class="theme-panel-current-label">Active theme</span>
+                            <span class="theme-panel-current-name" id="currentThemeLabel">Midnight</span>
+                        </div>
+                    </div>
+
+                    <div class="theme-section" aria-labelledby="lightThemesHeading">
+                        <div class="theme-section-header">
+                            <h4 id="lightThemesHeading">Light Themes</h4>
+                        </div>
+                        <div class="theme-grid" id="lightThemeGrid" role="list"></div>
+                    </div>
+
+                    <div class="theme-section" aria-labelledby="darkThemesHeading">
+                        <div class="theme-section-header">
+                            <h4 id="darkThemesHeading">Dark Themes</h4>
+                        </div>
+                        <div class="theme-grid" id="darkThemeGrid" role="list"></div>
                     </div>
                 </div>
             </div>
