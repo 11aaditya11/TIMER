@@ -64,6 +64,91 @@ const THEME_DEFINITIONS = [
             accent: '#4CAF50'
         }
     },
+
+    {
+        id: 'classic-cobalt',
+        name: 'Classic Cobalt',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#102A43',
+            secondaryText: '#486581',
+            accent: '#2563EB'
+        }
+    },
+    {
+        id: 'classic-crimson',
+        name: 'Classic Crimson',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#3B0D0D',
+            secondaryText: '#7A2A2A',
+            accent: '#D92D20'
+        }
+    },
+    {
+        id: 'classic-emerald',
+        name: 'Classic Emerald',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#123524',
+            secondaryText: '#3F7057',
+            accent: '#16A34A'
+        }
+    },
+    {
+        id: 'classic-plum',
+        name: 'Classic Plum',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#32133B',
+            secondaryText: '#684067',
+            accent: '#9D4EDD'
+        }
+    },
+    {
+        id: 'classic-amber',
+        name: 'Classic Amber',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#392100',
+            secondaryText: '#7B4F0B',
+            accent: '#F59E0B'
+        }
+    },
+    {
+        id: 'classic-slate',
+        name: 'Classic Slate',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#1A1D23',
+            secondaryText: '#4B4F59',
+            accent: '#64748B'
+        }
+    },
+    {
+        id: 'classic-rose',
+        name: 'Classic Rose',
+        group: 'light',
+        palette: {
+            background: '#FFFFFF',
+            surface: '#F5F5F5',
+            primaryText: '#3F1222',
+            secondaryText: '#7A3A53',
+            accent: '#EC4899'
+        }
+    },
     {
         id: 'soft-mint',
         name: 'Soft Mint',
@@ -232,6 +317,7 @@ const THEME_DEFINITIONS = [
             accent: '#5C7CFA'
         }
     },
+    
     {
         id: 'clear-glass',
         name: 'Clear Glass',
@@ -273,90 +359,7 @@ const THEME_DEFINITIONS = [
             '--tiny-close-color': '#111111'
         }
     },
-    {
-        id: 'classic-cobalt',
-        name: 'Classic Cobalt',
-        group: 'light',
-        palette: {
-            background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#102A43',
-            secondaryText: '#486581',
-            accent: '#2563EB'
-        }
-    },
-    {
-        id: 'classic-crimson',
-        name: 'Classic Crimson',
-        group: 'light',
-        palette: {
-            background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#3B0D0D',
-            secondaryText: '#7A2A2A',
-            accent: '#D92D20'
-        }
-    },
-    {
-        id: 'classic-emerald',
-        name: 'Classic Emerald',
-        group: 'light',
-        palette: {
-            background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#123524',
-            secondaryText: '#3F7057',
-            accent: '#16A34A'
-        }
-    },
-    {
-        id: 'classic-plum',
-        name: 'Classic Plum',
-        group: 'light',
-        palette: {
-            background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#32133B',
-            secondaryText: '#684067',
-            accent: '#9D4EDD'
-        }
-    },
-    {
-        id: 'classic-amber',
-        name: 'Classic Amber',
-        group: 'light',
-        palette: {
-            background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#392100',
-            secondaryText: '#7B4F0B',
-            accent: '#F59E0B'
-        }
-    },
-    {
-        id: 'classic-slate',
-        name: 'Classic Slate',
-        group: 'light',
-        palette: {
-            background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#1A1D23',
-            secondaryText: '#4B4F59',
-            accent: '#64748B'
-        }
-    },
-    {
-        id: 'classic-rose',
-        name: 'Classic Rose',
-        group: 'light',
-        palette: {
-            background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#3F1222',
-            secondaryText: '#7A3A53',
-            accent: '#EC4899'
-        }
-    },
+    
     {
         id: 'midnight',
         name: 'Midnight (Original)',
@@ -806,6 +809,9 @@ class Timer {
         this.targetEndTime = null;
         this.lastThemePayload = null;
         this.manualOverride = false;
+        this.hiddenThemesKey = 'timer-hidden-themes';
+        this.hiddenThemeIds = new Set();
+        this.visibleThemeIds = [];
         this.handleThemeCardClick = this.handleThemeCardClick.bind(this);
         this.initializeElements();
         this.setupThemeSystem();
@@ -840,6 +846,7 @@ class Timer {
         this.darkThemeGrid = document.getElementById('darkThemeGrid');
         this.currentThemeLabelEl = document.getElementById('currentThemeLabel');
         this.themePanel = document.getElementById('tab-theme');
+        this.resetThemeBtn = document.getElementById('resetThemeBtn');
 
         // Tabs
         this.tabButtons = document.querySelectorAll('.tab-btn');
@@ -902,6 +909,9 @@ class Timer {
         this.addPresetBtn.addEventListener('click', () => this.addPreferredTime());
         this.pipBtn.addEventListener('click', () => this.openPiP());
         this.tinyBtn.addEventListener('click', () => this.openTinyMode());
+        if (this.resetThemeBtn) {
+            this.resetThemeBtn.addEventListener('click', () => this.resetHiddenThemes());
+        }
         // Note: Window control handlers are centralized in public/js/window-controls.js
 
         // Tab switching
@@ -1046,15 +1056,19 @@ class Timer {
     setupThemeSystem() {
         this.themeDefinitions = THEME_DEFINITIONS;
         this.themeLookup = new Map(this.themeDefinitions.map(def => [def.id, def]));
-        this.groupedThemes = {
-            light: this.themeDefinitions.filter(theme => theme.group === 'light'),
-            dark: this.themeDefinitions.filter(theme => theme.group === 'dark')
-        };
-        this.themeOrder = this.themeDefinitions.map(theme => theme.id);
-        this.currentThemeId = this.themeOrder[0];
+        const hiddenFromStorage = this.loadHiddenThemes();
+        this.hiddenThemeIds = new Set(hiddenFromStorage);
+        this.refreshThemeCollections();
 
+        this.currentThemeId = this.getFirstVisibleThemeId() || (this.themeDefinitions[0]?.id || null);
         this.restoreThemePreference();
-        this.applyThemeById(this.currentThemeId, { skipPersist: true });
+        if (!this.currentThemeId || this.hiddenThemeIds.has(this.currentThemeId) || !this.themeOrder.includes(this.currentThemeId)) {
+            this.currentThemeId = this.getFirstVisibleThemeId() || (this.themeDefinitions[0]?.id || null);
+        }
+
+        if (this.currentThemeId) {
+            this.applyThemeById(this.currentThemeId, { skipPersist: true });
+        }
         this.renderThemeGallery();
         this.syncThemeUiState();
     }
@@ -1068,18 +1082,27 @@ class Timer {
         }
 
         if (!saved) {
-            this.currentThemeId = this.currentThemeId || 'midnight';
+            if (!this.currentThemeId) {
+                this.currentThemeId = this.getFirstVisibleThemeId() || 'midnight';
+            }
             return;
         }
 
-        if (this.themeLookup.has(saved)) {
+        if (this.themeLookup.has(saved) && !this.hiddenThemeIds.has(saved)) {
             this.currentThemeId = saved;
             return;
         }
 
         const remapped = LEGACY_THEME_MAP[saved];
-        if (remapped && this.themeLookup.has(remapped)) {
+        if (remapped && this.themeLookup.has(remapped) && !this.hiddenThemeIds.has(remapped)) {
             this.currentThemeId = remapped;
+        }
+
+        if (!this.currentThemeId || this.hiddenThemeIds.has(this.currentThemeId)) {
+            const fallback = this.getFirstVisibleThemeId();
+            if (fallback) {
+                this.currentThemeId = fallback;
+            }
         }
     }
 
@@ -1101,6 +1124,97 @@ class Timer {
         }
     }
 
+    loadHiddenThemes() {
+        try {
+            const raw = localStorage.getItem(this.hiddenThemesKey);
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed)) return [];
+            return parsed.filter((id) => typeof id === 'string');
+        } catch (_) {
+            return [];
+        }
+    }
+
+    persistHiddenThemes() {
+        try {
+            if (this.hiddenThemeIds.size > 0) {
+                localStorage.setItem(this.hiddenThemesKey, JSON.stringify([...this.hiddenThemeIds]));
+            } else {
+                localStorage.removeItem(this.hiddenThemesKey);
+            }
+        } catch (_) { /* ignore storage issues */ }
+    }
+
+    refreshThemeCollections() {
+        const visibleThemes = this.themeDefinitions.filter((theme) => !this.hiddenThemeIds.has(theme.id));
+        this.groupedThemes = {
+            light: visibleThemes.filter(theme => theme.group === 'light'),
+            dark: visibleThemes.filter(theme => theme.group === 'dark')
+        };
+        this.themeOrder = visibleThemes.map(theme => theme.id);
+        this.visibleThemeIds = [...this.themeOrder];
+    }
+
+    getFirstVisibleThemeId() {
+        return this.themeOrder.length > 0 ? this.themeOrder[0] : null;
+    }
+
+    disableTheme(themeId) {
+        if (!themeId || !this.themeLookup.has(themeId) || this.hiddenThemeIds.has(themeId)) {
+            return false;
+        }
+
+        if (!this.themeOrder.includes(themeId)) {
+            return false;
+        }
+
+        if (this.themeOrder.length <= 1) {
+            alert('At least one theme must remain available. Reset hidden themes to restore all themes.');
+            return false;
+        }
+
+        this.hiddenThemeIds.add(themeId);
+        this.persistHiddenThemes();
+        this.refreshThemeCollections();
+
+        const needsFallback = !this.currentThemeId || this.currentThemeId === themeId || !this.themeOrder.includes(this.currentThemeId);
+        if (needsFallback) {
+            const fallback = this.getFirstVisibleThemeId();
+            if (fallback && fallback !== this.currentThemeId) {
+                this.applyThemeById(fallback);
+            }
+        }
+
+        this.renderThemeGallery();
+        this.syncThemeUiState();
+        try { console.log('[Theme] Disabled theme:', themeId); } catch (_) {}
+        return true;
+    }
+
+    resetHiddenThemes() {
+        if (this.hiddenThemeIds.size === 0) {
+            this.renderThemeGallery();
+            this.syncThemeUiState();
+            return;
+        }
+
+        this.hiddenThemeIds.clear();
+        this.persistHiddenThemes();
+        this.refreshThemeCollections();
+
+        if (!this.currentThemeId || !this.themeOrder.includes(this.currentThemeId)) {
+            const fallback = this.getFirstVisibleThemeId();
+            if (fallback) {
+                this.applyThemeById(fallback);
+            }
+        }
+
+        this.renderThemeGallery();
+        this.syncThemeUiState();
+        try { console.log('[Theme] Reset hidden themes'); } catch (_) {}
+    }
+
     createThemeCard(theme) {
         const card = document.createElement('button');
         card.className = 'theme-card';
@@ -1108,6 +1222,7 @@ class Timer {
         card.setAttribute('data-theme-id', theme.id);
         card.setAttribute('role', 'listitem');
         card.setAttribute('aria-pressed', theme.id === this.currentThemeId ? 'true' : 'false');
+        card.title = 'Click to apply. Alt + Click to hide this theme.';
         card.innerHTML = `
             <span class="theme-card-preview">
                 <span class="theme-swatch" style="background:${theme.palette.background}"></span>
@@ -1127,7 +1242,18 @@ class Timer {
     handleThemeCardClick(event) {
         const target = event.currentTarget;
         const themeId = target.getAttribute('data-theme-id');
-        if (!themeId || themeId === this.currentThemeId) {
+        if (!themeId) {
+            return;
+        }
+
+        if (event.altKey) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.disableTheme(themeId);
+            return;
+        }
+
+        if (themeId === this.currentThemeId) {
             return;
         }
         this.applyThemeById(themeId);
@@ -1137,6 +1263,10 @@ class Timer {
     applyThemeById(themeId, options = {}) {
         if (!this.themeLookup.has(themeId)) {
             console.warn('Attempted to apply unknown theme', themeId);
+            return;
+        }
+        if (this.hiddenThemeIds.has(themeId)) {
+            console.warn('Attempted to apply hidden theme', themeId);
             return;
         }
         const theme = this.themeLookup.get(themeId);
@@ -1172,7 +1302,7 @@ class Timer {
         if (!this.themeLookup.has(this.currentThemeId)) return;
         const theme = this.themeLookup.get(this.currentThemeId);
         if (this.currentThemeLabelEl) {
-            this.currentThemeLabelEl.textContent = theme.name;
+            this.currentThemeLabelEl.textContent = theme ? theme.name : 'Default';
         }
 
         const allCards = document.querySelectorAll('.theme-card');
@@ -1186,10 +1316,15 @@ class Timer {
 
     cycleTheme(direction = 1) {
         const len = this.themeOrder.length;
+        if (len === 0) return;
+
         const currentIndex = this.themeOrder.indexOf(this.currentThemeId);
-        const normalized = (currentIndex + (direction % len) + len) % len;
-        const nextTheme = this.themeOrder[normalized];
-        this.applyThemeById(nextTheme);
+        let nextIndex = (currentIndex >= 0 ? currentIndex : 0) + direction;
+        nextIndex = ((nextIndex % len) + len) % len;
+        const nextTheme = this.themeOrder[nextIndex];
+        if (nextTheme) {
+            this.applyThemeById(nextTheme);
+        }
     }
 
     pushThemeToAuxWindows(theme, tokens) {
