@@ -272,9 +272,10 @@ function createPipWindow() {
         // Keep bottom-right anchor when resizing
         const { screen } = require('electron');
         const primaryDisplay = screen.getPrimaryDisplay();
-        const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
-        const x = screenWidth - safeW - 20;
-        const y = screenHeight - safeH - 20;
+        const { bounds } = primaryDisplay;
+        const padding = 16;
+        const x = Math.round(bounds.x + bounds.width - safeW - padding);
+        const y = Math.round(bounds.y + bounds.height - safeH - padding);
         pipWindow.setBounds({ x, y, width: safeW, height: safeH });
       }).catch(() => {});
       // Push current timer state immediately
@@ -316,12 +317,14 @@ function createPipWindow() {
   // Make PiP window draggable
   pipWindow.setMovable(true);
 
-  // Position at bottom-right corner with 20px margin
+  // Position at bottom-right corner with minimal margin
   const { screen } = require('electron');
   const primaryDisplay = screen.getPrimaryDisplay();
-  const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
-  const x = screenWidth - 110 - 20; // initial guess; will be corrected after load
-  const y = screenHeight - 50 - 20; // initial guess; will be corrected after load
+  const { bounds } = primaryDisplay;
+  const padding = 16;
+  const { width: initialWidth, height: initialHeight } = pipWindow.getBounds();
+  const x = Math.round(bounds.x + bounds.width - initialWidth - padding);
+  const y = Math.round(bounds.y + bounds.height - initialHeight - padding);
   pipWindow.setPosition(x, y);
 
   // Minimize main window when PiP opens
@@ -451,12 +454,14 @@ function createTinyWindow() {
     }, 500);
   }
   
-  // Position at bottom-right corner with 20px margin
+  // Position at bottom-right corner with minimal margin
   const { screen } = require('electron');
   const primaryDisplay = screen.getPrimaryDisplay();
-  const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
-  const x = screenWidth - 85 - 20; // window width + margin
-  const y = screenHeight - 65 - 20; // window height + margin
+  const { bounds } = primaryDisplay;
+  const padding = 16;
+  const { width: tinyWidth, height: tinyHeight } = tinyWindow.getBounds();
+  const x = Math.round(bounds.x + bounds.width - tinyWidth - padding);
+  const y = Math.round(bounds.y + bounds.height - tinyHeight - padding);
   tinyWindow.setPosition(x, y);
 }
 
