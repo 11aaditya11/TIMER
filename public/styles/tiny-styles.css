@@ -62,7 +62,7 @@ body {
     font-weight: 700;
     font-family: var(--tiny-time-font, 'Courier New', monospace);
     color: var(--tiny-text, #ffffff);
-    text-shadow: var(--tiny-time-shadow, 0 2px 8px rgba(0, 0, 0, 0.8));
+    /* text-shadow: var(--tiny-time-shadow, 0 2px 8px rgba(0, 0, 0, 0.8)); */
     text-align: center;
     letter-spacing: 1px;
 }

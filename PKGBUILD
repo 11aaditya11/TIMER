@@ -1,6 +1,6 @@
 # Maintainer: Timer App Developer <developer@timerapp.com>
 pkgname=timer-app
-pkgver=1.1.2
+pkgver=1.1.11
 pkgrel=1
 pkgdesc="A feature-rich timer application with Electron and Picture-in-Picture mode"
 install=${pkgname}.install
