@@ -1,5 +1,10 @@
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
+const toSafeString = (value) => {
+    if (value === null || value === undefined) return '';
+    return String(value);
+};
+
 const hexToRgb = (hex) => {
     if (!hex) return null;
     const normalized = hex.replace('#', '');
@@ -878,17 +883,24 @@ class Timer {
             
             const presetBtn = document.createElement('div');
             presetBtn.className = 'preset-btn';
-            presetBtn.innerHTML = `
-                <div class="preset-name">${preset.name}</div>
-                <div class="preset-time">${preset.minutes}:00</div>
-            `;
+            const presetNameEl = document.createElement('div');
+            presetNameEl.className = 'preset-name';
+            presetNameEl.textContent = toSafeString(preset && preset.name);
+
+            const presetTimeEl = document.createElement('div');
+            presetTimeEl.className = 'preset-time';
+            const minutes = Number(preset && preset.minutes);
+            presetTimeEl.textContent = `${Number.isFinite(minutes) ? minutes : 0}:00`;
+
+            presetBtn.appendChild(presetNameEl);
+            presetBtn.appendChild(presetTimeEl);
             presetBtn.addEventListener('click', () => {
                 this.setTime(preset.minutes, 0);
             });
             
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'preset-delete-btn';
-            deleteBtn.innerHTML = '×';
+            deleteBtn.textContent = '×';
             deleteBtn.title = 'Delete preset';
             deleteBtn.addEventListener('click', (e) => {
                 e.stopPropagation(); // Prevent triggering the preset button

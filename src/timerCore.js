@@ -19,7 +19,16 @@ class TimerCore extends EventEmitter {
   }
 
   setTime(minutes, seconds = 0) {
-    const total = Math.max(0, (parseInt(minutes) || 0) * 60 + (parseInt(seconds) || 0));
+    const m = Number.isFinite(Number(minutes)) ? Number(minutes) : parseInt(minutes, 10);
+    const s = Number.isFinite(Number(seconds)) ? Number(seconds) : parseInt(seconds, 10);
+    const safeMinutes = Math.max(0, Math.floor(Number.isFinite(m) ? m : 0));
+    const safeSeconds = Math.max(0, Math.floor(Number.isFinite(s) ? s : 0));
+    const total = Math.max(0, safeMinutes * 60 + safeSeconds);
+
+    // Setting time should be authoritative: stop any running timer to avoid state divergence.
+    this.isRunning = false;
+    this._clearInterval();
+    this._targetTime = null;
     this.totalTime = total;
     this.timeLeft = total;
     // Do not auto-start
@@ -27,7 +36,13 @@ class TimerCore extends EventEmitter {
   }
 
   start() {
-    if (this.isRunning || this.timeLeft <= 0) return;
+    if (this.isRunning) return;
+    if (!Number.isFinite(this.timeLeft) || this.timeLeft <= 0) {
+      this.timeLeft = Math.max(0, Number(this.timeLeft) || 0);
+      this.totalTime = Math.max(this.totalTime || 0, this.timeLeft);
+      this._emitUpdate();
+      return;
+    }
     this.isRunning = true;
     const now = Date.now();
     this._targetTime = now + this.timeLeft * 1000;
@@ -63,6 +78,14 @@ class TimerCore extends EventEmitter {
 
   _tick() {
     if (!this.isRunning) return;
+    if (!Number.isFinite(this._targetTime)) {
+      // Defensive: invalid target time means we can't compute remaining.
+      this.isRunning = false;
+      this._clearInterval();
+      this._targetTime = null;
+      this._emitUpdate();
+      return;
+    }
     const now = Date.now();
     const remaining = Math.floor((this._targetTime - now) / 1000);
     this.timeLeft = Math.max(0, remaining);

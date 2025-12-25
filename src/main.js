@@ -8,6 +8,17 @@ let pipWindow;
 let tinyWindows = []; // Track all tiny windows
 let currentThemePayload = null;
 
+const WINDOW_EDGE_PADDING = 12;
+
+function getBottomRightPosition(width, height, offset = WINDOW_EDGE_PADDING) {
+  const { screen } = require('electron');
+  const display = screen.getPrimaryDisplay();
+  const workArea = display.workArea || display.bounds;
+  const x = Math.round(workArea.x + workArea.width - width - offset);
+  const y = Math.round(workArea.y + workArea.height - height - offset);
+  return { x, y };
+}
+
 // Ensure Chromium does not throttle timers or background renderers when windows are unfocused/minimized
 // This keeps the main renderer's 1s tick accurate even when the main window is minimized
 try {
@@ -269,13 +280,7 @@ function createPipWindow() {
         const contentHeight = Number(dim && dim.h) || 60;
         const safeW = Math.max(100, Math.min(180, contentWidth));
         const safeH = Math.max(38, Math.min(150, contentHeight));
-        // Keep bottom-right anchor when resizing
-        const { screen } = require('electron');
-        const primaryDisplay = screen.getPrimaryDisplay();
-        const { bounds } = primaryDisplay;
-        const padding = 16;
-        const x = Math.round(bounds.x + bounds.width - safeW - padding);
-        const y = Math.round(bounds.y + bounds.height - safeH - padding);
+        const { x, y } = getBottomRightPosition(safeW, safeH);
         pipWindow.setBounds({ x, y, width: safeW, height: safeH });
       }).catch(() => {});
       // Push current timer state immediately
@@ -318,13 +323,8 @@ function createPipWindow() {
   pipWindow.setMovable(true);
 
   // Position at bottom-right corner with minimal margin
-  const { screen } = require('electron');
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { bounds } = primaryDisplay;
-  const padding = 16;
   const { width: initialWidth, height: initialHeight } = pipWindow.getBounds();
-  const x = Math.round(bounds.x + bounds.width - initialWidth - padding);
-  const y = Math.round(bounds.y + bounds.height - initialHeight - padding);
+  const { x, y } = getBottomRightPosition(initialWidth, initialHeight);
   pipWindow.setPosition(x, y);
 
   // Minimize main window when PiP opens
@@ -455,13 +455,8 @@ function createTinyWindow() {
   }
   
   // Position at bottom-right corner with minimal margin
-  const { screen } = require('electron');
-  const primaryDisplay = screen.getPrimaryDisplay();
-  const { bounds } = primaryDisplay;
-  const padding = 16;
   const { width: tinyWidth, height: tinyHeight } = tinyWindow.getBounds();
-  const x = Math.round(bounds.x + bounds.width - tinyWidth - padding);
-  const y = Math.round(bounds.y + bounds.height - tinyHeight - padding);
+  const { x, y } = getBottomRightPosition(tinyWidth, tinyHeight);
   tinyWindow.setPosition(x, y);
 }
 
@@ -601,11 +596,27 @@ function loadPreferredTimes() {
   ];
 }
 
+function normalizePreferredTimeEntry(entry) {
+  if (!entry || typeof entry !== 'object') return null;
+  const nameRaw = entry.name;
+  const minutesRaw = entry.minutes;
+
+  const name = String(nameRaw ?? '').trim().slice(0, 40);
+  const minutes = Math.max(1, Math.min(999, parseInt(minutesRaw, 10) || 0));
+
+  if (!name) return null;
+  if (!Number.isFinite(minutes) || minutes <= 0) return null;
+  return { name, minutes };
+}
+
 // Save preferred times to file
 function savePreferredTimes(times) {
   try {
     const configPath = getConfigPath();
-    fs.writeFileSync(configPath, JSON.stringify(times, null, 2));
+    const normalized = Array.isArray(times)
+      ? times.map(normalizePreferredTimeEntry).filter(Boolean)
+      : [];
+    fs.writeFileSync(configPath, JSON.stringify(normalized, null, 2));
     return true;
   } catch (error) {
     console.error('Error saving preferred times:', error);
@@ -620,7 +631,9 @@ ipcMain.handle('get-preferred-times', () => {
 ipcMain.handle('save-preferred-time', (event, timeData) => {
   try {
     const currentTimes = loadPreferredTimes();
-    currentTimes.push(timeData);
+    const normalized = normalizePreferredTimeEntry(timeData);
+    if (!normalized) return false;
+    currentTimes.push(normalized);
     const success = savePreferredTimes(currentTimes);
     console.log('Saving preferred time:', timeData, 'Success:', success);
     return success;
@@ -653,22 +666,21 @@ ipcMain.handle('close-pip', () => {
 });
 
 ipcMain.handle('close-tiny-window', (event) => {
-  // Close the window that sent this message
-  if (event.sender) {
-    event.sender.close();
-  }
+  try {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (win && !win.isDestroyed()) {
+      win.close();
+    }
+  } catch (_) {}
   return true;
 });
 
 ipcMain.handle('resize-pip-window', (event, width, height) => {
   if (pipWindow) {
-    pipWindow.setSize(width, height);
-    // Center the window on screen
-    const { screen } = require('electron');
-    const primaryDisplay = screen.getPrimaryDisplay();
-    const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
-    const x = Math.round((screenWidth - width) / 2);
-    const y = Math.round((screenHeight - height) / 2);
+    const safeW = Math.max(80, Math.round(Number(width) || 0));
+    const safeH = Math.max(60, Math.round(Number(height) || 0));
+    pipWindow.setSize(safeW, safeH);
+    const { x, y } = getBottomRightPosition(safeW, safeH);
     pipWindow.setPosition(x, y);
   }
   return true;
