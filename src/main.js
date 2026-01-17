@@ -1,3 +1,4 @@
+require('../public/js/log-config');
 const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Notification } = require('electron');
 const TimerCore = require('./timerCore');
 const path = require('path');
@@ -9,7 +10,7 @@ let tinyWindows = []; // Track all tiny windows
 let currentThemePayload = null;
 
 const WINDOW_EDGE_PADDING = 12;
-
+// setLog(true);
 function getBottomRightPosition(width, height, offset = WINDOW_EDGE_PADDING) {
   const { screen } = require('electron');
   const display = screen.getPrimaryDisplay();
