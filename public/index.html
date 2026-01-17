@@ -45,6 +45,12 @@
                     <path d="M16.95 16.95l-2.12-2.12"></path>
                 </svg>
             </button>
+            <button class="tab-btn analytics-btn" id="analyticsBtn" data-tab="tab-analytics" title="Analytics" aria-label="Open analytics">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3v18h18"></path>
+                    <path d="M7 14l3-3 4 4 6-7"></path>
+                </svg>
+            </button>
         </div>
 
         <div class="tab-content">
@@ -129,6 +135,44 @@
                         <button id="resetThemeBtn" class="theme-reset-btn" type="button">Reset Hidden Themes</button>
                         <!-- <p class="theme-reset-hint">Hidden themes will return after resetting or reinstalling the app.</p> -->
                     </div>
+                </div>
+            </div>
+
+            <div class="tab-panel" id="tab-analytics">
+                <button class="back-btn" id="backFromAnalyticsBtn">← Back to Timer</button>
+
+                <div class="analytics-panel">
+                    <div class="analytics-header">
+                        <div>
+                            <h3>Analytics</h3>
+                            <p class="analytics-subtitle">Completed sessions only (for now).</p>
+                        </div>
+                    </div>
+
+                    <div class="analytics-dashboard">
+                        <div class="analytics-card">
+                            <div class="analytics-card-label">Total focused time</div>
+                            <div class="analytics-card-value" id="analyticsTotalTime">0m</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-card-label">Completed sessions</div>
+                            <div class="analytics-card-value" id="analyticsTotalSessions">0</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-card-label">This week</div>
+                            <div class="analytics-card-value" id="analyticsWeekTime">0m</div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-graph-card">
+                        <div class="analytics-graph-header">
+                            <div class="analytics-graph-title">Last 15 days</div>
+                            <div class="analytics-graph-meta" id="analyticsGraphMeta">0m</div>
+                        </div>
+                        <canvas id="analyticsGraph" width="420" height="140"></canvas>
+                    </div>
+
+                    <div class="analytics-list" id="analyticsList"></div>
                 </div>
             </div>
         </div>

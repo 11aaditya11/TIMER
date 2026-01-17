@@ -852,6 +852,13 @@ class Timer {
         this.currentThemeLabelEl = document.getElementById('currentThemeLabel');
         this.themePanel = document.getElementById('tab-theme');
         this.resetThemeBtn = document.getElementById('resetThemeBtn');
+        this.backFromAnalyticsBtn = document.getElementById('backFromAnalyticsBtn');
+        this.analyticsTotalTimeEl = document.getElementById('analyticsTotalTime');
+        this.analyticsTotalSessionsEl = document.getElementById('analyticsTotalSessions');
+        this.analyticsWeekTimeEl = document.getElementById('analyticsWeekTime');
+        this.analyticsGraphMetaEl = document.getElementById('analyticsGraphMeta');
+        this.analyticsGraphEl = document.getElementById('analyticsGraph');
+        this.analyticsListEl = document.getElementById('analyticsList');
 
         // Tabs
         this.tabButtons = document.querySelectorAll('.tab-btn');
@@ -952,6 +959,9 @@ class Timer {
         if (this.backFromThemeBtn) {
             this.backFromThemeBtn.addEventListener('click', () => this.navigateToTab('tab-timer'));
         }
+        if (this.backFromAnalyticsBtn) {
+            this.backFromAnalyticsBtn.addEventListener('click', () => this.navigateToTab('tab-timer'));
+        }
         if (this.themeBtn) {
             this.themeBtn.addEventListener('click', () => {
                 const isPressed = this.themeBtn.getAttribute('aria-pressed') === 'true';
@@ -997,6 +1007,12 @@ class Timer {
         try {
             window.electronAPI.onMainTimerUpdate((event, state) => {
                 this.applyStateFromCore(state);
+            });
+        } catch (_) {}
+
+        try {
+            window.electronAPI.onAnalyticsUpdated(() => {
+                this.refreshAnalytics();
             });
         } catch (_) {}
     }
@@ -1055,6 +1071,9 @@ class Timer {
             document.body.classList.add('new-tab-active');
         } else {
             document.body.classList.remove('new-tab-active');
+        }
+        if (target === 'tab-analytics') {
+            this.refreshAnalytics();
         }
         if (target === 'tab-theme' && this.themeBtn) {
             this.themeBtn.classList.add('active');
@@ -1544,6 +1563,196 @@ class Timer {
         setTimeout(() => {
             this.timeDisplay.classList.remove('timer-complete');
         }, 1000);
+
+        try { this.refreshAnalytics(); } catch (_) {}
+    }
+
+    formatDuration(seconds) {
+        const total = Math.max(0, Math.floor(Number(seconds) || 0));
+        const h = Math.floor(total / 3600);
+        const m = Math.floor((total % 3600) / 60);
+        if (h > 0) return `${h}h ${m}m`;
+        return `${m}m`;
+    }
+
+    startOfDay(ts) {
+        const d = new Date(ts);
+        d.setHours(0, 0, 0, 0);
+        return d.getTime();
+    }
+
+    async fetchAnalytics() {
+        try {
+            if (!window.electronAPI || typeof window.electronAPI.analyticsGet !== 'function') {
+                return { sessions: [] };
+            }
+            const data = await window.electronAPI.analyticsGet();
+            if (!data || typeof data !== 'object' || !Array.isArray(data.sessions)) {
+                return { sessions: [] };
+            }
+            return data;
+        } catch (_) {
+            return { sessions: [] };
+        }
+    }
+
+    async refreshAnalytics() {
+        if (!this.analyticsListEl || !this.analyticsGraphEl) return;
+        const data = await this.fetchAnalytics();
+        const sessions = Array.isArray(data.sessions) ? data.sessions : [];
+        const totalSeconds = sessions.reduce((sum, s) => sum + (Number(s && s.durationSeconds) || 0), 0);
+        if (this.analyticsTotalTimeEl) this.analyticsTotalTimeEl.textContent = this.formatDuration(totalSeconds);
+        if (this.analyticsTotalSessionsEl) this.analyticsTotalSessionsEl.textContent = String(sessions.length);
+
+        const now = Date.now();
+        const weekStart = this.startOfDay(now) - 6 * 24 * 3600 * 1000;
+        const weekSeconds = sessions
+            .filter(s => (Number(s && s.completedAt) || 0) >= weekStart)
+            .reduce((sum, s) => sum + (Number(s && s.durationSeconds) || 0), 0);
+        if (this.analyticsWeekTimeEl) this.analyticsWeekTimeEl.textContent = this.formatDuration(weekSeconds);
+
+        const series = this.buildLast15DaysSeries(sessions);
+        this.drawAnalyticsGraph(series);
+        const weekTotalMinutes = Math.round(series.reduce((sum, d) => sum + d.minutes, 0));
+        if (this.analyticsGraphMetaEl) this.analyticsGraphMetaEl.textContent = `${weekTotalMinutes}m`;
+
+        this.renderAnalyticsList(sessions);
+    }
+
+    buildLast15DaysSeries(sessions) {
+        const todayStart = this.startOfDay(Date.now());
+        const days = [];
+        for (let i = 14; i >= 0; i -= 1) {
+            const start = todayStart - i * 24 * 3600 * 1000;
+            days.push({ start, minutes: 0 });
+        }
+        sessions.forEach((s) => {
+            const completedAt = Number(s && s.completedAt) || 0;
+            const durationSeconds = Number(s && s.durationSeconds) || 0;
+            if (!completedAt || durationSeconds <= 0) return;
+            const dayStart = this.startOfDay(completedAt);
+            const idx = days.findIndex(d => d.start === dayStart);
+            if (idx >= 0) {
+                days[idx].minutes += durationSeconds / 60;
+            }
+        });
+        days.forEach(d => {
+            d.minutes = Math.round(d.minutes);
+        });
+        return days;
+    }
+
+    drawAnalyticsGraph(days) {
+        const canvas = this.analyticsGraphEl;
+        if (!canvas || typeof canvas.getContext !== 'function') return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const width = canvas.width;
+        const height = canvas.height;
+        ctx.clearRect(0, 0, width, height);
+
+        const padding = 18;
+        const innerW = width - padding * 2;
+        const innerH = height - padding * 2;
+        const max = Math.max(10, ...days.map(d => d.minutes || 0));
+
+        ctx.globalAlpha = 1;
+        const styles = getComputedStyle(document.body);
+        const accent = styles.getPropertyValue('--accent').trim() || '#4CAF50';
+        const border = styles.getPropertyValue('--action-border').trim() || 'rgba(255, 255, 255, 0.12)';
+        const gridStroke = border.startsWith('rgba') || border.startsWith('rgb') ? border : hexToRgba(border, 0.45);
+
+        ctx.strokeStyle = gridStroke;
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 2; i += 1) {
+            const y = padding + (innerH * i) / 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(padding + innerW, y);
+            ctx.stroke();
+        }
+
+        const barGap = 8;
+        const barW = Math.max(8, (innerW - barGap * (days.length - 1)) / days.length);
+        const fill = hexToRgba(accent, 0.75);
+        const highlight = hexToRgba(accent, 0.95);
+
+        days.forEach((d, idx) => {
+            const value = Number(d.minutes) || 0;
+            const ratio = clamp(value / max, 0, 1);
+            const h = Math.round(innerH * ratio);
+            const x = padding + idx * (barW + barGap);
+            const y = padding + innerH - h;
+            ctx.fillStyle = idx === days.length - 1 ? highlight : fill;
+            ctx.beginPath();
+            const r = 6;
+            const w = barW;
+            const hh = h;
+            const rr = Math.min(r, Math.floor(w / 2), Math.floor(hh / 2));
+            ctx.moveTo(x + rr, y);
+            ctx.arcTo(x + w, y, x + w, y + hh, rr);
+            ctx.arcTo(x + w, y + hh, x, y + hh, rr);
+            ctx.arcTo(x, y + hh, x, y, rr);
+            ctx.arcTo(x, y, x + w, y, rr);
+            ctx.closePath();
+            ctx.fill();
+        });
+    }
+
+    renderAnalyticsList(sessions) {
+        if (!this.analyticsListEl) return;
+        this.analyticsListEl.innerHTML = '';
+
+        const list = sessions.slice(0, 25);
+        if (list.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'analytics-item';
+            empty.textContent = 'No completed sessions yet.';
+            this.analyticsListEl.appendChild(empty);
+            return;
+        }
+
+        list.forEach((session) => {
+            const item = document.createElement('div');
+            item.className = 'analytics-item';
+
+            const main = document.createElement('div');
+            main.className = 'analytics-item-main';
+
+            const meta = document.createElement('div');
+            meta.className = 'analytics-item-meta';
+            const completedAt = Number(session && session.completedAt) || 0;
+            const when = completedAt ? new Date(completedAt).toLocaleString() : '';
+            meta.textContent = `${this.formatDuration(session && session.durationSeconds)} • ${when}`;
+
+            main.appendChild(meta);
+
+            const actions = document.createElement('div');
+            actions.className = 'analytics-item-actions';
+
+            const del = document.createElement('button');
+            del.className = 'analytics-item-delete';
+            del.type = 'button';
+            del.textContent = 'Delete';
+
+            const sessionId = session && session.id;
+
+            del.addEventListener('click', async () => {
+                if (!sessionId) return;
+                try {
+                    if (window.electronAPI && typeof window.electronAPI.analyticsDeleteSession === 'function') {
+                        await window.electronAPI.analyticsDeleteSession({ id: sessionId });
+                        this.refreshAnalytics();
+                    }
+                } catch (_) {}
+            });
+
+            actions.appendChild(del);
+            item.appendChild(main);
+            item.appendChild(actions);
+            this.analyticsListEl.appendChild(item);
+        });
     }
 
     showConfetti() {

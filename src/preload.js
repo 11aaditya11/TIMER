@@ -48,6 +48,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   }),
   cycleTheme: (direction = 1) => ipcRenderer.invoke('theme:cycle', direction),
 
+  // Analytics
+  analyticsGet: () => ipcRenderer.invoke('analytics:get'),
+  analyticsDeleteSession: (payload) => ipcRenderer.invoke('analytics:delete-session', payload),
+  onAnalyticsUpdated: (callback) => ipcRenderer.on('analytics:updated', (_event, data) => {
+    try { callback(data); } catch (_) {}
+  }),
+
   // Listeners for timer updates
   onMainTimerUpdate: (callback) => ipcRenderer.on('main-timer-update', callback),
   onPipTimerUpdate: (callback) => ipcRenderer.on('pip-timer-update', callback),

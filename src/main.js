@@ -33,6 +33,73 @@ try {
 const gotTheLock = app.requestSingleInstanceLock();
 const lockFilePath = path.join(app.getPath('userData'), 'app.lock');
 
+function getAnalyticsPath() {
+  try {
+    return path.join(app.getPath('userData'), 'analytics.json');
+  } catch (_) {
+    return path.join(__dirname, '..', 'analytics.json');
+  }
+}
+
+function loadAnalytics() {
+  const analyticsPath = getAnalyticsPath();
+  try {
+    if (!fs.existsSync(analyticsPath)) {
+      return { sessions: [] };
+    }
+    const raw = fs.readFileSync(analyticsPath, 'utf8');
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return { sessions: [] };
+    if (!Array.isArray(parsed.sessions)) parsed.sessions = [];
+    return parsed;
+  } catch (_) {
+    return { sessions: [] };
+  }
+}
+
+function saveAnalytics(data) {
+  const analyticsPath = getAnalyticsPath();
+  try {
+    const safe = data && typeof data === 'object' ? data : { sessions: [] };
+    if (!Array.isArray(safe.sessions)) safe.sessions = [];
+    fs.writeFileSync(analyticsPath, JSON.stringify(safe, null, 2));
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function createSessionId() {
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function recordCompletedSession(timerState) {
+  try {
+    const totalTime = Number(timerState && timerState.totalTime) || 0;
+    const completedAt = Date.now();
+    const durationSeconds = Math.max(0, Math.floor(totalTime));
+    const startedAt = completedAt - durationSeconds * 1000;
+    const entry = {
+      id: createSessionId(),
+      durationSeconds,
+      startedAt,
+      completedAt,
+    };
+    const analytics = loadAnalytics();
+    analytics.sessions.unshift(entry);
+    analytics.sessions = analytics.sessions.slice(0, 500);
+    saveAnalytics(analytics);
+    try {
+      if (mainWindow && mainWindow.webContents) {
+        mainWindow.webContents.send('analytics:updated', entry);
+      }
+    } catch (_) {}
+    return entry;
+  } catch (_) {
+    return null;
+  }
+}
+
 // Function to handle cleanup
 function cleanup() {
   try {
@@ -220,6 +287,7 @@ timerCore.on('complete', (state) => {
       n.show();
     }
   } catch (_) {}
+  try { recordCompletedSession(state); } catch (_) {}
   broadcastTimerUpdate(state);
 });
 
@@ -569,6 +637,25 @@ ipcMain.handle('theme:cycle', (_event, direction = 1) => {
     try { mainWindow.webContents.send('cycle-theme', direction); } catch (_) {}
   }
   return true;
+});
+
+ipcMain.handle('analytics:get', () => {
+  return loadAnalytics();
+});
+
+ipcMain.handle('analytics:delete-session', (_event, payload) => {
+  try {
+    const id = payload && payload.id;
+    if (!id || typeof id !== 'string') return false;
+    const analytics = loadAnalytics();
+    const before = analytics.sessions.length;
+    analytics.sessions = analytics.sessions.filter(s => s && s.id !== id);
+    if (analytics.sessions.length === before) return false;
+    saveAnalytics(analytics);
+    return true;
+  } catch (_) {
+    return false;
+  }
 });
 
 // Get the path to the config file
