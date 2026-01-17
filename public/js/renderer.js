@@ -859,6 +859,8 @@ class Timer {
         this.analyticsGraphMetaEl = document.getElementById('analyticsGraphMeta');
         this.analyticsGraphEl = document.getElementById('analyticsGraph');
         this.analyticsListEl = document.getElementById('analyticsList');
+        this.analyticsToggleLogsBtn = document.getElementById('analyticsToggleLogsBtn');
+        this._analyticsLogsVisible = false;
 
         // Tabs
         this.tabButtons = document.querySelectorAll('.tab-btn');
@@ -961,6 +963,13 @@ class Timer {
         }
         if (this.backFromAnalyticsBtn) {
             this.backFromAnalyticsBtn.addEventListener('click', () => this.navigateToTab('tab-timer'));
+        }
+
+        if (this.analyticsToggleLogsBtn) {
+            this.analyticsToggleLogsBtn.addEventListener('click', () => {
+                this._analyticsLogsVisible = !this._analyticsLogsVisible;
+                this.updateAnalyticsLogsVisibility();
+            });
         }
         if (this.themeBtn) {
             this.themeBtn.addEventListener('click', () => {
@@ -1617,6 +1626,16 @@ class Timer {
         if (this.analyticsGraphMetaEl) this.analyticsGraphMetaEl.textContent = `${weekTotalMinutes}m`;
 
         this.renderAnalyticsList(sessions);
+        this.updateAnalyticsLogsVisibility();
+    }
+
+    updateAnalyticsLogsVisibility() {
+        if (this.analyticsListEl) {
+            this.analyticsListEl.style.display = this._analyticsLogsVisible ? '' : 'none';
+        }
+        if (this.analyticsToggleLogsBtn) {
+            this.analyticsToggleLogsBtn.textContent = this._analyticsLogsVisible ? 'Hide logs' : 'Show logs';
+        }
     }
 
     buildLast15DaysSeries(sessions) {

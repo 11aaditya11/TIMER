@@ -419,6 +419,22 @@ body {
     gap: 10px;
 }
 
+.analytics-toggle-logs {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--action-border);
+    background: var(--action-bg);
+    color: var(--action-text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.analytics-toggle-logs:hover {
+    background: var(--action-hover-bg);
+    border-color: var(--action-hover-border);
+}
+
 .analytics-item {
     display: grid;
     grid-template-columns: 1fr auto;
