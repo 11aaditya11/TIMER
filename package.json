@@ -7,6 +7,8 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
+    "start:silent": "sh -c 'TIMER_LOG=false TIMER_SILENT=true ELECTRON_DISABLE_SECURITY_WARNINGS=true ELECTRON_ENABLE_LOGGING=false electron . >/dev/null 2>&1'",
+    "start:bg": "sh -c 'TIMER_LOG=false TIMER_SILENT=true ELECTRON_DISABLE_SECURITY_WARNINGS=true ELECTRON_ENABLE_LOGGING=false nohup electron . >/dev/null 2>&1 & disown'",
     "build": "electron-builder",
     "build-linux": "electron-builder --linux",
     "build-win": "electron-builder --win",
