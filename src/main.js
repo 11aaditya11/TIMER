@@ -437,6 +437,7 @@ function createTinyWindow() {
     resizable: false,
     minimizable: false,
     maximizable: false,
+    fullscreenable: false,
     alwaysOnTop: true,
     skipTaskbar: true,
     title: 'Timer - Tiny',
@@ -450,6 +451,20 @@ function createTinyWindow() {
     maxHeight: 65,
     cornerRadius: 12 // Round the Electron window itself
   });
+
+  // Disallow Chromium fullscreen toggle (F11) in the tiny window.
+  // Fullscreen breaks the tiny UI layout and can make text appear to disappear.
+  try { tinyWindow.setFullScreenable(false); } catch (_) {}
+  try {
+    tinyWindow.webContents.on('before-input-event', (event, input) => {
+      if (input && input.type === 'keyDown' && input.key === 'F11') {
+        event.preventDefault();
+        // Make Tiny inactive (return focus to the previously active window) while
+        // keeping it running and always-on-top.
+        try { tinyWindow.blur(); } catch (_) {}
+      }
+    });
+  } catch (_) {}
 
   tinyWindow.loadFile(path.join(__dirname, '..', 'public', 'tiny.html'));
 
