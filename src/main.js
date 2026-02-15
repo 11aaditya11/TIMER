@@ -93,7 +93,7 @@ function recordCompletedSession(timerState) {
       if (mainWindow && mainWindow.webContents) {
         mainWindow.webContents.send('analytics:updated', entry);
       }
-    } catch (_) {}
+    } catch (_) { }
     return entry;
   } catch (_) {
     return null;
@@ -118,7 +118,7 @@ function acquireLockFile() {
     // Try to create lock file exclusively
     fs.writeFileSync(lockFilePath, process.pid.toString(), { flag: 'wx' });
     console.log('Lock file created successfully at:', lockFilePath);
-    
+
     // Ensure cleanup happens on exit
     const events = ['exit', 'SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2', 'uncaughtException'];
     events.forEach(event => {
@@ -128,7 +128,7 @@ function acquireLockFile() {
         if (event !== 'exit') process.exit(0);
       });
     });
-    
+
     return true;
   } catch (error) {
     if (error.code === 'EEXIST') {
@@ -136,7 +136,7 @@ function acquireLockFile() {
       try {
         const existingPid = fs.readFileSync(lockFilePath, 'utf8');
         console.log('Existing PID in lock file:', existingPid);
-        
+
         // Check if the process is still running
         try {
           process.kill(parseInt(existingPid), 0);
@@ -175,7 +175,7 @@ console.log('This is the first instance, continuing...');
 // Handle second instance - focus existing window instead of creating new one
 app.on('second-instance', (event, commandLine, workingDirectory) => {
   console.log('Second instance detected, focusing existing window...');
-  
+
   if (mainWindow) {
     if (mainWindow.isMinimized()) {
       mainWindow.restore();
@@ -253,26 +253,26 @@ function createMainWindow() {
 // ============================
 const timerCore = new TimerCore();
 // Set a sensible default so initial UI has non-zero time
-try { timerCore.setTime(15, 0); } catch (_) {}
+try { timerCore.setTime(15, 0); } catch (_) { }
 
 function broadcastTimerUpdate(state) {
   try {
     if (mainWindow && mainWindow.webContents) {
       mainWindow.webContents.send('main-timer-update', state);
     }
-  } catch (_) {}
+  } catch (_) { }
   try {
     if (pipWindow && pipWindow.webContents) {
       pipWindow.webContents.send('main-timer-update', state);
     }
-  } catch (_) {}
+  } catch (_) { }
   try {
     tinyWindows.forEach(tw => {
       if (tw && !tw.isDestroyed() && tw.webContents) {
         tw.webContents.send('main-timer-update', state);
       }
     });
-  } catch (_) {}
+  } catch (_) { }
 }
 
 timerCore.on('update', (state) => {
@@ -286,8 +286,8 @@ timerCore.on('complete', (state) => {
       const n = new Notification({ title: 'Timer Complete!', body: 'Your timer has finished!' });
       n.show();
     }
-  } catch (_) {}
-  try { recordCompletedSession(state); } catch (_) {}
+  } catch (_) { }
+  try { recordCompletedSession(state); } catch (_) { }
   broadcastTimerUpdate(state);
 });
 
@@ -304,7 +304,7 @@ function createPipWindow() {
     console.log('Cannot open PiP mode: Tiny mode is already active');
     return;
   }
-  
+
   if (pipWindow) {
     pipWindow.focus();
     return;
@@ -351,18 +351,18 @@ function createPipWindow() {
         const safeH = Math.max(38, Math.min(150, contentHeight));
         const { x, y } = getBottomRightPosition(safeW, safeH);
         pipWindow.setBounds({ x, y, width: safeW, height: safeH });
-      }).catch(() => {});
+      }).catch(() => { });
       // Push current timer state immediately
       try {
         if (pipWindow && pipWindow.webContents) {
           pipWindow.webContents.send('main-timer-update', timerCore.getState());
         }
-      } catch (_) {}
+      } catch (_) { }
       // Provide initial theme payload if available
       if (currentThemePayload) {
         pipWindow.webContents.send('theme:sync', currentThemePayload);
       }
-    } catch (_) {}
+    } catch (_) { }
   });
 
   // Forward focus/blur state to the PiP renderer so it can show/hide close button
@@ -372,7 +372,7 @@ function createPipWindow() {
         pipWindow.webContents.send('window-active', true);
         console.log('PiP window is active');
       }
-    } catch (_) {}
+    } catch (_) { }
   });
   pipWindow.on('blur', () => {
     try {
@@ -380,7 +380,7 @@ function createPipWindow() {
         pipWindow.webContents.send('window-active', false);
         console.log('PiP window is inactive');
       }
-    } catch (_) {}
+    } catch (_) { }
   });
 
   pipWindow.on('closed', () => {
@@ -416,14 +416,14 @@ function createTinyWindow() {
     console.log('Cannot open Tiny mode: PiP mode is already active');
     return;
   }
-  
+
   // Prevent multiple tiny windows
   if (tinyWindows.length > 0) {
     console.log('Tiny mode window already exists, focusing existing window');
     tinyWindows[0].focus();
     return;
   }
-  
+
   // Create a new tiny window (not reusing PiP window)
   const tinyWindow = new BrowserWindow({
     width: 85,
@@ -454,17 +454,17 @@ function createTinyWindow() {
 
   // Disallow Chromium fullscreen toggle (F11) in the tiny window.
   // Fullscreen breaks the tiny UI layout and can make text appear to disappear.
-  try { tinyWindow.setFullScreenable(false); } catch (_) {}
+  try { tinyWindow.setFullScreenable(false); } catch (_) { }
   try {
     tinyWindow.webContents.on('before-input-event', (event, input) => {
       if (input && input.type === 'keyDown' && input.key === 'F11') {
         event.preventDefault();
         // Make Tiny inactive (return focus to the previously active window) while
         // keeping it running and always-on-top.
-        try { tinyWindow.blur(); } catch (_) {}
+        try { tinyWindow.blur(); } catch (_) { }
       }
     });
-  } catch (_) {}
+  } catch (_) { }
 
   tinyWindow.loadFile(path.join(__dirname, '..', 'public', 'tiny.html'));
 
@@ -480,17 +480,24 @@ function createTinyWindow() {
         }
         console.log('Tiny window initial focus state sent:', isFocused);
         // Also push current timer state immediately
-        try { tinyWindow.webContents.send('main-timer-update', timerCore.getState()); } catch (_) {}
+        try { tinyWindow.webContents.send('main-timer-update', timerCore.getState()); } catch (_) { }
       }
-    } catch (_) {}
+    } catch (_) { }
   });
 
   tinyWindow.on('closed', () => {
     // Remove from tracking array when closed
+
     const index = tinyWindows.indexOf(tinyWindow);
     if (index > -1) {
       tinyWindows.splice(index, 1);
       console.log('Tiny window closed, remaining windows:', tinyWindows.length);
+    }
+
+    // Restore main window if no other tiny windows are open
+    if (tinyWindows.length === 0 && mainWindow) {
+      mainWindow.show();
+      mainWindow.focus();
     }
   });
 
@@ -504,7 +511,7 @@ function createTinyWindow() {
         tinyWindow.webContents.send('window-active', true);
         console.log('Tiny window is active');
       }
-    } catch (_) {}
+    } catch (_) { }
   });
   tinyWindow.on('blur', () => {
     try {
@@ -512,7 +519,7 @@ function createTinyWindow() {
         tinyWindow.webContents.send('window-active', false);
         console.log('Tiny window is inactive');
       }
-    } catch (_) {}
+    } catch (_) { }
   });
 
   // Send initial timer state to the new tiny window after a short delay
@@ -526,9 +533,9 @@ function createTinyWindow() {
   // Make tiny window draggable
   tinyWindow.setMovable(true);
 
-  // Minimize main window when Tiny mode opens
+  // Hide main window when Tiny mode opens (instead of minimizing)
   if (mainWindow) {
-    mainWindow.minimize();
+    mainWindow.hide();
     // Auto-start timer when tiny mode opens
     setTimeout(() => {
       if (mainWindow && mainWindow.webContents) {
@@ -537,7 +544,7 @@ function createTinyWindow() {
       }
     }, 500);
   }
-  
+
   // Position at bottom-right corner with minimal margin
   const { width: tinyWidth, height: tinyHeight } = tinyWindow.getBounds();
   const { x, y } = getBottomRightPosition(tinyWidth, tinyHeight);
@@ -617,8 +624,8 @@ app.on('window-all-closed', () => {
 });
 
 app.on('will-quit', () => {
-  try { globalShortcut.unregister('CommandOrControl+Shift+P'); } catch (_) {}
-  try { globalShortcut.unregisterAll(); } catch (_) {}
+  try { globalShortcut.unregister('CommandOrControl+Shift+P'); } catch (_) { }
+  try { globalShortcut.unregisterAll(); } catch (_) { }
 });
 
 // IPC handlers for timer functionality
@@ -635,11 +642,11 @@ ipcMain.handle('open-tiny-window', () => {
 ipcMain.handle('theme:update-aux-windows', (_event, payload) => {
   currentThemePayload = payload;
   if (pipWindow && !pipWindow.isDestroyed()) {
-    try { pipWindow.webContents.send('theme:sync', payload); } catch (_) {}
+    try { pipWindow.webContents.send('theme:sync', payload); } catch (_) { }
   }
   tinyWindows.forEach((tiny) => {
     if (tiny && !tiny.isDestroyed()) {
-      try { tiny.webContents.send('theme:sync', payload); } catch (_) {}
+      try { tiny.webContents.send('theme:sync', payload); } catch (_) { }
     }
   });
   return true;
@@ -649,7 +656,7 @@ ipcMain.handle('theme:request-current', () => currentThemePayload);
 
 ipcMain.handle('theme:cycle', (_event, direction = 1) => {
   if (mainWindow && !mainWindow.isDestroyed()) {
-    try { mainWindow.webContents.send('cycle-theme', direction); } catch (_) {}
+    try { mainWindow.webContents.send('cycle-theme', direction); } catch (_) { }
   }
   return true;
 });
@@ -689,7 +696,7 @@ function loadPreferredTimes() {
   } catch (error) {
     console.error('Error loading preferred times:', error);
   }
-  
+
   // Return default times if file doesn't exist or is corrupted
   return [
     { name: 'Fifteen', minutes: 15 },
@@ -774,7 +781,7 @@ ipcMain.handle('close-tiny-window', (event) => {
     if (win && !win.isDestroyed()) {
       win.close();
     }
-  } catch (_) {}
+  } catch (_) { }
   return true;
 });
 
@@ -798,7 +805,7 @@ ipcMain.handle('get-timer-state', () => {
 // New IPC handler to request timer state from main window
 ipcMain.handle('request-timer-state-from-main', () => {
   // Broadcast current core state to all windows
-  try { broadcastTimerUpdate(timerCore.getState()); } catch (_) {}
+  try { broadcastTimerUpdate(timerCore.getState()); } catch (_) { }
   return true;
 });
 
@@ -831,7 +838,7 @@ ipcMain.handle('update-timer-from-pip', (event, update) => {
       const s = parseInt(update.seconds) || 0;
       timerCore.setTime(m, s);
     }
-  } catch (_) {}
+  } catch (_) { }
   return true;
 });
 
@@ -840,14 +847,14 @@ ipcMain.handle('send-timer-update-to-pip', (event, timerState) => {
   if (pipWindow && pipWindow.webContents) {
     pipWindow.webContents.send('main-timer-update', timerState);
   }
-  
+
   // Also send updates to all tiny windows
   tinyWindows.forEach(tinyWindow => {
     if (tinyWindow && !tinyWindow.isDestroyed() && tinyWindow.webContents) {
       tinyWindow.webContents.send('main-timer-update', timerState);
     }
   });
-  
+
   return true;
 });
 
