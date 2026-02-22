@@ -57,6 +57,7 @@ const getContrastColor = (hex, lightFallback = '#101015', darkFallback = '#FFFFF
 };
 
 const THEME_DEFINITIONS = [
+    // --- LIGHT THEMES ---
     {
         id: 'classic-minimal',
         name: 'Classic Minimal',
@@ -69,260 +70,42 @@ const THEME_DEFINITIONS = [
             accent: '#4CAF50'
         }
     },
-
     {
-        id: 'classic-cobalt',
-        name: 'Classic Cobalt',
+        id: 'github-light',
+        name: 'GitHub Light',
         group: 'light',
         palette: {
             background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#102A43',
-            secondaryText: '#486581',
-            accent: '#2563EB'
+            surface: '#F6F8FA',
+            primaryText: '#1F2328',
+            secondaryText: '#656D76',
+            accent: '#0969DA'
         }
     },
     {
-        id: 'classic-crimson',
-        name: 'Classic Crimson',
+        id: 'catppuccin-latte',
+        name: 'Catppuccin Latte',
         group: 'light',
         palette: {
-            background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#3B0D0D',
-            secondaryText: '#7A2A2A',
-            accent: '#D92D20'
+            background: '#EFF1F5',
+            surface: '#E6E9EF',
+            primaryText: '#4C4F69',
+            secondaryText: '#7C7F93',
+            accent: '#1E66F5'
         }
     },
     {
-        id: 'classic-emerald',
-        name: 'Classic Emerald',
+        id: 'gruvbox-light',
+        name: 'Gruvbox Light',
         group: 'light',
         palette: {
-            background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#123524',
-            secondaryText: '#3F7057',
-            accent: '#16A34A'
+            background: '#FBF1C7',
+            surface: '#F2E5BC',
+            primaryText: '#3C3836',
+            secondaryText: '#7C6F64',
+            accent: '#B57614'
         }
     },
-    {
-        id: 'classic-plum',
-        name: 'Classic Plum',
-        group: 'light',
-        palette: {
-            background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#32133B',
-            secondaryText: '#684067',
-            accent: '#9D4EDD'
-        }
-    },
-    {
-        id: 'classic-amber',
-        name: 'Classic Amber',
-        group: 'light',
-        palette: {
-            background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#392100',
-            secondaryText: '#7B4F0B',
-            accent: '#F59E0B'
-        }
-    },
-    {
-        id: 'classic-slate',
-        name: 'Classic Slate',
-        group: 'light',
-        palette: {
-            background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#1A1D23',
-            secondaryText: '#4B4F59',
-            accent: '#64748B'
-        }
-    },
-    {
-        id: 'classic-rose',
-        name: 'Classic Rose',
-        group: 'light',
-        palette: {
-            background: '#FFFFFF',
-            surface: '#F5F5F5',
-            primaryText: '#3F1222',
-            secondaryText: '#7A3A53',
-            accent: '#EC4899'
-        }
-    },
-    {
-        id: 'soft-mint',
-        name: 'Soft Mint',
-        group: 'light',
-        palette: {
-            background: '#F9FAFB',
-            surface: '#E0F2F1',
-            primaryText: '#263238',
-            secondaryText: '#607D8B',
-            accent: '#A0E7E5'
-        }
-    },
-    {
-        id: 'warm-blush',
-        name: 'Warm Blush',
-        group: 'light',
-        palette: {
-            background: '#FFF8E8',
-            surface: '#FAFAFA',
-            primaryText: '#333333',
-            secondaryText: '#8D8DAA',
-            accent: '#F4A7B9'
-        }
-    },
-    {
-        id: 'neutral-gray',
-        name: 'Neutral Gray',
-        group: 'light',
-        palette: {
-            background: '#FAFAFA',
-            surface: '#E4E5F1',
-            primaryText: '#484B6A',
-            secondaryText: '#9394A5',
-            accent: '#81C784'
-        }
-    },
-    {
-        id: 'polar-mist',
-        name: 'Polar Mist',
-        group: 'light',
-        palette: {
-            background: '#F5FAFF',
-            surface: '#E8F1FF',
-            primaryText: '#1C2A3A',
-            secondaryText: '#5C6B7C',
-            accent: '#2A9DF4'
-        }
-    },
-    {
-        id: 'sunlit-dune',
-        name: 'Sunlit Dune',
-        group: 'light',
-        palette: {
-            background: '#FFF7E6',
-            surface: '#FFE9C4',
-            primaryText: '#3E2723',
-            secondaryText: '#7A5E4B',
-            accent: '#FF9800'
-        }
-    },
-    {
-        id: 'lavender-haze',
-        name: 'Lavender Haze',
-        group: 'light',
-        palette: {
-            background: '#F8F5FF',
-            surface: '#EEE6FF',
-            primaryText: '#251B4A',
-            secondaryText: '#7A6BAF',
-            accent: '#8A79FF'
-        }
-    },
-    {
-        id: 'morning-sky',
-        name: 'Morning Sky',
-        group: 'light',
-        palette: {
-            background: '#F1F6FF',
-            surface: '#E2EDFF',
-            primaryText: '#1C2E4A',
-            secondaryText: '#5B708F',
-            accent: '#4B8CFF'
-        }
-    },
-    {
-        id: 'coastal-breeze',
-        name: 'Coastal Breeze',
-        group: 'light',
-        palette: {
-            background: '#F2FFFB',
-            surface: '#DEF5EE',
-            primaryText: '#123B34',
-            secondaryText: '#4A7B71',
-            accent: '#2DD4BF'
-        }
-    },
-    {
-        id: 'golden-hour',
-        name: 'Golden Hour',
-        group: 'light',
-        palette: {
-            background: '#FFF8ED',
-            surface: '#FFEBD1',
-            primaryText: '#3D2A14',
-            secondaryText: '#8C6D3B',
-            accent: '#FFB347'
-        }
-    },
-    {
-        id: 'peach-latte',
-        name: 'Peach Latte',
-        group: 'light',
-        palette: {
-            background: '#FFF3EE',
-            surface: '#FDE1D7',
-            primaryText: '#4C2A1F',
-            secondaryText: '#9F6B55',
-            accent: '#FF8A65'
-        }
-    },
-    {
-        id: 'icy-mint',
-        name: 'Icy Mint',
-        group: 'light',
-        palette: {
-            background: '#F4FFFE',
-            surface: '#E2F6F5',
-            primaryText: '#124C47',
-            secondaryText: '#4B7C75',
-            accent: '#2DD8A3'
-        }
-    },
-    {
-        id: 'linen-slate',
-        name: 'Linen Slate',
-        group: 'light',
-        palette: {
-            background: '#F9F8F4',
-            surface: '#ECE9E0',
-            primaryText: '#2D2A24',
-            secondaryText: '#6F6A5C',
-            accent: '#8D9CFF'
-        }
-    },
-    {
-        id: 'orchid-glow',
-        name: 'Orchid Glow',
-        group: 'light',
-        palette: {
-            background: '#FFF6FF',
-            surface: '#F6E7FF',
-            primaryText: '#351B43',
-            secondaryText: '#7C5C96',
-            accent: '#BA68C8'
-        }
-    },
-    {
-        id: 'fresh-snow',
-        name: 'Fresh Snow',
-        group: 'light',
-        palette: {
-            background: '#FFFFFF',
-            surface: '#F1F3F6',
-            primaryText: '#1C2230',
-            secondaryText: '#5E6A7D',
-            accent: '#5C7CFA'
-        }
-    },
-    
     {
         id: 'clear-glass',
         name: 'Clear Glass',
@@ -364,7 +147,8 @@ const THEME_DEFINITIONS = [
             '--tiny-close-color': '#111111'
         }
     },
-    
+
+    // --- DARK THEMES ---
     {
         id: 'midnight',
         name: 'Midnight (Original)',
@@ -375,90 +159,6 @@ const THEME_DEFINITIONS = [
             primaryText: '#E7E7EA',
             secondaryText: '#B7BCC2',
             accent: '#4A90E2'
-        }
-    },
-    {
-        id: 'midnight-ember',
-        name: 'Midnight Ember',
-        group: 'dark',
-        palette: {
-            background: '#0F0F12',
-            surface: '#141418',
-            primaryText: '#F8E6E0',
-            secondaryText: '#D9B8A8',
-            accent: '#FB6F3D'
-        }
-    },
-    {
-        id: 'midnight-aurora',
-        name: 'Midnight Aurora',
-        group: 'dark',
-        palette: {
-            background: '#0F0F12',
-            surface: '#141418',
-            primaryText: '#E4F8FF',
-            secondaryText: '#B2D4E4',
-            accent: '#38BDF8'
-        }
-    },
-    {
-        id: 'midnight-vine',
-        name: 'Midnight Vine',
-        group: 'dark',
-        palette: {
-            background: '#0F0F12',
-            surface: '#141418',
-            primaryText: '#E4F5E8',
-            secondaryText: '#B3D5C1',
-            accent: '#34D399'
-        }
-    },
-    {
-        id: 'midnight-amethyst',
-        name: 'Midnight Amethyst',
-        group: 'dark',
-        palette: {
-            background: '#0F0F12',
-            surface: '#141418',
-            primaryText: '#F1E6FF',
-            secondaryText: '#C8B4E8',
-            accent: '#A855F7'
-        }
-    },
-    {
-        id: 'midnight-ruby',
-        name: 'Midnight Ruby',
-        group: 'dark',
-        palette: {
-            background: '#0F0F12',
-            surface: '#141418',
-            primaryText: '#FFE5E9',
-            secondaryText: '#E9B7C1',
-            accent: '#F43F5E'
-        }
-    },
-    {
-        id: 'midnight-amber',
-        name: 'Midnight Amber',
-        group: 'dark',
-        palette: {
-            background: '#0F0F12',
-            surface: '#141418',
-            primaryText: '#FFEFD9',
-            secondaryText: '#DFC5A3',
-            accent: '#FBBF24'
-        }
-    },
-    {
-        id: 'midnight-ice',
-        name: 'Midnight Ice',
-        group: 'dark',
-        palette: {
-            background: '#0F0F12',
-            surface: '#141418',
-            primaryText: '#E1F2FF',
-            secondaryText: '#AFC8DE',
-            accent: '#60A5FA'
         }
     },
     {
@@ -486,18 +186,6 @@ const THEME_DEFINITIONS = [
         }
     },
     {
-        id: 'moody-charcoal',
-        name: 'Moody Charcoal',
-        group: 'dark',
-        palette: {
-            background: '#1C2526',
-            surface: '#263132',
-            primaryText: '#F0F0F0',
-            secondaryText: '#A0A0A0',
-            accent: '#FFAB91'
-        }
-    },
-    {
         id: 'oled-black',
         name: 'OLED Black',
         group: 'dark',
@@ -510,133 +198,128 @@ const THEME_DEFINITIONS = [
         }
     },
     {
-        id: 'cobalt-night',
-        name: 'Cobalt Night',
+        id: 'nord',
+        name: 'Nord',
         group: 'dark',
         palette: {
-            background: '#111827',
-            surface: '#182235',
-            primaryText: '#E2E8F0',
-            secondaryText: '#94A3B8',
-            accent: '#6366F1'
+            background: '#2E3440',
+            surface: '#3B4252',
+            primaryText: '#ECEFF4',
+            secondaryText: '#D8DEE9',
+            accent: '#88C0D0'
         }
     },
     {
-        id: 'ember-glow',
-        name: 'Ember Glow',
+        id: 'tokyo-night',
+        name: 'Tokyo Night',
         group: 'dark',
         palette: {
-            background: '#150912',
-            surface: '#1F0F1D',
-            primaryText: '#F8E6F2',
-            secondaryText: '#D6A8C4',
-            accent: '#FF5C8A'
+            background: '#1A1B26',
+            surface: '#24283B',
+            primaryText: '#A9B1D6',
+            secondaryText: '#787C99',
+            accent: '#7AA2F7'
         }
     },
     {
-        id: 'northern-pine',
-        name: 'Northern Pine',
+        id: 'gruvbox-dark',
+        name: 'Gruvbox Dark',
         group: 'dark',
         palette: {
-            background: '#0B1714',
-            surface: '#12211C',
-            primaryText: '#D9F5EB',
-            secondaryText: '#7FC4A9',
-            accent: '#34D399'
+            background: '#282828',
+            surface: '#3C3836',
+            primaryText: '#EBDBB2',
+            secondaryText: '#A89984',
+            accent: '#FABD2F'
         }
     },
     {
-        id: 'royal-plum',
-        name: 'Royal Plum',
+        id: 'catppuccin-mocha',
+        name: 'Catppuccin Mocha',
         group: 'dark',
         palette: {
-            background: '#0E0518',
-            surface: '#1A0F29',
-            primaryText: '#EBD9FF',
-            secondaryText: '#BBA5E6',
-            accent: '#C084FC'
+            background: '#1E1E2E',
+            surface: '#313244',
+            primaryText: '#CDD6F4',
+            secondaryText: '#A6ADC8',
+            accent: '#89B4FA'
         }
     },
     {
-        id: 'onyx-gold',
-        name: 'Onyx Gold',
+        id: 'rose-pine',
+        name: 'Rosé Pine',
         group: 'dark',
         palette: {
-            background: '#050505',
-            surface: '#16120A',
-            primaryText: '#F5EAC5',
-            secondaryText: '#D7C48A',
-            accent: '#F4C542'
+            background: '#191724',
+            surface: '#26233A',
+            primaryText: '#E0DEF4',
+            secondaryText: '#908CAA',
+            accent: '#31748F'
         }
     },
     {
-        id: 'aurora-teal',
-        name: 'Aurora Teal',
+        id: 'dracula',
+        name: 'Dracula',
         group: 'dark',
         palette: {
-            background: '#03131F',
-            surface: '#102333',
-            primaryText: '#D3F8FF',
-            secondaryText: '#8FD3E7',
-            accent: '#22D3EE'
-        }
-    },
-    {
-        id: 'midnight-copper',
-        name: 'Midnight Copper',
-        group: 'dark',
-        palette: {
-            background: '#120D08',
-            surface: '#1E170F',
-            primaryText: '#FFE3CC',
-            secondaryText: '#D2B090',
-            accent: '#FF8F45'
-        }
-    },
-    {
-        id: 'void-magenta',
-        name: 'Void Magenta',
-        group: 'dark',
-        palette: {
-            background: '#08000C',
-            surface: '#150021',
-            primaryText: '#F8D8FF',
-            secondaryText: '#BF9BE2',
-            accent: '#FF55FF'
-        }
-    },
-    {
-        id: 'twilight-rust',
-        name: 'Twilight Rust',
-        group: 'dark',
-        palette: {
-            background: '#1C0F0C',
-            surface: '#2B1B16',
-            primaryText: '#FFD8C2',
-            secondaryText: '#E3A48A',
-            accent: '#FF7F50'
-        }
-    },
-    {
-        id: 'shadow-amber',
-        name: 'Shadow Amber',
-        group: 'dark',
-        palette: {
-            background: '#11100A',
-            surface: '#1F1E12',
-            primaryText: '#FFE3B0',
-            secondaryText: '#CFB27A',
-            accent: '#F59E0B'
+            background: '#282A36',
+            surface: '#44475A',
+            primaryText: '#F8F8F2',
+            secondaryText: '#6272A4',
+            accent: '#BD93F9'
         }
     }
 ];
 
 const LEGACY_THEME_MAP = {
+    // Keep internal aliases functional
     'theme-midnight': 'midnight',
     'theme-ocean': 'deep-navy',
-    'theme-sunset': 'moody-charcoal',
+    'theme-sunset': 'midnight',  // Point legacy randoms to standard midnight
     'theme-forest': 'elevated-gray',
-    'theme-neon': 'oled-black'
+    'theme-neon': 'oled-black',
+
+    // Map removed random themes back to midnight/classic-minimal logically
+    'classic-cobalt': 'classic-minimal',
+    'classic-crimson': 'classic-minimal',
+    'classic-emerald': 'classic-minimal',
+    'classic-plum': 'classic-minimal',
+    'classic-amber': 'classic-minimal',
+    'classic-slate': 'classic-minimal',
+    'classic-rose': 'classic-minimal',
+    'soft-mint': 'classic-minimal',
+    'warm-blush': 'classic-minimal',
+    'neutral-gray': 'classic-minimal',
+    'polar-mist': 'github-light',
+    'sunlit-dune': 'gruvbox-light',
+    'lavender-haze': 'classic-minimal',
+    'morning-sky': 'classic-minimal',
+    'coastal-breeze': 'classic-minimal',
+    'golden-hour': 'gruvbox-light',
+    'peach-latte': 'classic-minimal',
+    'icy-mint': 'classic-minimal',
+    'linen-slate': 'classic-minimal',
+    'orchid-glow': 'classic-minimal',
+    'fresh-snow': 'github-light',
+
+    'midnight-ember': 'midnight',
+    'midnight-aurora': 'midnight',
+    'midnight-vine': 'midnight',
+    'midnight-amethyst': 'midnight',
+    'midnight-ruby': 'midnight',
+    'midnight-amber': 'midnight',
+    'midnight-ice': 'midnight',
+    'moody-charcoal': 'midnight',
+    'cobalt-night': 'tokyo-night',
+    'ember-glow': 'midnight',
+    'northern-pine': 'nord',
+    'royal-plum': 'midnight',
+    'onyx-gold': 'gruvbox-dark',
+    'aurora-teal': 'tokyo-night',
+    'midnight-copper': 'gruvbox-dark',
+    'void-magenta': 'midnight',
+    'twilight-rust': 'midnight',
+    'shadow-amber': 'gruvbox-dark'
 };
 
 const createThemeTokens = (theme) => {
@@ -677,27 +360,28 @@ const createThemeTokens = (theme) => {
     const windowRadius = '16px';
     const headerHeight = '40px';
     const headerControlHeight = '32px';
-    const pipBg = mixHex(surface, background, group === 'light' ? 0.32 : 0.14);
-    const pipBg2 = mixHex(surfaceElevated, background, group === 'light' ? 0.48 : 0.26);
+    const pipBg = background; // Match exactly
+    const pipBg2 = background; // Match exactly
     const pipBtnBase = mixHex(surfaceMuted, accent, group === 'light' ? 0.18 : 0.12);
     const pipBtnHover = mixHex(pipBtnBase, accent, 0.35);
     const pipBtnBorder = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.12 : 0.28);
     const pipCloseBg = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.14 : 0.36);
     const pipCloseBorder = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.18 : 0.4);
     const pipShadow = `0 12px 28px ${hexToRgba('#000000', group === 'light' ? 0.16 : 0.45)}`;
-    const pipContainerBackground = `radial-gradient(120% 120% at 50% -30%, ${hexToRgba('#FFFFFF', 0.045)}, transparent 100%), linear-gradient(160deg, ${pipBg} 0%, ${pipBg2} 100%)`;
-    const pipBackdropFilter = 'blur(14px)';
+    // Force solid background identical to main window
+    const pipContainerBackground = background;
+    const pipBackdropFilter = 'none';
     const pipBtnBackdropFilter = 'blur(3px)';
     const pipTimeShadow = group === 'light' ? '0 1px 3px rgba(0, 0, 0, 0.45)' : '0 1px 4px rgba(0, 0, 0, 0.55)';
     const pipBtnTextColor = textPrimary;
     const pipCloseColor = textPrimary;
-    const tinyMix = mixHex(surface, background, group === 'light' ? 0.12 : 0.28);
-    const tinyBg = hexToRgba(tinyMix, group === 'light' ? 0.9 : 0.82);
+    // Force tiny background to identical solid color
+    const tinyBg = background;
     const tinyBorder = hexToRgba(group === 'light' ? '#000000' : '#FFFFFF', group === 'light' ? 0.08 : 0.26);
     const tinyShadow = `0 8px 28px ${hexToRgba('#000000', group === 'light' ? 0.18 : 0.48)}`;
     const tinyCloseBg = hexToRgba(accent, group === 'light' ? 0.25 : 0.35);
     const tinyCloseBgHover = hexToRgba(accent, group === 'light' ? 0.35 : 0.45);
-    const tinyBackdropFilter = 'blur(20px)';
+    const tinyBackdropFilter = 'none';
     const tinyTimeShadow = '0 2px 8px rgba(0, 0, 0, 0.8)';
     const tinyCloseColor = textPrimary;
     const sharedFont = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
@@ -889,7 +573,7 @@ class Timer {
         this.preferredTimes.forEach((preset, index) => {
             const presetContainer = document.createElement('div');
             presetContainer.className = 'preset-container';
-            
+
             const presetBtn = document.createElement('div');
             presetBtn.className = 'preset-btn';
             const presetNameEl = document.createElement('div');
@@ -906,7 +590,7 @@ class Timer {
             presetBtn.addEventListener('click', () => {
                 this.setTime(preset.minutes, 0);
             });
-            
+
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'preset-delete-btn';
             deleteBtn.textContent = '×';
@@ -915,7 +599,7 @@ class Timer {
                 e.stopPropagation(); // Prevent triggering the preset button
                 this.deletePreset(index);
             });
-            
+
             presetContainer.appendChild(presetBtn);
             presetContainer.appendChild(deleteBtn);
             this.presetGrid.appendChild(presetContainer);
@@ -988,7 +672,7 @@ class Timer {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
                 return;
             }
-            
+
             if (e.key === 'p' || e.key === 'P') {
                 e.preventDefault();
                 this.openPiP();
@@ -1010,20 +694,20 @@ class Timer {
             }
         });
     }
-    
+
     // Listen for centralized timer updates from main (TimerCore) and sync UI
     setupIpcListeners() {
         try {
             window.electronAPI.onMainTimerUpdate((event, state) => {
                 this.applyStateFromCore(state);
             });
-        } catch (_) {}
+        } catch (_) { }
 
         try {
             window.electronAPI.onAnalyticsUpdated(() => {
                 this.refreshAnalytics();
             });
-        } catch (_) {}
+        } catch (_) { }
     }
 
     // Pull initial state from the core (used on startup)
@@ -1031,7 +715,7 @@ class Timer {
         try {
             const state = await window.electronAPI.timerCoreGetState();
             this.applyStateFromCore(state);
-        } catch (_) {}
+        } catch (_) { }
     }
 
     // Apply a state object from the centralized core
@@ -1228,7 +912,7 @@ class Timer {
 
         this.renderThemeGallery();
         this.syncThemeUiState();
-        try { console.log('[Theme] Disabled theme:', themeId); } catch (_) {}
+        try { console.log('[Theme] Disabled theme:', themeId); } catch (_) { }
         return true;
     }
 
@@ -1252,7 +936,7 @@ class Timer {
 
         this.renderThemeGallery();
         this.syncThemeUiState();
-        try { console.log('[Theme] Reset hidden themes'); } catch (_) {}
+        try { console.log('[Theme] Reset hidden themes'); } catch (_) { }
     }
 
     createThemeCard(theme) {
@@ -1327,12 +1011,12 @@ class Timer {
         if (!options.skipPersist) {
             try {
                 localStorage.setItem('timer-app-theme', themeId);
-            } catch (_) {}
+            } catch (_) { }
         }
 
         try {
             console.log('[Theme] Applied theme:', themeId);
-        } catch (_) {}
+        } catch (_) { }
 
         this.pushThemeToAuxWindows(theme, tokens);
         this.syncThemeUiState();
@@ -1381,7 +1065,7 @@ class Timer {
         try {
             const result = window.electronAPI.updateAuxWindowTheme(payload);
             if (result && typeof result.then === 'function') {
-                result.catch(() => {});
+                result.catch(() => { });
             }
             this.lastThemePayload = payload;
         } catch (_) { /* ignore */ }
@@ -1401,7 +1085,7 @@ class Timer {
         if (this.pauseBtn) this.pauseBtn.disabled = true;
 
         // Notify centralized timer core
-        try { window.electronAPI.timerCoreSetTime(minutes, seconds); } catch (_) {}
+        try { window.electronAPI.timerCoreSetTime(minutes, seconds); } catch (_) { }
 
         // Reset completion guards for new configured time
         this._completionFired = false;
@@ -1411,12 +1095,12 @@ class Timer {
     setCustomTime() {
         const minutes = parseInt(this.minutesInput.value) || 0;
         const seconds = parseInt(this.secondsInput.value) || 0;
-        
+
         if (minutes === 0 && seconds === 0) {
             alert('Please enter a valid time');
             return;
         }
-        
+
         this.setTime(minutes, seconds);
         this.minutesInput.value = '';
         this.secondsInput.value = '';
@@ -1425,21 +1109,21 @@ class Timer {
     async addPreferredTime() {
         const name = this.presetNameInput.value.trim();
         const minutes = parseInt(this.presetMinutesInput.value);
-        
+
         if (!name || !minutes || minutes <= 0) {
             alert('Please enter a valid name and time');
             return;
         }
-        
+
         const newPreset = { name, minutes };
         this.preferredTimes.push(newPreset);
-        
+
         try {
             await window.electronAPI.savePreferredTime(newPreset);
         } catch (error) {
             console.error('Failed to save preferred time:', error);
         }
-        
+
         this.renderPresetTimes();
         this.presetNameInput.value = '';
         this.presetMinutesInput.value = '';
@@ -1487,12 +1171,12 @@ class Timer {
             const existing = await window.electronAPI.getPreferredTimes();
             if (Array.isArray(existing)) {
                 for (let i = existing.length - 1; i >= 0; i--) {
-                    try { await window.electronAPI.deletePreferredTime(i); } catch (_) {}
+                    try { await window.electronAPI.deletePreferredTime(i); } catch (_) { }
                 }
             }
             // Save defaults
             for (const preset of defaults) {
-                try { await window.electronAPI.savePreferredTime(preset); } catch (_) {}
+                try { await window.electronAPI.savePreferredTime(preset); } catch (_) { }
             }
             // Reload to ensure consistency with disk
             await this.loadPreferredTimes();
@@ -1504,20 +1188,20 @@ class Timer {
     }
 
     startTimer() {
-        try { window.electronAPI.timerCoreStart(); } catch (_) {}
+        try { window.electronAPI.timerCoreStart(); } catch (_) { }
         // Optimistically update button state; source of truth will arrive via IPC
         if (this.startBtn) this.startBtn.disabled = true;
         if (this.pauseBtn) this.pauseBtn.disabled = false;
     }
 
     pauseTimer() {
-        try { window.electronAPI.timerCorePause(); } catch (_) {}
+        try { window.electronAPI.timerCorePause(); } catch (_) { }
         if (this.startBtn) this.startBtn.disabled = false;
         if (this.pauseBtn) this.pauseBtn.disabled = true;
     }
 
     resetTimer() {
-        try { window.electronAPI.timerCoreReset(); } catch (_) {}
+        try { window.electronAPI.timerCoreReset(); } catch (_) { }
         if (this.startBtn) this.startBtn.disabled = false;
         if (this.pauseBtn) this.pauseBtn.disabled = true;
         // Reset guards on reset
@@ -1530,7 +1214,7 @@ class Timer {
         const seconds = this.timeLeft % 60;
         const displayText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         this.timeDisplay.textContent = displayText;
-        
+
         // Debug: log every 10 seconds to check timing
         if (this.timeLeft % 10 === 0) {
             console.log('Timer update:', displayText, 'at', new Date().toLocaleTimeString());
@@ -1539,11 +1223,11 @@ class Timer {
 
     updateProgress() {
         if (this.totalTime === 0) return;
-        
+
         const progress = (this.totalTime - this.timeLeft) / this.totalTime;
         const circumference = 2 * Math.PI * 90; // r = 90
         const offset = circumference - (progress * circumference);
-        
+
         this.progressCircle.style.strokeDashoffset = offset;
     }
 
@@ -1554,10 +1238,10 @@ class Timer {
 
         this.pauseTimer();
         this.timeDisplay.classList.add('timer-complete');
-        
+
         // Show confetti animation (main window only)
         this.showConfetti();
-        
+
         // Show system notification
         if ('Notification' in window && Notification.permission === 'granted') {
             new Notification('Timer Complete!', {
@@ -1565,15 +1249,15 @@ class Timer {
                 icon: 'assets/icon.png'
             });
         }
-        
+
         // Play sound once
         this.playNotificationSound();
-        
+
         setTimeout(() => {
             this.timeDisplay.classList.remove('timer-complete');
         }, 1000);
 
-        try { this.refreshAnalytics(); } catch (_) {}
+        try { this.refreshAnalytics(); } catch (_) { }
     }
 
     formatDuration(seconds) {
@@ -1764,7 +1448,7 @@ class Timer {
                         await window.electronAPI.analyticsDeleteSession({ id: sessionId });
                         this.refreshAnalytics();
                     }
-                } catch (_) {}
+                } catch (_) { }
             });
 
             actions.appendChild(del);
@@ -1867,10 +1551,10 @@ class Timer {
         for (let i = 0; i < 60; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti-piece side-left';
-            
+
             const color = pick(colors);
             confetti.style.backgroundColor = color;
-            
+
             // Randomize: sometimes use edge-bang instead of side-left
             const useEdgeLeft = Math.random() < 0.5;
             if (useEdgeLeft) {
@@ -1890,15 +1574,15 @@ class Timer {
                 confetti.style.left = '-10px';
                 confetti.style.top = Math.random() * 100 + '%';
             }
-            
+
             const { delay, dur } = setCappedTiming(confetti, { minDur: 1.0, maxDur: 2.0, maxDelay: 0.6, fastBias: 0.35 });
             confetti.style.animationTimingFunction = dur < 1.3 ? 'ease-out' : 'ease-in-out';
-            
+
             const size = randomSize(4, 10);
             confetti.style.width = size + 'px';
             confetti.style.height = size + 'px';
             assignShape(confetti);
-            
+
             confettiContainer.appendChild(confetti);
             scheduleRemoval(confetti, delay, dur);
         }
@@ -1907,10 +1591,10 @@ class Timer {
         for (let i = 0; i < 60; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti-piece side-right';
-            
+
             const color = pick(colors);
             confetti.style.backgroundColor = color;
-            
+
             // Randomize: sometimes use edge-bang instead of side-right
             const useEdgeRight = Math.random() < 0.5;
             if (useEdgeRight) {
@@ -1930,15 +1614,15 @@ class Timer {
                 confetti.style.right = '-10px';
                 confetti.style.top = Math.random() * 100 + '%';
             }
-            
+
             const { delay: delayR, dur: durR } = setCappedTiming(confetti, { minDur: 1.0, maxDur: 2.0, maxDelay: 0.6, fastBias: 0.35 });
             confetti.style.animationTimingFunction = durR < 1.3 ? 'ease-out' : 'ease-in-out';
-            
+
             const size = randomSize(4, 10);
             confetti.style.width = size + 'px';
             confetti.style.height = size + 'px';
             assignShape(confetti);
-            
+
             confettiContainer.appendChild(confetti);
             scheduleRemoval(confetti, delayR, durR);
         }
@@ -1947,10 +1631,10 @@ class Timer {
         for (let i = 0; i < 100; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti-piece top-fall';
-            
+
             const color = pick(colors);
             confetti.style.backgroundColor = color;
-            
+
             // Randomize: sometimes use edge-bang upward burst instead of pure fall
             const useEdgeTop = Math.random() < 0.4;
             if (useEdgeTop) {
@@ -1970,15 +1654,15 @@ class Timer {
                 confetti.style.left = Math.random() * 100 + 'vw';
                 confetti.style.top = '-20px';
             }
-            
+
             const { delay: delayT, dur: durT } = setCappedTiming(confetti, { minDur: 1.2, maxDur: 2.2, maxDelay: 0.8, fastBias: 0.3 });
             confetti.style.animationTimingFunction = durT < 1.4 ? 'ease-in' : 'ease-in-out';
-            
+
             const size = randomSize(4, 10);
             confetti.style.width = size + 'px';
             confetti.style.height = size + 'px';
             assignShape(confetti);
-            
+
             confettiContainer.appendChild(confetti);
             scheduleRemoval(confetti, delayT, durT);
         }
@@ -2120,7 +1804,7 @@ class Timer {
                 throw new Error('Audio play blocked');
             });
             return;
-        } catch (e) {}
+        } catch (e) { }
         try {
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
             if (!AudioCtx) return;
@@ -2134,7 +1818,7 @@ class Timer {
 
             // Ensure context is running (some browsers suspend until user gesture)
             if (ctx.state === 'suspended') {
-                ctx.resume().catch(() => {});
+                ctx.resume().catch(() => { });
             }
 
             const now = ctx.currentTime + 0.02; // slight delay to avoid pops
@@ -2216,7 +1900,7 @@ class Timer {
             window.electronAPI.openPipWindow();
             // Proactively push current state so PiP shows the correct time immediately
             const pushState = () => {
-                try { this.sendUpdateToPip(); } catch (_) {}
+                try { this.sendUpdateToPip(); } catch (_) { }
             };
             // Push immediately and with a couple of short retries to cover window init time
             pushState();
@@ -2268,7 +1952,7 @@ class Timer {
     }
 
     // No-op: Updates are broadcast from TimerCore in the main process
-    sendUpdateToPip() {}
+    sendUpdateToPip() { }
 }
 
 // Initialize the timer when the page loads
@@ -2277,22 +1961,22 @@ document.addEventListener('DOMContentLoaded', () => {
     if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
     }
-    
+
     // Create the timer
     window.timer = new Timer();
     // Pull initial state from centralized core
-    try { window.timer.syncFromCore && window.timer.syncFromCore(); } catch (_) {}
+    try { window.timer.syncFromCore && window.timer.syncFromCore(); } catch (_) { }
     // Handle auto-start timer command from main process
     window.electronAPI.onAutoStartTimer(() => {
         console.log('Auto-start timer command received');
         if (!window.timer.isRunning) {
             console.log('Starting timer automatically');
-            try { window.timer.startTimer(); } catch (_) {}
+            try { window.timer.startTimer(); } catch (_) { }
         } else {
             console.log('Timer already running, skipping auto-start');
         }
     });
-    
+
     // Listen for timer state requests from other windows
     window.electronAPI.onRequestTimerState((event) => {
         // Send current timer state to all other windows

@@ -319,10 +319,10 @@ body.pip-hover .pip-close-btn {
 
 /* Smooth transitions */
 
-/* ==============================
+/*
    PiP Variable-driven Themes
-   Apply with body.pip-theme-*
-   ============================== */
+   Dynamic tokens passed from main process apply CSS variables directly to body.
+*/
 
 /* Defaults (current look) */
 body {
@@ -338,86 +338,29 @@ body {
   --pip-shadow: 0 12px 28px rgba(0,0,0,0.45);
 }
 
-/* Apply variables */
-body {
-  font-family: var(--pip-font);
-  /* Remove body background gradients since they're now on container */
-}
-
 /* Ensure theme variables override button-specific gradients when a pip theme is active */
-body[class*="pip-theme-"] .pip-control-btn.play-btn,
-body[class*="pip-theme-"] .pip-control-btn.pause-btn,
-body[class*="pip-theme-"] .pip-control-btn.reset-btn {
+body[data-theme-id] .pip-control-btn.play-btn,
+body[data-theme-id] .pip-control-btn.pause-btn,
+body[data-theme-id] .pip-control-btn.reset-btn {
   background: var(--pip-btn-bg) !important;
   border-color: var(--pip-btn-border) !important;
   color: var(--pip-btn-text-color, var(--pip-time-color, #e7e7ea)) !important;
 }
-body[class*="pip-theme-"] .pip-control-btn.play-btn:hover:not(:disabled),
-body[class*="pip-theme-"] .pip-control-btn.pause-btn:hover:not(:disabled),
-body[class*="pip-theme-"] .pip-control-btn.reset-btn:hover:not(:disabled) {
+body[data-theme-id] .pip-control-btn.play-btn:hover:not(:disabled),
+body[data-theme-id] .pip-control-btn.pause-btn:hover:not(:disabled),
+body[data-theme-id] .pip-control-btn.reset-btn:hover:not(:disabled) {
   background: var(--pip-btn-hover-bg) !important;
 }
 
 /* Themed close button to match palette */
-body[class*="pip-theme-"] .pip-close-btn {
+body[data-theme-id] .pip-close-btn {
   background: var(--pip-close-bg, rgba(0, 0, 0, 0.5)) !important;
   border-color: var(--pip-close-border, rgba(255, 255, 255, 0.22)) !important;
   color: var(--pip-close-color, var(--pip-time-color, #ffffff)) !important;
 }
-body.pip-theme-shadow .pip-close-btn:hover {
+body[data-theme-group="light"] .pip-close-btn:hover {
+  background: rgba(0, 0, 0, 0.15) !important;
+}
+body[data-theme-group="dark"] .pip-close-btn:hover {
   background: rgba(255, 255, 255, 0.25) !important;
-}
-/* Theme: Deep Ocean */
-body.pip-theme-ocean {
-  --pip-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --pip-bg1: #0d2035;
-  --pip-bg2: #0a1726;
-  --pip-time-color: #e6f7ff;
-  --pip-btn-bg: rgba(15, 45, 73, 0.85);
-  --pip-btn-border: rgba(20, 70, 103, 0.8);
-  --pip-btn-hover-bg: rgba(34, 211, 238, 0.22);
-}
-
-/* Theme: Sunset Coral */
-body.pip-theme-sunset {
-  --pip-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --pip-bg1: #3b1120;
-  --pip-bg2: #2a0f18;
-  --pip-time-color: #ffe9e2;
-  --pip-btn-bg: rgba(81, 23, 38, 0.9);
-  --pip-btn-border: rgba(106, 30, 48, 0.8);
-  --pip-btn-hover-bg: rgba(255, 130, 67, 0.28);
-}
-
-/* Theme: Forest Mint */
-body.pip-theme-forest {
-  --pip-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --pip-bg1: #13241a;
-  --pip-bg2: #0f1d15;
-  --pip-time-color: #e8ffe9;
-  --pip-btn-bg: rgba(21, 56, 35, 0.9);
-  --pip-btn-border: rgba(33, 92, 58, 0.8);
-  --pip-btn-hover-bg: rgba(52, 211, 153, 0.28);
-}
-
-/* Theme: Carbon (compact, monochrome) */
-body.pip-theme-carbon {
-  --pip-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --pip-bg1: #151515;
-  --pip-bg2: #0f0f0f;
-  --pip-time-color: #efefef;
-  --pip-btn-bg: rgba(32, 32, 32, 0.95);
-  --pip-btn-border: rgba(80, 80, 80, 0.7);
-  --pip-btn-hover-bg: rgba(255, 255, 255, 0.18);
-}
-
-/* Theme: Neon Pulse (different font) */
-body.pip-theme-neon {
-  --pip-font: 'Courier New', monospace;
-  --pip-bg1: #1a0f2a;
-  --pip-bg2: #0f0f18;
-  --pip-time-color: #fbe8ff;
-  --pip-btn-bg: rgba(29, 20, 48, 0.9);
-  --pip-btn-border: rgba(58, 42, 106, 0.8);
-  --pip-btn-hover-bg: rgba(255, 42, 161, 0.28);
 }
