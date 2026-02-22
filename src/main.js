@@ -223,13 +223,13 @@ function createMainWindow() {
     resizable: false,
     minimizable: true,
     maximizable: false,
-    frame: false,
+    frame: process.platform !== 'darwin',
     title: 'Timer App',
     icon: path.join(__dirname, '../public/assets', 'icon.png'),
     backgroundColor: '#00000000', // fully transparent to remove corner artifacts
     transparent: true,
     hasShadow: false,
-    titleBarStyle: 'hidden',
+    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden',
     titleBarOverlay: false
   });
 

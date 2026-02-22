@@ -512,6 +512,10 @@ class Timer {
     }
 
     initializeElements() {
+        if (navigator.userAgent.toLowerCase().includes('mac')) {
+            document.body.classList.add('is-mac');
+        }
+
         this.timeDisplay = document.getElementById('timeDisplay');
         this.progressCircle = document.getElementById('progressCircle');
         this.startBtn = document.getElementById('startBtn');
