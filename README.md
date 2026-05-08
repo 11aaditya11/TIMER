@@ -12,6 +12,19 @@ A minimalist yet powerful timer application with multiple window modes, built wi
 
 ## Installation
 
+### macOS
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/timer-app.git
+cd timer-app
+
+# Install dependencies
+npm install
+
+# Start the app
+npm start
+```
+
 ### Linux (Recommended)
 ```bash
 # Clone the repository

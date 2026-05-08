@@ -253,7 +253,7 @@ function createMainWindow() {
 // ============================
 const timerCore = new TimerCore();
 // Set a sensible default so initial UI has non-zero time
-try { timerCore.setTime(15, 0); } catch (_) { }
+try { timerCore.setTime(60, 0); } catch (_) { }
 
 function broadcastTimerUpdate(state) {
   try {

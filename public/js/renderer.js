@@ -508,7 +508,7 @@ class Timer {
         this.setupEventListeners();
         this.setupIpcListeners();
         this.syncFromCore();
-        this.setDefaultTime(15, 0);
+        this.setDefaultTime(60, 0);
     }
 
     initializeElements() {
