@@ -532,15 +532,12 @@ class Timer {
         this.tinyBtn = document.getElementById('tinyBtn');
         this.closeBtn = document.getElementById('closeBtn');
         this.minBtn = document.getElementById('minBtn');
-        this.backBtn = document.getElementById('backBtn');
         this.themeBtn = document.getElementById('themeBtn');
-        this.backFromThemeBtn = document.getElementById('backFromThemeBtn');
         this.lightThemeGrid = document.getElementById('lightThemeGrid');
         this.darkThemeGrid = document.getElementById('darkThemeGrid');
         this.currentThemeLabelEl = document.getElementById('currentThemeLabel');
         this.themePanel = document.getElementById('tab-theme');
         this.resetThemeBtn = document.getElementById('resetThemeBtn');
-        this.backFromAnalyticsBtn = document.getElementById('backFromAnalyticsBtn');
         this.analyticsTotalTimeEl = document.getElementById('analyticsTotalTime');
         this.analyticsTotalSessionsEl = document.getElementById('analyticsTotalSessions');
         this.analyticsWeekTimeEl = document.getElementById('analyticsWeekTime');
@@ -641,17 +638,6 @@ class Timer {
         this.presetMinutesInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.addPreferredTime();
         });
-
-        // Back button event listener
-        if (this.backBtn) {
-            this.backBtn.addEventListener('click', () => this.navigateToTab('tab-timer'));
-        }
-        if (this.backFromThemeBtn) {
-            this.backFromThemeBtn.addEventListener('click', () => this.navigateToTab('tab-timer'));
-        }
-        if (this.backFromAnalyticsBtn) {
-            this.backFromAnalyticsBtn.addEventListener('click', () => this.navigateToTab('tab-timer'));
-        }
 
         if (this.analyticsToggleLogsBtn) {
             this.analyticsToggleLogsBtn.addEventListener('click', () => {
@@ -764,11 +750,6 @@ class Timer {
         }
         const panel = document.getElementById(target);
         if (panel) panel.classList.add('active');
-        if (target === 'tab-new') {
-            document.body.classList.add('new-tab-active');
-        } else {
-            document.body.classList.remove('new-tab-active');
-        }
         if (target === 'tab-analytics') {
             this.refreshAnalytics();
         }

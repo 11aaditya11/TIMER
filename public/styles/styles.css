@@ -1616,11 +1616,6 @@ body {
     border-top-right-radius: 0 !important;
 }
 
-/* Hide PiP/Tiny bar when New Timer tab is active */
-.new-tab-active .tabs {
-    display: none !important;
-}
-
 /* keep container rounded corners (bottom) across all themes */
 
 /* Ensure top bar corners are perfectly rounded and filled */
